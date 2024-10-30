@@ -26,13 +26,22 @@ public class ValaBar : Gtk.Window
 
     public static int main(string[] args)
     {
-        Gtk.init(ref args);
-
-        ValaBar window = new ValaBar();
-        window.show_all();
-
-        Gtk.main();
-
+        Gtk.init (ref args);
+        try {
+            // If the UI contains custom widgets, their types must've been instantiated once
+            // Type type = typeof(Foo.BarEntry);
+            // assert(type != 0);
+            var builder = new Gtk.Builder ();
+            builder.add_from_file ("ui.xml");
+            builder.connect_signals (null);
+            var window = builder.get_object ("window") as Gtk.Window;
+            window.show_all ();
+            Gtk.main ();
+        } catch (Error e) {
+            stderr.printf ("Could not load UI: %s\n", e.message);
+            return 1;
+        }
         return 0;
+        //ValaBar window = new ValaBar();
     }
 }

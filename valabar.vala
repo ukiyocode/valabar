@@ -32,7 +32,7 @@ public class ValaBar : Gtk.Window
             // Type type = typeof(Foo.BarEntry);
             // assert(type != 0);
             var builder = new Gtk.Builder ();
-            builder.add_from_file ("ui.xml");
+            builder.add_from_file ("valabar.ui");
             builder.connect_signals (null);
             var window = builder.get_object ("window") as Gtk.Window;
             window.show_all ();

@@ -22,7 +22,6 @@ public class ValaBar : Gtk.Window
             builder.connect_signals(null);
             var window = builder.get_object("window") as ValaBar;
             window.move(window.x, window.y);
-            //var tasklist = builder.get_object ("tasklist") as Wnck.Tasklist;
             window.show_all ();
             Gtk.main ();
         } catch (Error e) {
@@ -30,6 +29,5 @@ public class ValaBar : Gtk.Window
             return 1;
         }
         return 0;
-        //ValaBar window = new ValaBar();
     }
 }

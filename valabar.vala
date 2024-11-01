@@ -1,13 +1,10 @@
 public class ValaBar : Gtk.Window
 {
-    //Wnck.Tasklist tasklist;
-    //Gdk.Monitor curmon;
+    public int x { get; set; default = 0; }
+    public int y { get; set; default = 0; }
     
-    //  public ValaBar()
+    //  public TaskList()
     //  {
-    //      curmon = Gdk.Display.get_default().get_monitor_at_window(this.get_window());
-    //      this.move(620,curmon.geometry.height-300);
-
     //      tasklist = new Wnck.Tasklist();
     //      tasklist.set_grouping(Wnck.TasklistGroupingType.NEVER_GROUP);
     //      grid.attach(tasklist, 0, 0, 1, 1);
@@ -16,14 +13,16 @@ public class ValaBar : Gtk.Window
     public static int main(string[] args)
     {
         Gtk.init (ref args);
+        var builder = new Gtk.Builder ();
         try {
             // If the UI contains custom widgets, their types must've been instantiated once
             // Type type = typeof(Foo.BarEntry);
             // assert(type != 0);
-            var builder = new Gtk.Builder ();
             builder.add_from_file("valabar.ui");
             builder.connect_signals(null);
-            var window = builder.get_object("window") as Gtk.Window;
+            var window = builder.get_object("window") as ValaBar;
+            window.move(window.x, window.y);
+            //var tasklist = builder.get_object ("tasklist") as Wnck.Tasklist;
             window.show_all ();
             Gtk.main ();
         } catch (Error e) {

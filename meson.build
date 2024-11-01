@@ -6,7 +6,7 @@ dependencies = [
     dependency('gobject-2.0'),
     dependency('gtk+-3.0'),
     dependency('gmodule-2.0'),
-    dependency('libbamf3'),
+    dependency('libwnck-3.0'),
 ]
 
 sources = files('valabar.vala')

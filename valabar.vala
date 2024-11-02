@@ -17,6 +17,9 @@ public class ValaBar : Gtk.Window
 
         var builder = new Gtk.Builder ();
         try {
+            Gtk.CssProvider css_provider = new Gtk.CssProvider();
+            css_provider.load_from_path("style.css");
+            Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
             // If the UI contains custom widgets, their types must've been instantiated once
             // Type type = typeof(Foo.BarEntry);
             // assert(type != 0);

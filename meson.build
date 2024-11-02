@@ -13,6 +13,7 @@ dependencies = [
 sources = files(
     'valabar.vala',
     'taskbar.vala',
+    'windowbutton.vala',
 )
 
 executable('valabar', sources, dependencies: dependencies)

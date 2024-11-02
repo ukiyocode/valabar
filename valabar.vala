@@ -19,7 +19,7 @@ public class ValaBar : Gtk.Window
             builder.add_from_file("valabar.ui");
 
             taskbar = builder.get_object("taskbar") as TaskBar;
-            taskbar.populate();
+            taskbar.init();
 
             builder.connect_signals(null);
             var window = builder.get_object("window") as ValaBar;

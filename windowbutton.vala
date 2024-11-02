@@ -15,7 +15,7 @@ public class WindowButton : Gtk.Button
         this.clicked.connect (on_clicked);
     }
 
-    private void on_clicked () {
+    private void on_clicked() {
         if (!ww.is_active()) {
             ww.activate(Gtk.get_current_event_time());           
         }

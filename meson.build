@@ -8,7 +8,6 @@ dependencies = [
     dependency('gtk+-3.0'),
     dependency('gmodule-2.0'),
     dependency('libwnck-3.0'),
-    dependency('gdk-x11-3.0'),
 ]
 
 sources = files(

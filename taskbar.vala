@@ -10,6 +10,7 @@ public class TaskBar : Gtk.Box
         unowned List<Wnck.Window> wnds = scr.get_windows();
         Wnck.Application app;
         Gtk.Button btn;
+        Gdk.Pixbuf pb;
 
         foreach (Wnck.Window wnd in wnds) {
             if (wnd.get_window_type() == Wnck.WindowType.NORMAL) {
@@ -18,9 +19,11 @@ public class TaskBar : Gtk.Box
                 //stdout.printf("%s\n", wnd.get_window_type().to_string());
                 app = wnd.get_application();
                 btn = new Gtk.Button();
-                //btn.halign = Gtk.Align.START;
+                btn.halign = Gtk.Align.START;
                 btn.valign = Gtk.Align.CENTER;
-                btn.image = new Gtk.Image.from_pixbuf(app.get_icon());
+                pb = app.get_icon();
+                pb = pb.scale_simple(30, 30, Gdk.InterpType.BILINEAR);
+                btn.image = new Gtk.Image.from_pixbuf(pb);
                 this.add(btn); 
             }
         }

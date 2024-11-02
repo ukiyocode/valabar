@@ -1,4 +1,4 @@
-public class TaskBar : Gtk.ButtonBox
+public class TaskBar : Gtk.Box
 {
     public void populate() {
         Wnck.Screen scr = Wnck.Screen.get_default ();
@@ -18,8 +18,9 @@ public class TaskBar : Gtk.ButtonBox
                 //stdout.printf("%s\n", wnd.get_window_type().to_string());
                 app = wnd.get_application();
                 btn = new Gtk.Button();
+                btn.halign = Gtk.Align.START;
                 btn.image = new Gtk.Image.from_pixbuf(app.get_icon());
-                this.pack_start(btn, false, false, 0); 
+                this.add(btn); 
             }
         }
     }

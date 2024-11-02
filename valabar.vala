@@ -2,13 +2,6 @@ public class ValaBar : Gtk.Window
 {
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
-    
-    //  public TaskList()
-    //  {
-    //      tasklist = new Wnck.Tasklist();
-    //      tasklist.set_grouping(Wnck.TasklistGroupingType.NEVER_GROUP);
-    //      grid.attach(tasklist, 0, 0, 1, 1);
-    //  }
 
     public static int main(string[] args)
     {

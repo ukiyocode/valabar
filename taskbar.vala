@@ -8,15 +8,13 @@ public class TaskBar : Gtk.Box
         }
         scr.force_update();
         unowned List<Wnck.Window> wnds = scr.get_windows();
-        Wnck.Application app;
 
         foreach (Wnck.Window wnd in wnds) {
             if (wnd.get_window_type() == Wnck.WindowType.NORMAL) {
                 //stdout.printf("%s\n", wnd.get_name());
                 //stdout.printf("%lu\n", wnd.get_xid());
                 //stdout.printf("%s\n", wnd.get_window_type().to_string());
-                app = wnd.get_application();
-                this.add(new WindowButton(app.get_icon(), 30)); 
+                this.add(new WindowButton(wnd, 30)); 
             }
         }
     }

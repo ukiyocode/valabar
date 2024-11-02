@@ -11,9 +11,6 @@ public class TaskBar : Gtk.Box
 
         foreach (Wnck.Window wnd in wnds) {
             if (wnd.get_window_type() == Wnck.WindowType.NORMAL) {
-                //stdout.printf("%s\n", wnd.get_name());
-                //stdout.printf("%lu\n", wnd.get_xid());
-                //stdout.printf("%s\n", wnd.get_window_type().to_string());
                 this.add(new WindowButton(wnd, 30)); 
             }
         }

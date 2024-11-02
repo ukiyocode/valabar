@@ -18,7 +18,8 @@ public class TaskBar : Gtk.Box
                 //stdout.printf("%s\n", wnd.get_window_type().to_string());
                 app = wnd.get_application();
                 btn = new Gtk.Button();
-                btn.halign = Gtk.Align.START;
+                //btn.halign = Gtk.Align.START;
+                btn.valign = Gtk.Align.CENTER;
                 btn.image = new Gtk.Image.from_pixbuf(app.get_icon());
                 this.add(btn); 
             }

@@ -19,7 +19,8 @@ public class TaskBar : Gtk.ButtonBox
                 app = wnd.get_application();
                 btn = new Gtk.Button();
                 btn.image = new Gtk.Image.from_pixbuf(app.get_icon());
-                this.add(btn);
+                this.pack_start(btn, false, false, 0); 
+                //this.add(btn);
             }
         }
     }

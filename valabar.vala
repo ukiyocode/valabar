@@ -13,8 +13,6 @@ public class ValaBar : Gtk.Window
     public static int main(string[] args)
     {
         Gtk.init (ref args);
-        Type tbt = typeof(TaskBar);
-
         TaskBar taskbar;
 
         var builder = new Gtk.Builder ();
@@ -31,12 +29,6 @@ public class ValaBar : Gtk.Window
             var window = builder.get_object("window") as ValaBar;
             window.move(window.x, window.y);
             window.show_all ();
-
-            /*Gtk.Window ww = new Gtk.Window();
-            ww.set_default_size(800, 60);
-            tb = new TaskBar();
-            ww.add(tb);
-            ww.show_all();*/
 
             Gtk.main ();
         } catch (Error e) {

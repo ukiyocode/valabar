@@ -19,8 +19,8 @@
         <property name="can-focus">False</property>
         <child>
           <object class="TaskBar" id="taskbar">
-            <property name="orientation">Gtk.Orientation.HORIZONTAL</property>
-            <property name="layout_style">Gtk.ButtonBoxStyle.START</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            <property name="layout_style">GTK_BUTTONBOX_START</property>
             <property name="spacing">2</property>
           </object>
         </child>

@@ -1,6 +1,9 @@
 public class TaskBar : Gtk.Box
 {
     private Wnck.Screen scr;
+    private unowned List<Wnck.Window> windows;
+    public int btn_size { get; set; }
+
     public int init() {
         scr = Wnck.Screen.get_default ();
         if (scr == null) {
@@ -8,11 +11,11 @@ public class TaskBar : Gtk.Box
             return 1;
         }
         scr.force_update();
-        unowned List<Wnck.Window> wnds = scr.get_windows();
+        windows = scr.get_windows();
 
-        foreach (Wnck.Window wnd in wnds) {
-            if (wnd.get_window_type() == Wnck.WindowType.NORMAL) {
-                this.add(new WindowButton(wnd, 30)); 
+        foreach (Wnck.Window win in windows) {
+            if (win.get_window_type() == Wnck.WindowType.NORMAL) {
+                this.pack_start(new WindowButton(win, btn_size)); 
             }
         }
         scr.window_closed.connect(on_window_closed);
@@ -20,11 +23,20 @@ public class TaskBar : Gtk.Box
         return 0;
     }
 
+    private void foreach_callback(WindowButton wb, Wnck.Window ww){
+        if (wb.xid == ww.get_xid()) {
+            wb.unparent();
+            wb = null;
+        }
+    }
     private void on_window_closed(Wnck.Window win) {
-        stdout.printf("%lu\n", win.get_xid());
+        this.foreach ((elem) => foreach_callback((WindowButton)elem, win));
     }
 
     private void on_window_opened(Wnck.Window win) {
-        stdout.printf("%lu\n", win.get_xid());
+        if (win.get_window_type() == Wnck.WindowType.NORMAL) {
+                this.pack_start(new WindowButton(win, btn_size));
+                this.queue_draw();
+            }
     }
 }

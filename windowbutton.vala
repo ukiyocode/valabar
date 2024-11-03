@@ -12,7 +12,7 @@ public class WindowButton : Gtk.Button
         this.image = new Gtk.Image.from_pixbuf(app.get_icon().scale_simple(size, size, Gdk.InterpType.BILINEAR));
         this.set_tooltip_text(ww.get_name());
         this.xid = ww.get_xid();
-        this.clicked.connect (on_clicked);
+        this.clicked.connect(on_clicked);
     }
 
     private void on_clicked() {

@@ -36,7 +36,35 @@ public class TaskBar : Gtk.Box
     private void on_window_opened(Wnck.Window win) {
         if (win.get_window_type() == Wnck.WindowType.NORMAL) {
                 this.pack_start(new WindowButton(win, btn_size));
-                this.queue_draw();
+                //this.queue_draw();
             }
     }
+
+    public override void add (WindowButton widget) {
+        widget.set_parent (this);
+        this.queue_resize ();
+        //this._child = widget;
+    }
+
+    public override void remove (WindowButton widget) {
+        widget.unparent ();
+        this.queue_resize ();
+    }
+
+    public override void forall_internal (bool include_internals, Gtk.Callback callback) {
+        if (this._title != null) {
+            callback (this._title);
+        }
+        if (this._child != null) {
+            callback (this._child);
+        }
+    }
+
+    public override Gtk.SizeRequestMode get_request_mode () {
+        return this._child.get_request_mode ();
+    }
+
+    //  public Gtk.Widget get_child () {
+    //      return this._child;
+    //  }
 }

@@ -7,8 +7,6 @@
       gtk3
       libwnck
       vala
+      cowsay
     ];
-    shellHook = ''
-      exec zsh
-    '';
 }

@@ -16,11 +16,12 @@
           gtk3
           libwnck
           vala
+          # zsh
         ];
-        shellHook =
+        /*shellHook =
         ''
           exec zsh
-        '';
+        '';*/
       };
     };
 }

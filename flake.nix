@@ -17,6 +17,7 @@
           libwnck
           meson
           ninja
+          nix-info
           vala
           zsh
         ];

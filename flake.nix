@@ -18,6 +18,7 @@
           meson
           ninja
           vala
+          zsh
         ];
       };
     };

@@ -39,38 +39,4 @@ public class TaskBar : Gtk.Box
             this.show_all();
         }
     }
-/*
-    public override void add (Gtk.Widget widget) {
-        widget.set_parent(this);
-        this.queue_resize();*?
-        //this._child = widget;
-    }
-
-    public override void remove (Gtk.Widget widget) {
-        if (this.)
-        widget.unparent();
-        widget = null;
-        if (this.get_visible () && widget.get_visible ()) {
-            this.queue_resize_no_redraw ();
-        }
-        //this.queue_resize();
-    }*/
-/*
-    public override void forall_internal (bool include_internals, Gtk.Callback callback) {
-        base.forall_internal(include_internals, callback);
-        /*List<weak Gtk.Widget> chlds = this.get_children();
-        foreach (Gtk.Widget widg in chlds) {
-            if (widg != null) {
-                callback(widg);
-            }
-        }
-    }
-
-    /*public override Gtk.SizeRequestMode get_request_mode () {
-        return this._child.get_request_mode ();
-    }*/
-
-    //  public Gtk.Widget get_child () {
-    //      return this._child;
-    //  }
 }

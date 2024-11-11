@@ -7,16 +7,18 @@ public class ValaBar : Gtk.Window
     {
         Gtk.init (ref args);
         TaskBar taskbar;
+        string exePath;
 
         var builder = new Gtk.Builder ();
         try {
+            exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
-            css_provider.load_from_path("style.css");
+            css_provider.load_from_path(exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
             // If the UI contains custom widgets, their types must've been instantiated once
             // Type type = typeof(Foo.BarEntry);
             // assert(type != 0);
-            builder.add_from_file("valabar.ui");
+            builder.add_from_file(exePath + "/valabar.ui");
 
             taskbar = builder.get_object("taskbar") as TaskBar;
             taskbar.init_();

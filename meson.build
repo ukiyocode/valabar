@@ -16,4 +16,9 @@ sources = files(
     'windowbutton.vala',
 )
 
-executable('valabar', sources, dependencies: dependencies, install : true, install_dir : 'github/mybar')
+configure_file(input : 'style.css', output : 'style.css', copy: true)
+configure_file(input : 'valabar.ui', output : 'valabar.ui', copy: true)
+
+executable('valabar', sources, dependencies: dependencies, install : true, install_dir : join_paths(get_option('prefix'), 'github/mybar'))
+install_data('style.css', install_dir : join_paths(get_option('prefix'), 'github/mybar'))
+install_data('valabar.ui', install_dir : join_paths(get_option('prefix'), 'github/mybar'))

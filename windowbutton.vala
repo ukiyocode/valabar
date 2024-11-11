@@ -12,12 +12,17 @@ public class WindowButton : Gtk.Button
         this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
         this.set_tooltip_text(window.get_name());
         this.xid = window.get_xid();
-        this.window.icon_changed.connect(on_icon_change);
+        this.window.icon_changed.connect(on_icon_changed);
+        this.window.name_changed.connect(on_name_changed);
         this.button_press_event.connect(on_button_press);
     }
 
-    private void on_icon_change() {
-        this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
+    private void on_icon_changed() {
+        this.image = new Gtk.Image.from_pixbuf(this.window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
+    }
+
+    private void on_name_changed() {
+        this.set_tooltip_text(this.window.get_name());
     }
 
     private bool on_mitem_close(Gtk.Widget widget, Gdk.EventButton event) {

@@ -1,19 +1,24 @@
 public class WindowButton : Gtk.Button
 {
-    private Wnck.Application app;
     public Wnck.Window window { get; }
     public ulong xid { get; set; }
+    public int imgSize { get; }
 
     public WindowButton(Wnck.Window window, int size) {
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
+        this._imgSize = size;
         this._window = window;
-        this.app = window.get_application();
-        this.image = new Gtk.Image.from_pixbuf(app.get_icon().scale_simple(size, size, Gdk.InterpType.BILINEAR));
+        this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
         this.set_tooltip_text(window.get_name());
         this.xid = window.get_xid();
+        this.window.icon_changed.connect(on_icon_change);
         this.button_press_event.connect(on_button_press);
-    }       
+    }
+
+    private void on_icon_change() {
+        this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
+    }
 
     private bool on_mitem_close(Gtk.Widget widget, Gdk.EventButton event) {
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;

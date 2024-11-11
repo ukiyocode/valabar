@@ -19,7 +19,6 @@
           ninja
           nix-info
           vala
-          zsh
         ];
       };
     };

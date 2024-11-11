@@ -16,4 +16,4 @@ sources = files(
     'windowbutton.vala',
 )
 
-executable('valabar', sources, dependencies: dependencies)
+executable('valabar', sources, dependencies: dependencies, install : true, install_dir : 'github/mybar')

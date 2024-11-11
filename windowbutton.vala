@@ -15,9 +15,13 @@ public class WindowButton : Gtk.Button
         this.button_press_event.connect(on_button_press);
     }       
 
-    private void on_mitem_close() {
-
+    private bool on_mitem_close(Gtk.Widget widget, Gdk.EventButton event) {
+        Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
+        WindowButton wb = (WindowButton)parent_menu.get_attach_widget();
+        wb.window.close(Gtk.get_current_event_time());
+        return false;
     }
+
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
         if (event.type == Gdk.EventType.BUTTON_PRESS)
         {
@@ -33,13 +37,12 @@ public class WindowButton : Gtk.Button
             } else if ((event.button == 3) && event.triggers_context_menu()) { //right button
                 Gtk.Menu menu = new Gtk.Menu();
                 Gtk.MenuItem mitem_close = new Gtk.MenuItem.with_label("Close");
-                mitem_close.activate.connect(on_mitem_close);
+                mitem_close.button_release_event.connect(on_mitem_close);
                 menu.deactivate.connect(menu.destroy);
                 menu.attach_to_widget(widget, null);
-                menu.add(menu_item);
+                menu.add(mitem_close);
                 menu.show_all ();
                 menu.popup_at_widget (widget, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH, event);
-                stdout.printf("menu!!!!\n");
             }
         }
         return false;

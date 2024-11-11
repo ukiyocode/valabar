@@ -12,10 +12,13 @@ public class WindowButton : Gtk.Button
         this.image = new Gtk.Image.from_pixbuf(app.get_icon().scale_simple(size, size, Gdk.InterpType.BILINEAR));
         this.set_tooltip_text(window.get_name());
         this.xid = window.get_xid();
-        this.button_press_event.connect(on_bpe);
+        this.button_press_event.connect(on_button_press);
     }       
 
-    private bool on_bpe(Gtk.Widget widget, Gdk.EventButton event) {
+    private void on_mitem_close() {
+
+    }
+    private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
         if (event.type == Gdk.EventType.BUTTON_PRESS)
         {
             WindowButton wb = (WindowButton)widget;
@@ -29,7 +32,8 @@ public class WindowButton : Gtk.Button
                 return true;
             } else if ((event.button == 3) && event.triggers_context_menu()) { //right button
                 Gtk.Menu menu = new Gtk.Menu();
-                Gtk.MenuItem menu_item = new Gtk.MenuItem.with_label("Add file");
+                Gtk.MenuItem mitem_close = new Gtk.MenuItem.with_label("Close");
+                mitem_close.activate.connect(on_mitem_close);
                 menu.deactivate.connect(menu.destroy);
                 menu.attach_to_widget(widget, null);
                 menu.add(menu_item);

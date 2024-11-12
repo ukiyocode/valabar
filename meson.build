@@ -3,6 +3,7 @@ project('valabar', 'vala', 'c')
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 add_project_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language: 'c')
 dependencies = [
+    dependency('gio-unix-2.0'),
     dependency('glib-2.0'),
     dependency('gobject-2.0'),
     dependency('gtk+-3.0'),
@@ -12,6 +13,7 @@ dependencies = [
 
 sources = files(
     'valabar.vala',
+    'appchooser.vala',
     'taskbar.vala',
     'windowbutton.vala',
 )

@@ -33,9 +33,11 @@ public class ValaBar : Gtk.Window
 
     private bool on_mitem_favs(Gtk.Widget widget, Gdk.EventButton event) {
         Gtk.Window parent_window = (Gtk.Window)widget.parent.parent;
-        Gtk.AppChooserDialog dialog = new Gtk.AppChooserDialog.for_content_type(parent_window, 0, "text/plain");
+        /*Gtk.AppChooserDialog dialog = new Gtk.AppChooserDialog.for_content_type(parent_window, 0, "text/plain");
         Gtk.AppChooserWidget app_chooser = (Gtk.AppChooserWidget)dialog.get_widget();
         app_chooser.set_show_all(true);
+        }*/
+        AppChooser dialog = new AppChooser();
         if (dialog.run () == Gtk.ResponseType.OK) {
             AppInfo info = dialog.get_app_info ();
             if (info != null) {

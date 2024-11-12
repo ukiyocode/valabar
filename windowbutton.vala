@@ -16,7 +16,7 @@ public class WindowButton : Gtk.Button
         this.window.name_changed.connect(on_name_changed);
         this.button_press_event.connect(on_button_press);
 
-        stdout.printf("%s\n", this.window.get_application().get_name());
+        stdout.printf("%s\n", this.window.get_application().get_startup_id());
     }
 
     private void on_icon_changed() {

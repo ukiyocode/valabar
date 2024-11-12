@@ -4,7 +4,7 @@ public class TaskBar : Gtk.Box
     private unowned List<Wnck.Window> windows;
     public int btn_size { get; set; }
 
-    public int init_() {
+    public int init() {
         scr = Wnck.Screen.get_default ();
         if (scr == null) {
             stderr.printf("Unable to get the default screen.\n");

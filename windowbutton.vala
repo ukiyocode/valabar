@@ -31,7 +31,7 @@ public class WindowButton : Gtk.Button
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
         WindowButton wb = (WindowButton)parent_menu.get_attach_widget();
         wb.window.close(Gtk.get_current_event_time());
-        return false;
+        return true;
     }
 
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
@@ -55,6 +55,7 @@ public class WindowButton : Gtk.Button
                 menu.add(mitem_close);
                 menu.show_all ();
                 menu.popup_at_widget (widget, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH, event);
+                return true;
             }
         }
         return false;

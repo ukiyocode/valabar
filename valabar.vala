@@ -11,16 +11,6 @@ public class ValaBar : Gtk.Window
         this.move(this.x, this.y);
 
         this.button_press_event.connect(on_button_press);
-
-        //  Gtk.AppChooserDialog dialog = new Gtk.AppChooserDialog(window, 0, GLib.File.new_for_path("_"));
-        //  if (dialog.run () == Gtk.ResponseType.OK) {
-        //      AppInfo info = dialog.get_app_info ();
-        //      if (info != null) {
-        //          print (" Name: %s\n", info.get_display_name ());
-        //          print (" Desc: %s\n", info.get_description ());
-        //      }
-        //  }
-        //  dialog.close ();
     }
 
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
@@ -29,15 +19,32 @@ public class ValaBar : Gtk.Window
             if ((event.button == 3) && event.triggers_context_menu()) { //right button
                 Gtk.Menu menu = new Gtk.Menu();
                 Gtk.MenuItem mitem_favs = new Gtk.MenuItem.with_label("Favs");
-                //mitem_favs.button_release_event.connect(on_mitem_favs);
+                mitem_favs.button_release_event.connect(on_mitem_favs);
                 menu.deactivate.connect(menu.destroy);
                 menu.attach_to_widget(widget, null);
                 menu.add(mitem_favs);
                 menu.show_all ();
                 menu.popup_at_pointer (event);
+                return true;
             }
         }
         return false;
+    }
+
+    private bool on_mitem_favs(Gtk.Widget widget, Gdk.EventButton event) {
+        Gtk.Window parent_window = (Gtk.Window)widget.parent.parent;
+        Gtk.AppChooserDialog dialog = new Gtk.AppChooserDialog.for_content_type(parent_window, 0, "text/plain");
+        Gtk.AppChooserWidget app_chooser = (Gtk.AppChooserWidget)dialog.get_widget();
+        app_chooser.set_show_all(true);
+        if (dialog.run () == Gtk.ResponseType.OK) {
+            AppInfo info = dialog.get_app_info ();
+            if (info != null) {
+                print (" Name: %s\n", info.get_display_name ());
+                print (" Desc: %s\n", info.get_description ());
+            }
+        }
+        dialog.close ();
+        return true;
     }
 
     public static int main(string[] args)

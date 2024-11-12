@@ -10,6 +10,8 @@ public class ValaBar : Gtk.Window
         builder.connect_signals(null);
         this.move(this.x, this.y);
 
+        this.button_press_event.connect(on_button_press);
+
         //  Gtk.AppChooserDialog dialog = new Gtk.AppChooserDialog(window, 0, GLib.File.new_for_path("_"));
         //  if (dialog.run () == Gtk.ResponseType.OK) {
         //      AppInfo info = dialog.get_app_info ();
@@ -19,6 +21,23 @@ public class ValaBar : Gtk.Window
         //      }
         //  }
         //  dialog.close ();
+    }
+
+    private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
+        if (event.type == Gdk.EventType.BUTTON_PRESS)
+        {
+            if ((event.button == 3) && event.triggers_context_menu()) { //right button
+                Gtk.Menu menu = new Gtk.Menu();
+                Gtk.MenuItem mitem_favs = new Gtk.MenuItem.with_label("Favs");
+                //mitem_favs.button_release_event.connect(on_mitem_favs);
+                menu.deactivate.connect(menu.destroy);
+                menu.attach_to_widget(widget, null);
+                menu.add(mitem_favs);
+                menu.show_all ();
+                menu.popup_at_pointer (event);
+            }
+        }
+        return false;
     }
 
     public static int main(string[] args)

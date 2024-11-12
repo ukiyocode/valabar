@@ -14,7 +14,7 @@ public class TaskBar : Gtk.Box
         windows = scr.get_windows();
 
         foreach (Wnck.Window win in windows) {
-            if (win.get_window_type() == Wnck.WindowType.NORMAL) {
+            if (!win.is_skip_tasklist()) {
                 this.add(new WindowButton(win, btn_size)); 
             }
         }

@@ -11,6 +11,10 @@ public class ValaBar : Gtk.Window
 
         var builder = new Gtk.Builder ();
         try {
+            GLib.List<GLib.AppInfo> apps = GLib.AppInfo.get_all();
+            foreach (GLib.AppInfo ai in apps) {
+                stdout.printf("%s\n", ai.get_commandline());
+            }
             exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
             css_provider.load_from_path(exePath + "/style.css");

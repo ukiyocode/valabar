@@ -1,17 +1,26 @@
-public class WindowButton : Gtk.Button
+public class AppButton : Gtk.Button
 {
     public Wnck.Window window { get; }
+    public DesktopAppInfo appInfo { get; }
     public ulong xid { get; set; }
     public int imgSize { get; }
 
-    public WindowButton(Wnck.Window window, int size) {
+    private Bamf.Matcher _matcher;
+
+    public AppButton(Wnck.Window window, int size) {
+        this._matcher = Bamf.Matcher.get_default();
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = size;
         this._window = window;
-        this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
-        this.set_tooltip_text(window.get_name());
         this.xid = window.get_xid();
+        string desktopFile = _matcher.get_application_for_xid((uint32)this.xid).get_desktop_file();
+        this._appInfo = new GLib.DesktopAppInfo.from_filename(desktopFile);
+        Gtk.Image img = new Gtk.Image.from_gicon(new GLib.DesktopAppInfo.from_filename(this.desktopFile).get_icon(), Gtk.IconSize.DIALOG);
+        img.pixel_size = size;
+        this.image = img;
+        this.set_tooltip_text(window.get_name());
+        this.window.state_changed.connect(on_state_changed);
         this.window.icon_changed.connect(on_icon_changed);
         this.window.name_changed.connect(on_name_changed);
         this.button_press_event.connect(on_button_press);
@@ -19,8 +28,14 @@ public class WindowButton : Gtk.Button
         stdout.printf("%lu %s\n", this.window.get_xid(), this.window.get_name());
     }
 
+    private void on_state_changed(Wnck.WindowState changed_mask, Wnck.WindowState new_state) {
+        stdout.printf("%i %i\n", new_state, changed_mask);
+    }
+
     private void on_icon_changed() {
-        this.image = new Gtk.Image.from_pixbuf(this.window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
+        Gtk.Image img = new Gtk.Image.from_gicon(new GLib.DesktopAppInfo.from_filename(this.desktopFile).get_icon(), Gtk.IconSize.DIALOG);
+        img.pixel_size = imgSize;
+        this.image = img;
     }
 
     private void on_name_changed() {
@@ -29,15 +44,15 @@ public class WindowButton : Gtk.Button
 
     private bool on_mitem_close(Gtk.Widget widget, Gdk.EventButton event) {
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
-        WindowButton wb = (WindowButton)parent_menu.get_attach_widget();
-        wb.window.close(Gtk.get_current_event_time());
+        AppButton ab = (AppButton)parent_menu.get_attach_widget();
+        ab.window.close(Gtk.get_current_event_time());
         return true;
     }
 
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
         if (event.type == Gdk.EventType.BUTTON_PRESS)
         {
-            WindowButton wb = (WindowButton)widget;
+            AppButton wb = (AppButton)widget;
             if (event.button == 1) { //left button
                 if (!wb.window.is_active()) {
                     wb.window.activate(Gtk.get_current_event_time());           

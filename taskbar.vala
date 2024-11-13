@@ -15,7 +15,7 @@ public class TaskBar : Gtk.Box
 
         foreach (Wnck.Window win in windows) {
             if (!win.is_skip_tasklist()) {
-                this.add(new WindowButton(win, btn_size)); 
+                this.add(new AppButton(win, btn_size)); 
             }
         }
         scr.window_closed.connect(on_window_closed);
@@ -23,19 +23,19 @@ public class TaskBar : Gtk.Box
         return 0;
     }
 
-    private void foreach_remove_callback(WindowButton wb, Wnck.Window ww){
+    private void foreach_remove_callback(AppButton wb, Wnck.Window ww){
         if (wb.xid == ww.get_xid()) {
             this.remove(wb);
             this.show_all();
         }
     }
     private void on_window_closed(Wnck.Window win) {
-        this.foreach ((elem) => foreach_remove_callback((WindowButton)elem, win));
+        this.foreach ((elem) => foreach_remove_callback((AppButton)elem, win));
     }
 
     private void on_window_opened(Wnck.Window win) {
         if (win.get_window_type() == Wnck.WindowType.NORMAL) {
-            this.add(new WindowButton(win, btn_size));
+            this.add(new AppButton(win, btn_size));
             this.show_all();
         }
     }

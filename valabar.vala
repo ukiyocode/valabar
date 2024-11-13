@@ -32,11 +32,7 @@ public class ValaBar : Gtk.Window
     }
 
     private bool on_mitem_favs(Gtk.Widget widget, Gdk.EventButton event) {
-        Gtk.Window parent_window = (Gtk.Window)widget.parent.parent;
-        /*Gtk.AppChooserDialog dialog = new Gtk.AppChooserDialog.for_content_type(parent_window, 0, "text/plain");
-        Gtk.AppChooserWidget app_chooser = (Gtk.AppChooserWidget)dialog.get_widget();
-        app_chooser.set_show_all(true);
-        }*/
+        //Gtk.Window parent_window = (Gtk.Window)widget.parent.parent;
         AppChooser dialog = new AppChooser();
         if (dialog.run () == Gtk.ResponseType.OK) {
             AppInfo info = dialog.get_app_info ();
@@ -67,6 +63,9 @@ public class ValaBar : Gtk.Window
             valabar = builder.get_object("window") as ValaBar;
             valabar.init(builder);
             valabar.show_all ();
+            //  GLib.DesktopAppInfo dai = new GLib.DesktopAppInfo("nemo.desktop");
+            //  stdout.printf("%s\n", dai.list_actions()[0]);
+            //  stdout.printf("%s\n", GLib.DesktopAppInfo.search("nemo")[0][0]);
         } catch (Error e) {
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;

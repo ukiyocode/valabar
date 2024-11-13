@@ -13,12 +13,13 @@ public class AppChooser : Gtk.Dialog
         foreach (GLib.AppInfo ai in apps) {
             Gtk.Box box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
             GLib.Icon icon = ai.get_icon();
-            string name = ai.get_display_name();
+            string name = ai.get_id();
+            //stdout.printf("%s\n", ai.get_id());
             if ((icon != null) && (name != "")) {
                 Gtk.Image img = new Gtk.Image.from_gicon(icon, Gtk.IconSize.BUTTON);
                 img.pixel_size = 16;
                 box.pack_start(img, false, false, 0);
-                box.pack_start(new Gtk.Label(ai.get_display_name()), false, true, 0);
+                box.pack_start(new Gtk.Label(name), false, false, 0);
                 listBox.add(box);
             }
         }

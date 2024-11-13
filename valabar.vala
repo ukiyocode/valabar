@@ -66,6 +66,8 @@ public class ValaBar : Gtk.Window
             //  GLib.DesktopAppInfo dai = new GLib.DesktopAppInfo("nemo.desktop");
             //  stdout.printf("%s\n", dai.list_actions()[0]);
             //  stdout.printf("%s\n", GLib.DesktopAppInfo.search("nemo")[0][0]);
+            Bamf.Matcher bm = Bamf.Matcher.get_default();
+            stdout.printf("%s\n", bm.get_application_for_xid(92274692).get_desktop_file());
         } catch (Error e) {
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;

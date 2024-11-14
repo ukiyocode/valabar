@@ -1,19 +1,16 @@
 public class AppChooser : Gtk.Dialog
 {
-    List<AppInfo> apps;
-    int selectedRowIndex;
+    private List<AppInfo> _apps;
+    private int _selectedRowIndex;
 
     public AppChooser() {
-        apps = GLib.AppInfo.get_all();
-        selectedRowIndex = 0;
+        this._apps = GLib.AppInfo.get_all();
+        this._selectedRowIndex = 0;
         this.set_default_size(400, 500);
         Gtk.Box contentArea = this.get_content_area () as Gtk.Box;
         Gtk.ScrolledWindow scrWin = new Gtk.ScrolledWindow(null, null);
         Gtk.ListBox listBox = new Gtk.ListBox();
-        foreach (GLib.AppInfo ai in apps) {
-            //  DesktopAppInfo dai = new DesktopAppInfo(ai.get_id());
-            //  print("%s\n", dai.get_filename());
-
+        foreach (GLib.AppInfo ai in this._apps) {
             Gtk.Box box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
             GLib.Icon icon = ai.get_icon();
             string name = ai.get_id();
@@ -32,11 +29,11 @@ public class AppChooser : Gtk.Dialog
     }
 
     void on_row_activated(Gtk.ListBoxRow row) {
-        this.selectedRowIndex = row.get_index();
-        stdout.printf(" Name: %s\n", apps.nth_data(selectedRowIndex).get_display_name ());
+        this._selectedRowIndex = row.get_index();
+        stdout.printf(" Name: %s\n", this._apps.nth_data(this._selectedRowIndex).get_display_name ());
     }
 
     public GLib.AppInfo get_app_info() {
-        return apps.nth_data(selectedRowIndex);
+        return this._apps.nth_data(this._selectedRowIndex);
     }
 }

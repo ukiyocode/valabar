@@ -1,9 +1,9 @@
 public class AppButton : Gtk.Button
 {
     public string desktop_file { get; set; }
-    public Wnck.Window window { get; }
+    public ulong xid { get; }
+    private Wnck.Window _window;
     private DesktopAppInfo _appInfo;
-    public ulong xid { get; set; }
     private int _imgSize;
 
     private Bamf.Matcher _matcher;
@@ -34,21 +34,21 @@ public class AppButton : Gtk.Button
         this._imgSize = size;
         this._matcher = Bamf.Matcher.get_default();
         this._window = window;
-        this.xid = window.get_xid();
+        this._xid = this._window.get_xid();
         this.desktop_file = GLib.Filename.display_basename(_matcher.get_application_for_xid((uint32)this.xid).get_desktop_file());
         if ((this.desktop_file != "") && (this.desktop_file != null)) {
             this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
         }
-        this.image = prepare_image(window.get_icon());
-        this.set_tooltip_text(window.get_name());
-        this.window.icon_changed.connect(on_icon_changed);
-        this.window.name_changed.connect(on_name_changed);
+        this.image = prepare_image(this._window.get_icon());
+        this.set_tooltip_text(this._window.get_name());
+        this._window.icon_changed.connect(on_icon_changed);
+        this._window.name_changed.connect(on_name_changed);
         this.button_press_event.connect(on_button_press);
     }
 
     private Gtk.Image prepare_image(Gdk.Pixbuf image) {
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
-        if (this.window != null) {
+        if (this._window != null) {
             try {
                 Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale("border.svg", this._imgSize, this._imgSize, true);
                 overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
@@ -60,17 +60,17 @@ public class AppButton : Gtk.Button
     }
 
     private void on_icon_changed() {
-        this.image = prepare_image(window.get_icon());
+        this.image = prepare_image(this._window.get_icon());
     }
 
     private void on_name_changed() {
-        this.set_tooltip_text(this.window.get_name());
+        this.set_tooltip_text(this._window.get_name());
     }
 
     private bool on_mitem_close(Gtk.Widget widget, Gdk.EventButton event) {
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
         AppButton ab = (AppButton)parent_menu.get_attach_widget();
-        ab.window.close(Gtk.get_current_event_time());
+        ab._window.close(Gtk.get_current_event_time());
         parent_menu.popdown();
         return true;
     }
@@ -78,10 +78,10 @@ public class AppButton : Gtk.Button
     private bool on_mitem_maximize(Gtk.Widget widget, Gdk.EventButton event) {
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
         AppButton ab = (AppButton)parent_menu.get_attach_widget();
-        if (ab.window.is_maximized()) {
-            ab.window.unmaximize();
+        if (ab._window.is_maximized()) {
+            ab._window.unmaximize();
         } else {
-            ab.window.maximize();
+            ab._window.maximize();
         }
         parent_menu.popdown();
         return true;
@@ -90,10 +90,10 @@ public class AppButton : Gtk.Button
     private bool on_mitem_minimize(Gtk.Widget widget, Gdk.EventButton event) {
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
         AppButton ab = (AppButton)parent_menu.get_attach_widget();
-        if (ab.window.is_minimized()) {
-            ab.window.unminimize(Gtk.get_current_event_time());
+        if (ab._window.is_minimized()) {
+            ab._window.unminimize(Gtk.get_current_event_time());
         } else {
-            ab.window.minimize();
+            ab._window.minimize();
         }
         parent_menu.popdown();
         return true;
@@ -112,12 +112,12 @@ public class AppButton : Gtk.Button
         {
             AppButton ab = (AppButton)widget;
             if (event.button == 1) { //left button
-                if (ab.window != null) {
-                    if (!ab.window.is_active()) {
-                        ab.window.activate(Gtk.get_current_event_time());           
+                if (ab._window != null) {
+                    if (!ab._window.is_active()) {
+                        ab._window.activate(Gtk.get_current_event_time());           
                     }
                     else {
-                        ab.window.minimize();
+                        ab._window.minimize();
                     }
                 } else {
                     try {
@@ -137,14 +137,14 @@ public class AppButton : Gtk.Button
                         menu.add(mitem_action);
                     }
                 }
-                if (ab.window != null) {
+                if (ab._window != null) {
                     Gtk.MenuItem mitem_close = new Gtk.MenuItem.with_label("Close");
                     Gtk.MenuItem mitem_maximize = new Gtk.MenuItem.with_label("Maximize");
-                    if (ab.window.is_maximized()) {
+                    if (ab._window.is_maximized()) {
                         mitem_maximize.label = "Unmaximize";
                     }
                     Gtk.MenuItem mitem_minimize = new Gtk.MenuItem.with_label("Minimize");
-                    if (ab.window.is_minimized()) {
+                    if (ab._window.is_minimized()) {
                         mitem_minimize.label = "Restore";
                     }
                     mitem_close.button_release_event.connect(on_mitem_close);

@@ -2,14 +2,14 @@ public class TaskBar : Gtk.Box
 {
     private Wnck.Screen scr;
     private unowned List<Wnck.Window> windows;
-    public int btnSize { get; }
+    private int _btnSize;
 
     public int init(int barHeight) {
         this._btnSize = barHeight - 2;
 
         foreach (Gtk.Widget child in this.get_children()) {
             AppButton ab = (AppButton)child;
-            ab.init_for_dfile(this.btnSize);
+            ab.init_for_dfile(this._btnSize);
         }
         scr = Wnck.Screen.get_default ();
         if (scr == null) {
@@ -21,7 +21,7 @@ public class TaskBar : Gtk.Box
 
         foreach (Wnck.Window win in windows) {
             if (!win.is_skip_tasklist()) {
-                this.add(new AppButton(win, this.btnSize)); 
+                this.add(new AppButton(win, this._btnSize)); 
             }
         }
         scr.window_closed.connect(on_window_closed);
@@ -50,12 +50,12 @@ public class TaskBar : Gtk.Box
                 print("%s\n", ab.desktop_file);
                 if (ab.desktop_file == desktop_file) {
                     matched = true;
-                    ab.init_for_window(win, btnSize);
+                    ab.init_for_window(win, this._btnSize);
                     break;
                 } 
             }
             if (!matched) {
-                this.add(new AppButton(win, this.btnSize));
+                this.add(new AppButton(win, this._btnSize));
             }
             this.show_all();
         }

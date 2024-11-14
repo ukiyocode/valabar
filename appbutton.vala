@@ -100,6 +100,7 @@ public class AppButton : Gtk.Button
                 menu.add(mitem_close);
                 menu.show_all ();
                 menu.popup_at_widget (widget, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH, event);
+                print("hhh");
                 return true;
             }
         }

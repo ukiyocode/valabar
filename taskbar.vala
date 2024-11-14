@@ -6,6 +6,11 @@ public class TaskBar : Gtk.Box
 
     public int init(int barHeight) {
         this._btnSize = barHeight - 2;
+
+        foreach (Gtk.Widget child in this.get_children()) {
+            AppButton ab = (AppButton)child;
+            ab.init(this.btnSize);
+        }
         scr = Wnck.Screen.get_default ();
         if (scr == null) {
             stderr.printf("Unable to get the default screen.\n");

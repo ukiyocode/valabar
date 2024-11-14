@@ -11,6 +11,9 @@ public class AppChooser : Gtk.Dialog
         Gtk.ScrolledWindow scrWin = new Gtk.ScrolledWindow(null, null);
         Gtk.ListBox listBox = new Gtk.ListBox();
         foreach (GLib.AppInfo ai in apps) {
+            //  DesktopAppInfo dai = new DesktopAppInfo(ai.get_id());
+            //  print("%s\n", dai.get_filename());
+
             Gtk.Box box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
             GLib.Icon icon = ai.get_icon();
             string name = ai.get_id();

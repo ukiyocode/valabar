@@ -42,21 +42,15 @@ public class TaskBar : Gtk.Box
     private void on_window_opened(Wnck.Window win) {
         if (!win.is_skip_tasklist()) {
             string desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)win.get_xid()).get_desktop_file());
-            bool matched = false;
             AppButton ab = null;
-            print("DF: %s\n", desktop_file);
             foreach (Gtk.Widget widget in this.get_children()) {
                 ab = (AppButton)widget;
-                print("%s\n", ab.desktop_file);
                 if (ab.desktop_file == desktop_file) {
-                    matched = true;
                     ab.init_for_window(win, this._btnSize);
-                    break;
+                    return;
                 } 
             }
-            if (!matched) {
-                this.add(new AppButton(win, this._btnSize));
-            }
+            this.add(new AppButton(win, this._btnSize));
             this.show_all();
         }
     }

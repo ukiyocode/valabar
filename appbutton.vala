@@ -37,10 +37,14 @@ public class AppButton : Gtk.Button
 
     private Gtk.Image prepare_image(Gdk.Pixbuf image) {
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
-        try {
-            Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale("border.svg", this._imgSize, this._imgSize, true);
-            overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
-        } catch (Error e) {}
+        if (this.window != null) {
+            try {
+                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale("border.svg", this._imgSize, this._imgSize, true);
+                overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
+            } catch (Error e) {
+                stderr.printf ("Error while getting border.svg file: %s", e.message);
+            }
+        }
         return new Gtk.Image.from_pixbuf(background);
     }
 

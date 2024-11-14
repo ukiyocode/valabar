@@ -2,20 +2,22 @@ public class AppButton : Gtk.Button
 {
     public string desktop_file { get; set; }
     public ulong xid { get; }
+    public Wnck.Application app { get; }
     private Wnck.Window _window;
     private DesktopAppInfo _appInfo;
     private int _imgSize;
-
-    private Bamf.Matcher _matcher;
 
     public AppButton(Wnck.Window window, int size) {
         this.init_for_window(window, size);
     }
 
     public void init_for_dfile(int size) {
+        this._app = null;
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = size;
+        this._window = null;
+        this._xid = 0;
         if ((this.desktop_file != "") && (this.desktop_file != null)) {
             this._appInfo = new GLib.DesktopAppInfo(desktop_file);
             try {
@@ -29,13 +31,13 @@ public class AppButton : Gtk.Button
     }
 
     public void init_for_window(Wnck.Window window, int size) {
+        this._app = window.get_application();
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = size;
-        this._matcher = Bamf.Matcher.get_default();
         this._window = window;
         this._xid = this._window.get_xid();
-        this.desktop_file = GLib.Filename.display_basename(_matcher.get_application_for_xid((uint32)this.xid).get_desktop_file());
+        this.desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)this.xid).get_desktop_file());
         if ((this.desktop_file != "") && (this.desktop_file != null)) {
             this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
         }

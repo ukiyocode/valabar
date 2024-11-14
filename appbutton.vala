@@ -67,6 +67,13 @@ public class AppButton : Gtk.Button
         return true;
     }
 
+    private bool on_mitem_action(Gtk.Widget widget, Gdk.EventButton event, string action) {
+        Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
+        AppButton ab = (AppButton)parent_menu.get_attach_widget();
+        ab.appInfo.launch_action (action, new AppLaunchContext());
+        return true;
+    }
+
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
         if (event.type == Gdk.EventType.BUTTON_PRESS)
         {
@@ -95,12 +102,19 @@ public class AppButton : Gtk.Button
                 mitem_minimize.button_release_event.connect(on_mitem_minimize);
                 menu.deactivate.connect(menu.destroy);
                 menu.attach_to_widget(widget, null);
+                string[] actions = ab.appInfo.list_actions();
+                if (actions.length > 0) {
+                    foreach (string action in actions) {
+                        Gtk.MenuItem mitem_action = new Gtk.MenuItem.with_label(ab.appInfo.get_action_name(action));
+                        mitem_action.button_release_event.connect((widget, event) => on_mitem_action(widget, event, action));
+                        menu.add(mitem_action);
+                    }
+                }
                 menu.add(mitem_minimize);
                 menu.add(mitem_maximize);
                 menu.add(mitem_close);
                 menu.show_all ();
                 menu.popup_at_widget (widget, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH, event);
-                print("hhh");
                 return true;
             }
         }

@@ -18,7 +18,8 @@ public class AppButton : Gtk.Button
         if ((desktopFile != "") && (desktopFile != null)) {
             this._appInfo = new GLib.DesktopAppInfo.from_filename(desktopFile);
         }
-        this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
+        this.image = prepare_image(window.get_icon());
+        //prepare_image(window.get_icon());
         this.set_tooltip_text(window.get_name());
         this.window.icon_changed.connect(on_icon_changed);
         this.window.name_changed.connect(on_name_changed);
@@ -27,8 +28,17 @@ public class AppButton : Gtk.Button
         //stdout.printf("%s\n", desktopFile);
     }
 
+    private Gtk.Image prepare_image(Gdk.Pixbuf image) {
+        Gdk.Pixbuf background = image.scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR);
+        try {
+            Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale("border.svg", this.imgSize, this.imgSize, true);
+            overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
+        } catch (Error e) {}
+        return new Gtk.Image.from_pixbuf(background);
+    }
+
     private void on_icon_changed() {
-        this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
+        this.image = prepare_image(window.get_icon());
     }
 
     private void on_name_changed() {

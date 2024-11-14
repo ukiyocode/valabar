@@ -2,9 +2,10 @@ public class TaskBar : Gtk.Box
 {
     private Wnck.Screen scr;
     private unowned List<Wnck.Window> windows;
-    public int btn_size { get; set; }
+    public int btnSize { get; }
 
-    public int init() {
+    public int init(int barHeight) {
+        this._btnSize = barHeight - 2;
         scr = Wnck.Screen.get_default ();
         if (scr == null) {
             stderr.printf("Unable to get the default screen.\n");
@@ -15,7 +16,7 @@ public class TaskBar : Gtk.Box
 
         foreach (Wnck.Window win in windows) {
             if (!win.is_skip_tasklist()) {
-                this.add(new AppButton(win, btn_size)); 
+                this.add(new AppButton(win, this.btnSize)); 
             }
         }
         scr.window_closed.connect(on_window_closed);
@@ -35,7 +36,7 @@ public class TaskBar : Gtk.Box
 
     private void on_window_opened(Wnck.Window win) {
         if (!win.is_skip_tasklist()) {
-            this.add(new AppButton(win, btn_size));
+            this.add(new AppButton(win, this.btnSize));
             this.show_all();
         }
     }

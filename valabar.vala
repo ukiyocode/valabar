@@ -5,7 +5,7 @@ public class ValaBar : Gtk.Window
 
     public void init(Gtk.Builder builder) {
         TaskBar taskbar = builder.get_object("taskbar") as TaskBar;
-        taskbar.init();
+        taskbar.init(this.default_height);
 
         builder.connect_signals(null);
         this.move(this.x, this.y);
@@ -60,6 +60,9 @@ public class ValaBar : Gtk.Window
             builder.add_from_file(_exePath + "/valabar.ui");
             builder.connect_signals(null);
             valabar = builder.get_object("window") as ValaBar;
+            if (valabar == null) {
+                throw new MarkupError.INVALID_CONTENT("Malformed valabar.ui");
+            }
             valabar.init(builder);
             valabar.show_all ();
         } catch (Error e) {

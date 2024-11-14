@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE interface [
-  <!ENTITY size "30">
-]>
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="ValaBar" id="window">
@@ -23,7 +20,6 @@
           <object class="TaskBar" id="taskbar">
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <property name="spacing">1</property>
-            <property name="btn_size">28</property>
           </object>
         </child>
       </object>

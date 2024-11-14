@@ -30,11 +30,11 @@ public class TaskBar : Gtk.Box
         }
     }
     private void on_window_closed(Wnck.Window win) {
-        this.foreach ((elem) => foreach_remove_callback((AppButton)elem, win));
+        this.foreach((elem) => foreach_remove_callback((AppButton)elem, win));
     }
 
     private void on_window_opened(Wnck.Window win) {
-        if (win.get_window_type() == Wnck.WindowType.NORMAL) {
+        if (!win.is_skip_tasklist()) {
             this.add(new AppButton(win, btn_size));
             this.show_all();
         }

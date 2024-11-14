@@ -1,7 +1,7 @@
 public class AppButton : Gtk.Button
 {
     public Wnck.Window window { get; }
-    public DesktopAppInfo appInfo { get; }
+    public DesktopAppInfo? appInfo { get; }
     public ulong xid { get; set; }
     public int imgSize { get; }
 
@@ -15,14 +15,16 @@ public class AppButton : Gtk.Button
         this._window = window;
         this.xid = window.get_xid();
         string desktopFile = _matcher.get_application_for_xid((uint32)this.xid).get_desktop_file();
-        this._appInfo = new GLib.DesktopAppInfo.from_filename(desktopFile);
+        if ((desktopFile != "") && (desktopFile != null)) {
+            this._appInfo = new GLib.DesktopAppInfo.from_filename(desktopFile);
+        }
         this.image = new Gtk.Image.from_pixbuf(window.get_icon().scale_simple(this.imgSize, this.imgSize, Gdk.InterpType.BILINEAR));
         this.set_tooltip_text(window.get_name());
         this.window.icon_changed.connect(on_icon_changed);
         this.window.name_changed.connect(on_name_changed);
         this.button_press_event.connect(on_button_press);
 
-        stdout.printf("%lu %s\n", this.window.get_xid(), this.window.get_name());
+        //stdout.printf("%s\n", desktopFile);
     }
 
     private void on_icon_changed() {

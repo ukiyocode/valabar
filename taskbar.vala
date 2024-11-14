@@ -9,7 +9,7 @@ public class TaskBar : Gtk.Box
 
         foreach (Gtk.Widget child in this.get_children()) {
             AppButton ab = (AppButton)child;
-            ab.init(this.btnSize);
+            ab.init_for_dfile(this.btnSize);
         }
         scr = Wnck.Screen.get_default ();
         if (scr == null) {
@@ -29,19 +29,34 @@ public class TaskBar : Gtk.Box
         return 0;
     }
 
-    private void foreach_remove_callback(AppButton wb, Wnck.Window ww){
-        if (wb.xid == ww.get_xid()) {
-            this.remove(wb);
-            this.show_all();
-        }
-    }
     private void on_window_closed(Wnck.Window win) {
-        this.foreach((elem) => foreach_remove_callback((AppButton)elem, win));
+        foreach (Gtk.Widget widget in this.get_children()) {
+            AppButton ab = (AppButton)widget;
+            if (ab.xid == win.get_xid()) {
+                this.remove(ab);
+                this.show_all();
+            }
+        }
     }
 
     private void on_window_opened(Wnck.Window win) {
         if (!win.is_skip_tasklist()) {
-            this.add(new AppButton(win, this.btnSize));
+            string desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)win.get_xid()).get_desktop_file());
+            bool matched = false;
+            AppButton ab = null;
+            print("DF: %s\n", desktop_file);
+            foreach (Gtk.Widget widget in this.get_children()) {
+                ab = (AppButton)widget;
+                print("%s\n", ab.desktop_file);
+                if (ab.desktop_file == desktop_file) {
+                    matched = true;
+                    ab.init_for_window(win, btnSize);
+                    break;
+                } 
+            }
+            if (!matched) {
+                this.add(new AppButton(win, this.btnSize));
+            }
             this.show_all();
         }
     }

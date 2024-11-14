@@ -9,29 +9,40 @@ public class AppButton : Gtk.Button
     private Bamf.Matcher _matcher;
 
     public AppButton(Wnck.Window window, int size) {
-        this._matcher = Bamf.Matcher.get_default();
+        this.init_for_window(window, size);
+    }
+
+    public void init_for_dfile(int size) {
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = size;
+        if ((this.desktop_file != "") && (this.desktop_file != null)) {
+            this._appInfo = new GLib.DesktopAppInfo(desktop_file);
+            try {
+                this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this._appInfo.get_icon(), 0, 0).load_icon());
+            } catch (Error e) {
+                stderr.printf("Error while loading icon is appbuton init: %s", e.message);
+            }
+            this.set_tooltip_text(_appInfo.get_display_name());
+        }
+        this.button_press_event.connect(on_button_press);
+    }
+
+    public void init_for_window(Wnck.Window window, int size) {
+        this.halign = Gtk.Align.START;
+        this.valign = Gtk.Align.CENTER;
+        this._imgSize = size;
+        this._matcher = Bamf.Matcher.get_default();
         this._window = window;
         this.xid = window.get_xid();
-        string desktopFile = _matcher.get_application_for_xid((uint32)this.xid).get_desktop_file();
-        if ((desktopFile != "") && (desktopFile != null)) {
-            this._appInfo = new GLib.DesktopAppInfo.from_filename(desktopFile);
+        this.desktop_file = GLib.Filename.display_basename(_matcher.get_application_for_xid((uint32)this.xid).get_desktop_file());
+        if ((this.desktop_file != "") && (this.desktop_file != null)) {
+            this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
         }
         this.image = prepare_image(window.get_icon());
         this.set_tooltip_text(window.get_name());
         this.window.icon_changed.connect(on_icon_changed);
         this.window.name_changed.connect(on_name_changed);
-        this.button_press_event.connect(on_button_press);
-    }
-
-    public void init(int size) {
-        this._imgSize = size;
-        if ((this.desktop_file != "") && (this.desktop_file != null)) {
-            this._appInfo = new GLib.DesktopAppInfo(desktop_file);
-            this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this._appInfo.get_icon(), 0, 0).load_icon());
-        }
         this.button_press_event.connect(on_button_press);
     }
 
@@ -91,7 +102,7 @@ public class AppButton : Gtk.Button
     private bool on_mitem_action(Gtk.Widget widget, Gdk.EventButton event, string action) {
         Gtk.Menu parent_menu = (Gtk.Menu)widget.parent;
         AppButton ab = (AppButton)parent_menu.get_attach_widget();
-        ab._appInfo.launch_action (action, new AppLaunchContext());
+        ab._appInfo.launch_action(action, new AppLaunchContext());
         parent_menu.popdown();
         return true;
     }
@@ -107,6 +118,12 @@ public class AppButton : Gtk.Button
                     }
                     else {
                         ab.window.minimize();
+                    }
+                } else {
+                    try {
+                        ab._appInfo.launch(null, new AppLaunchContext());
+                    } catch (Error e) {
+                        stderr.printf("Error while launching app: %s\n", e.message);
                     }
                 }
                 return true;

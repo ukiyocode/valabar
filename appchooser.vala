@@ -14,7 +14,6 @@ public class AppChooser : Gtk.Dialog
             Gtk.Box box = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
             GLib.Icon icon = ai.get_icon();
             string name = ai.get_id();
-            //stdout.printf("%s\n", ai.get_id());
             if ((icon != null) && (name != "")) {
                 Gtk.Image img = new Gtk.Image.from_gicon(icon, Gtk.IconSize.BUTTON);
                 img.pixel_size = 16;

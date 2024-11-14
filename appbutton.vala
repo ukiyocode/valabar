@@ -19,7 +19,6 @@ public class AppButton : Gtk.Button
             this._appInfo = new GLib.DesktopAppInfo.from_filename(desktopFile);
         }
         this.image = prepare_image(window.get_icon());
-        //prepare_image(window.get_icon());
         this.set_tooltip_text(window.get_name());
         this.window.icon_changed.connect(on_icon_changed);
         this.window.name_changed.connect(on_name_changed);

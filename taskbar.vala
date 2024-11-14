@@ -45,7 +45,7 @@ public class TaskBar : Gtk.Box
             AppButton ab = null;
             foreach (Gtk.Widget widget in this.get_children()) {
                 ab = (AppButton)widget;
-                if (ab.desktop_file == desktop_file) {
+                if ((ab.desktop_file == desktop_file) && (!ab.isRunning())) {
                     ab.init_for_window(win, this._btnSize);
                     return;
                 } 

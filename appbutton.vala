@@ -46,9 +46,16 @@ public class AppButton : Gtk.Button
         this.button_press_event.connect(on_button_press);
     }
 
+    public bool isRunning() {
+        if (this._window != null) {
+            return true;
+        }
+        return false;
+    }
+
     private Gtk.Image prepare_image(Gdk.Pixbuf image) {
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
-        if (this._window != null) {
+        if (this.isRunning()) {
             try {
                 Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale("border.svg", this._imgSize, this._imgSize, true);
                 overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
@@ -112,7 +119,7 @@ public class AppButton : Gtk.Button
         {
             AppButton ab = (AppButton)widget;
             if (event.button == 1) { //left button
-                if (ab._window != null) {
+                if (ab.isRunning()) {
                     if (!ab._window.is_active()) {
                         ab._window.activate(Gtk.get_current_event_time());           
                     }
@@ -137,7 +144,7 @@ public class AppButton : Gtk.Button
                         menu.add(mitem_action);
                     }
                 }
-                if (ab._window != null) {
+                if (ab.isRunning()) {
                     Gtk.MenuItem mitem_close = new Gtk.MenuItem.with_label("Close");
                     Gtk.MenuItem mitem_maximize = new Gtk.MenuItem.with_label("Maximize");
                     if (ab._window.is_maximized()) {

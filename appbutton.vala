@@ -6,18 +6,16 @@ public class AppButton : Gtk.Button
     private Wnck.Window _window;
     private DesktopAppInfo _appInfo;
     private int _imgSize;
-    private string _exePath;
 
-    public AppButton(Wnck.Window window, int size, string exePath) {
-        this.init_for_window(window, size, exePath);
+    public AppButton(Wnck.Window window) {
+        this.init_for_window(window);
     }
 
-    public void init_for_dfile(int size, string exePath) {
-        this._exePath = exePath;
+    public void init_for_dfile() {
         this._app = null;
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
-        this._imgSize = size;
+        this._imgSize = ValaBar.btnSize;
         this._window = null;
         this._xid = 0;
         if ((this.desktop_file != "") && (this.desktop_file != null)) {
@@ -32,12 +30,11 @@ public class AppButton : Gtk.Button
         this.button_press_event.connect(on_button_press);
     }
 
-    public void init_for_window(Wnck.Window window, int size, string exePath) {
-        this._exePath = exePath;
+    public void init_for_window(Wnck.Window window) {
         this._app = window.get_application();
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
-        this._imgSize = size;
+        this._imgSize = ValaBar.btnSize;
         this._window = window;
         this._xid = this._window.get_xid();
         this.desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)this.xid).get_desktop_file());
@@ -62,7 +59,7 @@ public class AppButton : Gtk.Button
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
         if (this.isRunning()) {
             try {
-                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale(this._exePath + "/border.svg", this._imgSize, this._imgSize, true);
+                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale(ValaBar.exePath + "/border.svg", this._imgSize, this._imgSize, true);
                 overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
             } catch (Error e) {
                 stderr.printf ("Error while getting border.svg file: %s\n", e.message);

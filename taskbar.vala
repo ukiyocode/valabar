@@ -1,18 +1,14 @@
 public class TaskBar : Gtk.Box
 {
-    private int _btnSize;
     private List<AppButton> _launchers;
-    private string _exePath;
 
-    public int init(int barHeight, string exePath) {
-        this._btnSize = barHeight - 2;
+    public int init() {
         this._launchers = new List<AppButton>();
-        this._exePath = exePath;
 
         foreach (Gtk.Widget child in this.get_children()) {
             AppButton ab = (AppButton)child;
             this._launchers.append(ab);
-            ab.init_for_dfile(this._btnSize, this._exePath);
+            ab.init_for_dfile();
         }
         Wnck.Screen scr = Wnck.Screen.get_default ();
         if (scr == null) {
@@ -23,9 +19,7 @@ public class TaskBar : Gtk.Box
 
         unowned List<Wnck.Window> windows = scr.get_windows();
         foreach (Wnck.Window win in windows) {
-            if (!win.is_skip_tasklist()) {
-                this.add(new AppButton(win, this._btnSize, this._exePath)); 
-            }
+            on_window_opened(win);
         }
         scr.window_closed.connect(on_window_closed);
         scr.window_opened.connect(on_window_opened);
@@ -38,7 +32,7 @@ public class TaskBar : Gtk.Box
             if (ab.xid == win.get_xid()) {
                 foreach (AppButton ln in this._launchers) {
                     if ((ab.desktop_file == ln.desktop_file) && (ab.app.get_n_windows() == 0)) {
-                        ab.init_for_dfile(this._btnSize, this._exePath);
+                        ab.init_for_dfile();
                         this.show_all();
                         return;
                     }
@@ -56,12 +50,13 @@ public class TaskBar : Gtk.Box
             foreach (Gtk.Widget widget in this.get_children()) {
                 ab = (AppButton)widget;
                 if ((ab.desktop_file == desktop_file) && (!ab.isRunning())) {
-                    ab.init_for_window(win, this._btnSize, this._exePath);
+                    ab.init_for_window(win);
                     this.show_all();
                     return;
                 } 
             }
-            this.add(new AppButton(win, this._btnSize, this._exePath));
+            //this.add(new AppBox());
+            this.add(new AppButton(win));
             this.show_all();
         }
     }

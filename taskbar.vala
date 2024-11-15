@@ -41,11 +41,11 @@ public class TaskBar : Gtk.Box
                         }
                     }*/
                     abox.remove(abutt);
+                    if (!abox.hasChildren()) {
+                        this.remove(abox);
+                    }
+                    this.show_all();
                 }
-                if (abox.get_children().length() == 0) {
-                    this.remove(abox);
-                }
-                this.show_all();
             }
         }
     }

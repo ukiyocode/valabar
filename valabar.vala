@@ -6,7 +6,7 @@ public class ValaBar : Gtk.Window
     public int y { get; set; default = 0; }
 
     public void init(Gtk.Builder builder, string _exePath) {
-        btnSize = this.default_height - 2;
+        btnSize = this.default_height - 3;
         exePath = _exePath;
         TaskBar taskbar = builder.get_object("taskbar") as TaskBar;
         taskbar.init();

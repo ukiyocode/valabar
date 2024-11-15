@@ -52,7 +52,7 @@ public class TaskBar : Gtk.Box
 
     private void on_window_opened(Wnck.Window win) {
         if (!win.is_skip_tasklist()) {
-            string desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)win.get_xid()).get_desktop_file());
+            string desktop_file = Bamf.Matcher.get_default().get_application_for_xid((uint32)win.get_xid()).get_desktop_file();
             foreach (Gtk.Widget widget in this.get_children()) {
                 AppBox abox = (AppBox)widget;
                 AppButton abutt = abox.getFirstChild();

@@ -21,7 +21,17 @@
             <property name="spacing">1</property>
             <child>
               <object class="AppBox">
-                <property name="desktop-file">nemo.desktop</property>
+                <property name="desktop-file">/usr/share/applications/nemo.desktop</property>
+              </object>
+            </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/usr/share/applications/firefox.desktop</property>
+              </object>
+            </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/var/lib/flatpak/exports/share/applications/org.kde.elisa.desktop</property>
               </object>
             </child>
           </object>

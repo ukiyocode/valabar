@@ -4,9 +4,9 @@ public class AppBox : Gtk.Box
     private DesktopAppInfo _appInfo;
 
     public AppBox(AppButton button) {
-        this.desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)button.xid).get_desktop_file());
+        this.desktop_file = Bamf.Matcher.get_default().get_application_for_xid((uint32)button.xid).get_desktop_file();
         if ((this.desktop_file != "") && (this.desktop_file != null)) {
-            this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
+            this._appInfo = new GLib.DesktopAppInfo.from_filename(this.desktop_file);
         }
         button.appInfo = this._appInfo;
         this.add(button);

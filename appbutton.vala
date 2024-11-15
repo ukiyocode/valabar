@@ -22,7 +22,7 @@ public class AppButton : Gtk.Button
         this._window = null;
         this._xid = 0;
         if ((dFileName != "") && (dFileName != null)) {
-            this.appInfo = new GLib.DesktopAppInfo(dFileName);
+            this.appInfo = new GLib.DesktopAppInfo.from_filename(dFileName);
             try {
                 this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this.appInfo.get_icon(), 0, 0).load_icon());
             } catch (Error e) {

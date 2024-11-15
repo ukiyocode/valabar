@@ -1,15 +1,14 @@
 public class TaskBar : Gtk.Box
 {
-    private List<AppButton> _launchers;
+    private List<AppBox> _launchers;
 
     public int init() {
-        this._launchers = new List<AppButton>();
+        this._launchers = new List<AppBox>();
 
         foreach (Gtk.Widget child in this.get_children()) {
-            /*AppBox abox = (AppBox)child;
+            AppBox abox = (AppBox)child;
             this._launchers.append(abox);
-            abox.init_for_dfile();*/
-            //this.remove(ab);
+            abox.add (new AppButton.fromDesktopFile(abox.desktop_file));
         }
         Wnck.Screen scr = Wnck.Screen.get_default ();
         if (scr == null) {
@@ -33,14 +32,15 @@ public class TaskBar : Gtk.Box
             foreach (Gtk.Widget child in abox.get_children()) {
                 AppButton abutt = (AppButton)child;
                 if (abutt.xid == win.get_xid()) {
-                    /*foreach (AppButton ln in this._launchers) {
-                        if ((ab.desktop_file == ln.desktop_file) && (ab.app.get_n_windows() == 0)) {
-                            ab.init_for_dfile();
+                    foreach (AppBox ln in this._launchers) {
+                        if ((abox.desktop_file == ln.desktop_file) && (abox.getChildrenCount() == 1)) {
+                            abutt.init_for_dfile(abox.desktop_file);
                             this.show_all();
                             return;
                         }
-                    }*/
+                    }
                     abox.remove(abutt);
+                    this.show_all();
                     if (!abox.hasChildren()) {
                         this.remove(abox);
                     }
@@ -58,19 +58,16 @@ public class TaskBar : Gtk.Box
                 AppButton abutt = abox.getFirstChild();
                 if (abox.desktop_file == desktop_file) {
                     if (!abutt.isRunning()) {
-                        print("first win in app\n");
                         abutt.init_for_window(win);
                         this.show_all();
                         return;
                     } else {
-                        print("new win for app\n");
                         abox.add(new AppButton(win));
                         this.show_all();
                         return;
                     }
                 }
             }
-            print("new app box\n");
             this.add(new AppBox(new AppButton(win))); 
             this.show_all();
         }

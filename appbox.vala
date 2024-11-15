@@ -16,10 +16,14 @@ public class AppBox : Gtk.Box
         return (AppButton)this.get_children().nth_data(0);
     }
 
-    public bool hasChildren()   {
+    public bool hasChildren() {
         if (this.get_children().length() == 0) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
+    }
+
+    public uint getChildrenCount() {
+        return this.get_children().length();
     }
 }

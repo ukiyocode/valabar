@@ -10,23 +10,27 @@ public class AppButton : Gtk.Button
         this.init_for_window(window);
     }
 
-    public void init_for_dfile() {
-        /*this._app = null;
+    public AppButton.fromDesktopFile(string dFileName) {
+        this.init_for_dfile(dFileName);
+    }
+
+    public void init_for_dfile(string dFileName) {
+        this._app = null;
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = ValaBar.btnSize;
         this._window = null;
         this._xid = 0;
-        if ((this.desktop_file != "") && (this.desktop_file != null)) {
-            this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
+        if ((dFileName != "") && (dFileName != null)) {
+            this.appInfo = new GLib.DesktopAppInfo(dFileName);
             try {
-                this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this._appInfo.get_icon(), 0, 0).load_icon());
+                this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this.appInfo.get_icon(), 0, 0).load_icon());
             } catch (Error e) {
                 stderr.printf("Error while loading icon is appbuton init: %s\n", e.message);
             }
-            this.set_tooltip_text(_appInfo.get_display_name());
+            this.set_tooltip_text(this.appInfo.get_display_name());
         }
-        this.button_press_event.connect(on_button_press);*/
+        this.button_press_event.connect(on_button_press);
     }
 
     public void init_for_window(Wnck.Window window) {

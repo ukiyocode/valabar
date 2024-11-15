@@ -1,10 +1,9 @@
 public class AppButton : Gtk.Button
 {
-    public string desktop_file { get; set; }
     public ulong xid { get; }
     public Wnck.Application app { get; }
-    private Wnck.Window _window;
-    private DesktopAppInfo _appInfo;
+    public Wnck.Window window { get; }
+    public DesktopAppInfo appInfo { get; set; }
     private int _imgSize;
 
     public AppButton(Wnck.Window window) {
@@ -12,14 +11,14 @@ public class AppButton : Gtk.Button
     }
 
     public void init_for_dfile() {
-        this._app = null;
+        /*this._app = null;
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = ValaBar.btnSize;
         this._window = null;
         this._xid = 0;
         if ((this.desktop_file != "") && (this.desktop_file != null)) {
-            this._appInfo = new GLib.DesktopAppInfo(desktop_file);
+            this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
             try {
                 this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this._appInfo.get_icon(), 0, 0).load_icon());
             } catch (Error e) {
@@ -27,7 +26,7 @@ public class AppButton : Gtk.Button
             }
             this.set_tooltip_text(_appInfo.get_display_name());
         }
-        this.button_press_event.connect(on_button_press);
+        this.button_press_event.connect(on_button_press);*/
     }
 
     public void init_for_window(Wnck.Window window) {
@@ -37,10 +36,6 @@ public class AppButton : Gtk.Button
         this._imgSize = ValaBar.btnSize;
         this._window = window;
         this._xid = this._window.get_xid();
-        this.desktop_file = GLib.Filename.display_basename(Bamf.Matcher.get_default().get_application_for_xid((uint32)this.xid).get_desktop_file());
-        if ((this.desktop_file != "") && (this.desktop_file != null)) {
-            this._appInfo = new GLib.DesktopAppInfo(this.desktop_file);
-        }
         this.image = prepare_image(this._window.get_icon());
         this.set_tooltip_text(this._window.get_name());
         this._window.icon_changed.connect(on_icon_changed);

@@ -57,7 +57,7 @@ public class ValaBar : Gtk.Window
         Gtk.init (ref args);
         builder = new Gtk.Builder ();
         try {
-            _exePath = string.join("", GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe")));
+            _exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
             css_provider.load_from_path(_exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);

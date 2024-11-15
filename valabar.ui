@@ -9,7 +9,7 @@
     <property name="type-hint">dock</property>
     <property name="decorated">False</property>
     <property name="x">620</property>
-    <property name="y">1050</property>
+    <property name="y">850</property>
     <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
     <child>
       <object class="GtkGrid">

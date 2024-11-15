@@ -20,6 +20,7 @@ sources = files(
     'appchooser.vala',
     'taskbar.vala',
     'appbutton.vala',
+    'appbox.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

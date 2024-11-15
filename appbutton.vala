@@ -6,12 +6,14 @@ public class AppButton : Gtk.Button
     private Wnck.Window _window;
     private DesktopAppInfo _appInfo;
     private int _imgSize;
+    private string _exePath;
 
-    public AppButton(Wnck.Window window, int size) {
-        this.init_for_window(window, size);
+    public AppButton(Wnck.Window window, int size, string exePath) {
+        this.init_for_window(window, size, exePath);
     }
 
-    public void init_for_dfile(int size) {
+    public void init_for_dfile(int size, string exePath) {
+        this._exePath = exePath;
         this._app = null;
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
@@ -23,14 +25,15 @@ public class AppButton : Gtk.Button
             try {
                 this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this._appInfo.get_icon(), 0, 0).load_icon());
             } catch (Error e) {
-                stderr.printf("Error while loading icon is appbuton init: %s", e.message);
+                stderr.printf("Error while loading icon is appbuton init: %s\n", e.message);
             }
             this.set_tooltip_text(_appInfo.get_display_name());
         }
         this.button_press_event.connect(on_button_press);
     }
 
-    public void init_for_window(Wnck.Window window, int size) {
+    public void init_for_window(Wnck.Window window, int size, string exePath) {
+        this._exePath = exePath;
         this._app = window.get_application();
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
@@ -59,10 +62,10 @@ public class AppButton : Gtk.Button
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
         if (this.isRunning()) {
             try {
-                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale("border.svg", this._imgSize, this._imgSize, true);
+                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale(this._exePath + "/border.svg", this._imgSize, this._imgSize, true);
                 overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
             } catch (Error e) {
-                stderr.printf ("Error while getting border.svg file: %s", e.message);
+                stderr.printf ("Error while getting border.svg file: %s\n", e.message);
             }
         }
         return new Gtk.Image.from_pixbuf(background);

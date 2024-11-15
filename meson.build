@@ -24,6 +24,7 @@ sources = files(
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)
 configure_file(input : 'valabar.ui', output : 'valabar.ui', copy: true)
+configure_file(input : 'border.svg', output : 'border.svg', copy: true)
 
 executable('valabar', sources, dependencies: dependencies, install : true, install_dir : join_paths(get_option('prefix'), 'github/mybar'))
 install_data('style.css', install_dir : join_paths(get_option('prefix'), 'github/mybar'))

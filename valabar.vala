@@ -3,9 +3,9 @@ public class ValaBar : Gtk.Window
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
 
-    public void init(Gtk.Builder builder) {
+    public void init(Gtk.Builder builder, string exePath) {
         TaskBar taskbar = builder.get_object("taskbar") as TaskBar;
-        taskbar.init(this.default_height);
+        taskbar.init(this.default_height, exePath);
 
         builder.connect_signals(null);
         this.move(this.x, this.y);
@@ -48,22 +48,22 @@ public class ValaBar : Gtk.Window
     {
         ValaBar valabar;
         Gtk.Builder builder;
-        string _exePath;
+        string exePath;
 
         Gtk.init (ref args);
         builder = new Gtk.Builder ();
         try {
-            _exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
+            exePath = string.join("", GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe")));
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
-            css_provider.load_from_path(_exePath + "/style.css");
+            css_provider.load_from_path(exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
-            builder.add_from_file(_exePath + "/valabar.ui");
+            builder.add_from_file(exePath + "/valabar.ui");
             builder.connect_signals(null);
             valabar = builder.get_object("window") as ValaBar;
             if (valabar == null) {
                 throw new MarkupError.INVALID_CONTENT("Malformed valabar.ui");
             }
-            valabar.init(builder);
+            valabar.init(builder, exePath);
             valabar.show_all ();
         } catch (Error e) {
             stderr.printf("Could not load UI: %s\n", e.message);

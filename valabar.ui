@@ -34,6 +34,31 @@
                 <property name="desktop-file">/var/lib/flatpak/exports/share/applications/org.kde.elisa.desktop</property>
               </object>
             </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/var/lib/flatpak/exports/share/applications/org.keepassxc.KeePassXC.desktop</property>
+              </object>
+            </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/usr/share/applications/debian-uxterm.desktop</property>
+              </object>
+            </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/var/lib/flatpak/exports/share/applications/io.gitlab.news_flash.NewsFlash.desktop</property>
+              </object>
+            </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/usr/share/applications/virt-manager.desktop</property>
+              </object>
+            </child>
+            <child>
+              <object class="AppBox">
+                <property name="desktop-file">/usr/share/applications/codium.desktop</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

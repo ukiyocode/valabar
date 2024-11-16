@@ -69,6 +69,9 @@ public class ValaBar : Gtk.Window
             }
             valabar.init(builder, _exePath);
             valabar.show_all ();
+            //string stuff;
+            //GLib.FileUtils.get_contents (string filename, out string contents, out size_t length = null) throws FileError 
+            //print();
         } catch (Error e) {
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;

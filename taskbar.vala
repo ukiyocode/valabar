@@ -62,7 +62,7 @@ public class TaskBar : Gtk.Box
                         this.show_all();
                         return;
                     } else {
-                        abox.add(new AppButton(win));
+                        abox.addButton(new AppButton(win));
                         this.show_all();
                         return;
                     }

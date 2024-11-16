@@ -24,7 +24,6 @@ public class AppButton : Gtk.Button
         if ((dFileName != "") && (dFileName != null)) {
             this.appInfo = new GLib.DesktopAppInfo.from_filename(dFileName);
             try {
-                print("%s\n", this.appInfo.get_icon().to_string());
                 this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this.appInfo.get_icon(), this._imgSize, 0).load_icon());
             } catch (Error e) {
                 stderr.printf("Error while loading icon is appbuton init: %s\n", e.message);

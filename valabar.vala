@@ -76,6 +76,15 @@ public class ValaBar : Gtk.Window
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;
         }
+        CPUUsageMeter cpuMeter = new CPUUsageMeter();
+        cpuMeter.perCoreCPUUsageCallback();
+        //  TimeoutSource time = new TimeoutSource (2000);
+        //  time.set_callback (() => {
+        //      print ("Time!\n");
+        //      return true;
+        //  });
+        //  time.attach(null);
+
         Gtk.main ();
 
         return 0;

@@ -21,6 +21,7 @@ sources = files(
     'taskbar.vala',
     'appbutton.vala',
     'appbox.vala',
+    'cpuusagemeter.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

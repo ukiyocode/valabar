@@ -1,56 +1,88 @@
 class CPUUsageMeter : Gtk.Button
 {
     //private File _cPUFile;
+    private IdleTotal[] values;
+    private IdleTotal[] oldValues;
+    private double[] usages;
+    private List<string> lines;
+    private uint numOfCPUCores;
+    private Gtk.ProgressBar[] coreBars;
+    private Gtk.Box contentsBox;
 
-    public CPUUsageMeter() {
-        //_cPUFile = File.new_for_path ("/proc/stat");
+    class IdleTotal {
+        public uint64 idle { get; }
+        public uint64 total { get; }
+
+        public IdleTotal(uint64 idle, uint64 total) {
+            this._idle = idle;
+            this._total = total;
+        }
+    }
+
+    public void init() {
+        this.lines = getLines();
+        this.numOfCPUCores = this.lines.length();
+        this.values = new IdleTotal[this.numOfCPUCores];
+        this.coreBars = new Gtk.ProgressBar[this.numOfCPUCores];
+        this.contentsBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+        for (int i = 0; i < this.numOfCPUCores; i++) {
+            this.values[i] = parseStatLine(lines.nth_data(i));
+            this.coreBars[i] = new Gtk.ProgressBar();
+            this.coreBars[i].orientation = Gtk.Orientation.VERTICAL;
+            this.coreBars[i].inverted = true;
+            this.contentsBox.add(coreBars[i]);
+        }
+        this.add(contentsBox);
+        GLib.Timeout.add(2000, perCoreCPUUsageCallback);
+    }
+
+    private IdleTotal parseStatLine(string line) {
+        string[] cpuTimes = line.split(" ");
+        uint64 idle = uint64.parse(cpuTimes[4]);
+        uint64 total = 0;
+        for (int i = 1; i < cpuTimes.length; i++) {
+            total += uint64.parse(cpuTimes[i]);
+        }
+        return new IdleTotal(idle, total);
+    }
+
+    private List<string> getLines() {
+        File cpuFile = File.new_for_path ("/proc/stat");
+        List<string> rets = new List<string>();
+        try {
+            FileInputStream fis = cpuFile.read();
+            DataInputStream dis = new DataInputStream(fis);
+            string line = dis.read_line(); //skip 1st line
+            
+            while ((line = dis.read_line()) != null) {
+                if (!line.has_prefix("cpu")) { //break after all cpu cores
+                    break;
+                }
+                rets.append(line);
+            }
+        } catch (Error e) {
+            print ("Error in CPU Usage Callback: %s\n", e.message);
+        }
+        return rets;
     }
 
     public bool perCoreCPUUsageCallback() {
-        File cPUFile = File.new_for_path ("/proc/stat");
-        try {
-            FileInputStream fis = cPUFile.read();
-            DataInputStream dis = new DataInputStream(fis);
-            string line;
-    
-            while ((line = dis.read_line ()) != null) {
-                print ("%s\n", line);
-            }
-        } catch (Error e) {
-            print ("Error: %s\n", e.message);
+        this.lines = getLines();
+        this.oldValues = this.values;
+        this.values = new IdleTotal[this.numOfCPUCores];
+        this.usages = new double[this.numOfCPUCores];
+        double totalDelta;
+        double idleDelta;
+
+        for (int i = 0; i < this.numOfCPUCores; i++) {
+            this.values[i] = parseStatLine(lines.nth_data(i));
+            totalDelta = (double)(this.values[i].total - this.oldValues[i].total);
+            idleDelta = (double)(this.values[i].idle - this.oldValues[i].idle);
+            this.usages[i] = ((totalDelta - idleDelta) / totalDelta);
+            this.coreBars[i].set_fraction(this.usages[i]);
         }
-        //  gchar     tempString[20];
-        //  gint      counter;
-        //  gint      i;
-        //  gfloat    load;
-        //  FILE* fp;
-        //  gchar *scrap;
-
-        //  scrap=(gchar *)g_malloc(15);
-        
-        //  fp = fopen ("/proc/stat", "r");
-
-        //  for (counter = 0; counter <= processors; counter++) {
-        //      up1[counter]=0;
-        //      fscanf (fp, "%s %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld",scrap,&a[0],&a[1],&a[2],&a[3],&a[4],&a[5],&a[6],&a[7],&a[8],&a[9]);
-        //      if (strncmp(scrap,"cpu",3) != 0) break;
-        //      for (i =0; i < 8; i++) up1[counter]+= a[i];
-        //      idle1[counter] = a[3]+a[4];
-        //      if (counter == 0) {
-        //          // calculates total up time
-        //          sprintf(tempString,"%3.5f",(float)(up1[0]/(24.0*3600.0*100.0 ) / (float)processors));  // format decimal days
-        //      }
-        //      up[counter]=up1[counter]-up[counter];
-        //      idle[counter]=idle1[counter]-idle[counter];
-        //      load=((float)(up[counter]-idle[counter])/(float)up[counter])*100.0;
-        //      // now you halve the load..
-
-        //      // update staic variables for next loop
-        //      up[counter]=up1[counter];
-        //      idle[counter]=idle1[counter];
-        //  }
-        //  fclose(fp);
-
+        //this.show_all();
+        //print("%f\n", this.usages[0]);
         return true;
     }
 }

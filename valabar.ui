@@ -67,7 +67,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton">
+          <object class="CPUUsageMeter" id="cpu-usage-meter">
           </object>
         </child>
       </object>

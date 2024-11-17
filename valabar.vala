@@ -10,6 +10,8 @@ public class ValaBar : Gtk.Window
         exePath = _exePath;
         TaskBar taskbar = builder.get_object("taskbar") as TaskBar;
         taskbar.init();
+        CPUUsageMeter cpuUsageMeter = builder.get_object("cpu-usage-meter") as CPUUsageMeter;
+        cpuUsageMeter.init();
 
         builder.connect_signals(null);
         this.move(this.x, this.y);
@@ -76,14 +78,8 @@ public class ValaBar : Gtk.Window
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;
         }
-        CPUUsageMeter cpuMeter = new CPUUsageMeter();
-        cpuMeter.perCoreCPUUsageCallback();
-        //  TimeoutSource time = new TimeoutSource (2000);
-        //  time.set_callback (() => {
-        //      print ("Time!\n");
-        //      return true;
-        //  });
-        //  time.attach(null);
+        //CPUUsageMeter cpuMeter = new CPUUsageMeter();
+        //cpuMeter.perCoreCPUUsageCallback();
 
         Gtk.main ();
 

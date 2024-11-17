@@ -8,3 +8,17 @@ button{
     margin-top: 0px;
     margin-bottom: 0px;
 }
+
+progressbar trough{
+    min-width: 5px;
+    min-height: 20px;
+    border-left-color: rgba(0,0,0,0);
+    border-right-color: rgba(0,0,0,0);
+    border-top-color: rgba(0,0,0,0);
+    border-bottom-color: rgba(0,0,0,0);
+    background-color: rgba(0,0,0,0);
+  }
+  progressbar progress{
+    min-width: 5px;
+    background-color: #ffffff;
+  }

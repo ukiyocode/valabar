@@ -44,7 +44,8 @@ class Graph : Gtk.Button {
         return true;
     }
 
-    public override bool draw (Cairo.Context cr) {
+    public override bool draw(Cairo.Context cr) {
+        base.draw(cr);
         int width = this.get_allocated_width();
         int height = this.get_allocated_height();
         cr.set_source_rgb(1, 1, 1);

@@ -12,6 +12,8 @@ public class ValaBar : Gtk.Window
         taskbar.init();
         CPUUsageMeter cpuUsageMeter = builder.get_object("cpu-usage-meter") as CPUUsageMeter;
         cpuUsageMeter.init();
+        Graph gr = builder.get_object("graph") as Graph;
+        gr.init();
 
         builder.connect_signals(null);
         this.move(this.x, this.y);
@@ -75,7 +77,6 @@ public class ValaBar : Gtk.Window
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;
         }
-        new Graph().init();
 
         Gtk.main ();
 

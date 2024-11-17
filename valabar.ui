@@ -70,6 +70,10 @@
           <object class="CPUUsageMeter" id="cpu-usage-meter">
           </object>
         </child>
+        <child>
+          <object class="Graph" id="graph">
+          </object>
+        </child>
       </object>
     </child>
   </object>

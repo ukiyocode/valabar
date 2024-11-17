@@ -1,8 +1,9 @@
 class Graph : Gtk.Button {
-    public double value { get; set; }
-    public double thickness { get; set; default = 1.0; }
-    public double max { get; set; default = double.MAX; }
-    public double min { get; set; default = double.MIN; }
+    public string data_file { get; set; }
+    public bool data_file_delta { get; set; default = false; }
+    public double line_thickness { get; set; default = 1.0; }
+    public double max { get; set; default = 100; }
+    public double min { get; set; default = 0; }
     public bool dynamicScale { get; set; default = true; }
     public uint time_range { get; set; default = 160; }
     public uint interval { get; set; default = 2000; }
@@ -23,11 +24,9 @@ class Graph : Gtk.Button {
     }
 
     public bool timerCallback() {
-        min = 0;//(double)int32.MIN;
-        max = 100000;//(double)int32.MAX;
         double span = max - min;
         double val;
-        File dataFile = File.new_for_path ("/sys/class/thermal/thermal_zone6/temp");
+        File dataFile = File.new_for_path (this.data_file);
         try {
             FileInputStream fis = dataFile.read();
             DataInputStream dis = new DataInputStream(fis);
@@ -44,18 +43,40 @@ class Graph : Gtk.Button {
         return true;
     }
 
+    private double calcStep(double width) {
+        double ret = width / (double)(this.histLength - 1);
+        if (this.flip_x) {
+            return -ret;
+        }
+        return ret;
+    }
+
+    private double calcX(double x, double width) {
+        if (this.flip_x) {
+            return width - x;
+        }
+        return x;
+    }
+
+    private double calcY(double y, double height) {
+        if (this.flip_y) {
+            return y * height;
+        }
+        return height - y * height;
+    }
+
     public override bool draw(Cairo.Context cr) {
         base.draw(cr);
         int width = this.get_allocated_width();
         int height = this.get_allocated_height();
         cr.set_source_rgb(1, 1, 1);
-        cr.set_line_width(1);
-        double step = (double)width / (double)(histLength - 1);
-        double x = width;
-        cr.move_to(width, height - history.nth_data(0) * height);
+        cr.set_line_width(this.line_thickness);
+        double step = calcStep(width);
+        double x = calcX(0, width);
+        cr.move_to(x, calcY(history.nth_data(0), height));
         foreach (double y in history) {
-            cr.line_to(x, height - y * height);
-            x -= step;
+            cr.line_to(x, calcY(y, height));
+            x += step;
         }
         cr.stroke();
 

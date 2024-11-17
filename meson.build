@@ -22,6 +22,7 @@ sources = files(
     'appbutton.vala',
     'appbox.vala',
     'cpuusagemeter.vala',
+    'graph.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

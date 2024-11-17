@@ -1,6 +1,5 @@
 class CPUUsageMeter : Gtk.Button
 {
-    //private File _cPUFile;
     private IdleTotal[] values;
     private IdleTotal[] oldValues;
     private double[] usages;
@@ -81,8 +80,6 @@ class CPUUsageMeter : Gtk.Button
             this.usages[i] = ((totalDelta - idleDelta) / totalDelta);
             this.coreBars[i].set_fraction(this.usages[i]);
         }
-        //this.show_all();
-        //print("%f\n", this.usages[0]);
         return true;
     }
 }

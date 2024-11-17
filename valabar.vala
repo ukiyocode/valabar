@@ -12,8 +12,10 @@ public class ValaBar : Gtk.Window
         taskbar.init();
         CPUUsageMeter cpuUsageMeter = builder.get_object("cpu-usage-meter") as CPUUsageMeter;
         cpuUsageMeter.init();
-        Graph gr = builder.get_object("graph") as Graph;
-        gr.init();
+        Graph cpuTempGraph = builder.get_object("cpu-temp-graph") as Graph;
+        cpuTempGraph.init();
+        Graph gpuFreqGraph = builder.get_object("gpu-freq-graph") as Graph;
+        gpuFreqGraph.init();
 
         builder.connect_signals(null);
         this.move(this.x, this.y);

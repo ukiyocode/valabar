@@ -26,13 +26,14 @@ class Graph : Gtk.Button {
     public bool timerCallback() {
         double span = max - min;
         double val;
-        File dataFile = File.new_for_path (this.data_file);
+        File dataFile = File.new_for_path(this.data_file);
         try {
             FileInputStream fis = dataFile.read();
             DataInputStream dis = new DataInputStream(fis);
 
             val = double.parse(dis.read_line());
-            val = (val + min.abs()) / span;
+            //print("%f\n", val);
+            val = (val - min) / span;
             history.prepend(val);
             history.remove(history.nth_data(histLength));
         } catch (Error e) {

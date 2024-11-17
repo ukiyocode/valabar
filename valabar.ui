@@ -4,7 +4,7 @@
   <object class="ValaBar" id="window">
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">ValaBar</property>
-    <property name="default-width">800</property>
+    <property name="default-width">890</property>
     <property name="default-height">30</property>
     <property name="type-hint">dock</property>
     <property name="decorated">False</property>
@@ -71,11 +71,19 @@
           </object>
         </child>
         <child>
-          <object class="Graph" id="graph">
+          <object class="Graph" id="cpu-temp-graph">
             <property name="data_file">/sys/class/thermal/thermal_zone6/temp</property>
             <property name="flip_x">true</property>
             <property name="min">0</property>
             <property name="max">100000</property>
+          </object>
+        </child>
+        <child>
+          <object class="Graph" id="gpu-freq-graph">
+            <property name="data_file">/sys/class/drm/card1/gt_cur_freq_mhz</property>
+            <property name="flip_x">true</property>
+            <property name="min">590</property>
+            <property name="max">1310</property>
           </object>
         </child>
       </object>

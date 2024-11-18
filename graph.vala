@@ -4,7 +4,7 @@ class Graph : Gtk.Button {
     public double line_thickness { get; set; default = 1.0; }
     public double max { get; set; default = 100; }
     public double min { get; set; default = 0; }
-    public bool dynamicScale { get; set; default = true; }
+    public bool dynamic_scale { get; set; default = false; }
     public uint time_range { get; set; default = 160; }
     public uint interval { get; set; default = 2000; }
     public bool flip_x { get; set; default = false; }
@@ -26,7 +26,6 @@ class Graph : Gtk.Button {
     }
 
     public bool timerCallback() {
-        double span = max - min;
         double val;
         File dataFile = File.new_for_path(this.data_file);
         try {
@@ -34,7 +33,6 @@ class Graph : Gtk.Button {
             DataInputStream dis = new DataInputStream(fis);
 
             val = double.parse(dis.read_line());
-            val = (val - min) / span;
             history.append(val);
             history.remove(history.nth_data(0));
         } catch (Error e) {
@@ -61,6 +59,7 @@ class Graph : Gtk.Button {
     }
 
     private double calcY(double y, double height) {
+        y = (y - this.min) / (this.max - this.min);
         if (this.flip_y) {
             return y * height + cssPadding.top;
         }
@@ -75,6 +74,14 @@ class Graph : Gtk.Button {
         cr.set_line_width(this.line_thickness);
         double step = calcStep(width);
         double x = calcX(0, width);
+        if (dynamic_scale) {
+            this.min = double.MAX;
+            this.max = double.MIN;
+            foreach (double y in history) {
+                if (y > this.max) { this.max = y; }
+                if (y < this.min) { this.min = y; }
+            }
+        }
         cr.move_to(x, calcY(history.nth_data(0), height));
         foreach (double y in history) {
             cr.line_to(x, calcY(y, height));

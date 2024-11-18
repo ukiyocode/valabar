@@ -12,9 +12,11 @@ class Graph : Gtk.Button {
 
     private uint histLength;
     private List<double?> history;
+    private Gtk.Border cssPadding;
 
     public void init() {
-        this.width_request = 80;
+        this.cssPadding = this.get_style_context().get_padding(Gtk.StateFlags.NORMAL);
+        this.width_request = 80 + cssPadding.left + cssPadding.right;
         histLength = this.time_range * 1000 / this.interval;
         history = new List<double?>();
         for (int i = 0; i < histLength; i++) {
@@ -32,10 +34,9 @@ class Graph : Gtk.Button {
             DataInputStream dis = new DataInputStream(fis);
 
             val = double.parse(dis.read_line());
-            //print("%f\n", val);
             val = (val - min) / span;
-            history.prepend(val);
-            history.remove(history.nth_data(histLength));
+            history.append(val);
+            history.remove(history.nth_data(0));
         } catch (Error e) {
             stderr.printf("Error while getting graph data: %s\n", e.message);
         }
@@ -54,22 +55,22 @@ class Graph : Gtk.Button {
 
     private double calcX(double x, double width) {
         if (this.flip_x) {
-            return width - x;
+            return width - x + cssPadding.left;
         }
-        return x;
+        return x + cssPadding.left;
     }
 
     private double calcY(double y, double height) {
         if (this.flip_y) {
-            return y * height;
+            return y * height + cssPadding.top;
         }
-        return height - y * height;
+        return height - y * height + cssPadding.bottom;
     }
 
     public override bool draw(Cairo.Context cr) {
         base.draw(cr);
-        int width = this.get_allocated_width();
-        int height = this.get_allocated_height();
+        int width = this.get_allocated_width() - cssPadding.left - cssPadding.right;
+        int height = this.get_allocated_height() - cssPadding.top - cssPadding.bottom;
         cr.set_source_rgb(1, 1, 1);
         cr.set_line_width(this.line_thickness);
         double step = calcStep(width);

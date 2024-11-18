@@ -73,7 +73,6 @@
         <child>
           <object class="Graph" id="cpu-temp-graph">
             <property name="data_file">/sys/class/thermal/thermal_zone6/temp</property>
-            <property name="flip_x">true</property>
             <property name="min">0</property>
             <property name="max">100000</property>
           </object>
@@ -81,9 +80,8 @@
         <child>
           <object class="Graph" id="gpu-freq-graph">
             <property name="data_file">/sys/class/drm/card1/gt_cur_freq_mhz</property>
-            <property name="flip_x">true</property>
-            <property name="min">590</property>
-            <property name="max">1310</property>
+            <property name="min">600</property>
+            <property name="max">1300</property>
           </object>
         </child>
       </object>

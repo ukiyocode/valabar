@@ -8,14 +8,20 @@ public class ValaBar : Gtk.Window
     public void init(Gtk.Builder builder, string _exePath) {
         btnSize = this.default_height - 3;
         exePath = _exePath;
-        TaskBar taskbar = builder.get_object("taskbar") as TaskBar;
-        taskbar.init();
-        CPUUsageMeter cpuUsageMeter = builder.get_object("cpu-usage-meter") as CPUUsageMeter;
-        cpuUsageMeter.init();
-        Graph cpuTempGraph = builder.get_object("cpu-temp-graph") as Graph;
-        cpuTempGraph.init();
-        Graph gpuFreqGraph = builder.get_object("gpu-freq-graph") as Graph;
-        gpuFreqGraph.init();
+        SList<weak Object> objects = builder.get_objects();
+        foreach(Object obj in objects) {
+            switch(obj.get_type().name()) {
+                case "TaskBar":
+                    ((TaskBar)obj).init();
+                    break;
+                case "Graph":
+                    ((Graph)obj).init();
+                    break;
+                case "CPUUsageMeter":
+                    ((CPUUsageMeter)obj).init();
+                    break;
+            }
+        }
 
         builder.connect_signals(null);
         this.move(this.x, this.y);

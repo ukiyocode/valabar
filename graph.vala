@@ -12,6 +12,7 @@ class Graph : Gtk.Button {
 
     private uint histLength;
     private List<double?> history;
+    private List<double?> delta_history;
     private Gtk.Border cssPadding;
 
     public void init() {
@@ -21,6 +22,15 @@ class Graph : Gtk.Button {
         history = new List<double?>();
         for (int i = 0; i < histLength; i++) {
             history.append(0);
+        }
+        if (data_file_delta) {
+            delta_history = new List<double?>();
+            for (int i = 0; i < histLength; i++) {
+                delta_history.append(0);
+            }
+        }
+        if (data_file == "default_network_device") {
+            this.data_file = "/sys/class/net/enx2887bada4ab4/statistics/rx_bytes";
         }
         GLib.Timeout.add(interval, timerCallback);
     }
@@ -32,7 +42,14 @@ class Graph : Gtk.Button {
             FileInputStream fis = dataFile.read();
             DataInputStream dis = new DataInputStream(fis);
 
-            val = double.parse(dis.read_line());
+            if (data_file_delta) {
+                delta_history.append(double.parse(dis.read_line()));
+                delta_history.remove(delta_history.nth_data(0));
+                val = delta_history.nth_data(histLength - 1) - delta_history.nth_data(histLength - 2);
+                //print("%f - %f = %f\n", delta_history.nth_data(histLength - 1), delta_history.nth_data(histLength - 2), val);
+            } else {
+                val = double.parse(dis.read_line());
+            }
             history.append(val);
             history.remove(history.nth_data(0));
         } catch (Error e) {

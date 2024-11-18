@@ -15,6 +15,16 @@ class Graph : Gtk.Button {
     private List<double?> delta_history;
     private Gtk.Border cssPadding;
 
+    private string getDefaultNetDev () {
+        string output;
+        try {
+            Process.spawn_command_line_sync ("ip route show default", out output);
+        } catch (SpawnError e) {
+            print ("Error while getting default network device: %s\n", e.message);
+        }
+        return output.split(" ")[4];
+    }
+
     public void init() {
         this.cssPadding = this.get_style_context().get_padding(Gtk.StateFlags.NORMAL);
         this.width_request = 80 + cssPadding.left + cssPadding.right;
@@ -30,7 +40,7 @@ class Graph : Gtk.Button {
             }
         }
         if (data_file == "default_network_device") {
-            this.data_file = "/sys/class/net/enx2887bada4ab4/statistics/rx_bytes";
+            this.data_file = "/sys/class/net/" + getDefaultNetDev() + "/statistics/rx_bytes";
         }
         GLib.Timeout.add(interval, timerCallback);
     }

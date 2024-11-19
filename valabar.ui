@@ -99,6 +99,10 @@
             <property name="data_token_number">6</property>
           </object>
         </child>
+        <child>
+          <object class="SystemTray">
+          </object>
+        </child>
       </object>
     </child>
   </object>

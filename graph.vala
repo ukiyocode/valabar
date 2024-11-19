@@ -1,6 +1,7 @@
 class Graph : Gtk.Button {
     public string data_file { get; set; }
     public bool data_file_delta { get; set; default = false; }
+    public uint data_token_number { get; set; default = 0; }
     public double line_thickness { get; set; default = 1.0; }
     public double max { get; set; default = 100; }
     public double min { get; set; default = 0; }
@@ -45,7 +46,7 @@ class Graph : Gtk.Button {
                 delta_history.append(initVal);
             }
         }
-        
+
         GLib.Timeout.add(interval, timerCallback);
     }
 
@@ -55,7 +56,8 @@ class Graph : Gtk.Button {
         try {
             FileInputStream fis = dataFile.read();
             DataInputStream dis = new DataInputStream(fis);
-            ret = double.parse(dis.read_line());
+
+            ret = double.parse(dis.read_line().tokenize_and_fold("", null)[this.data_token_number]);
         } catch (Error e) {
             stderr.printf("Error while getting graph data: %s\n", e.message);
         }

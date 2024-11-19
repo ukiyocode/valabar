@@ -91,6 +91,14 @@
             <property name="dynamic_scale">true</property>
           </object>
         </child>
+        <child>
+          <object class="Graph" id="disk-graph">
+            <property name="data_file">/sys/block/nvme0n1/stat</property>
+            <property name="data_file_delta">true</property>
+            <property name="dynamic_scale">true</property>
+            <property name="data_token_number">6</property>
+          </object>
+        </child>
       </object>
     </child>
   </object>

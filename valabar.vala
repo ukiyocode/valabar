@@ -1,24 +1,21 @@
-public class ValaBar : Gtk.Window
+public class ValaBar : Gtk.Window, Gtk.Buildable
 {
     public static int btnSize = 0;
-    public static string exePath = "";
+    public static string exePath;
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
 
-    public void init(Gtk.Builder builder, string _exePath) {
-        btnSize = this.default_height - 3;
-        exePath = _exePath;
-        SList<weak Object> objects = builder.get_objects();
-        foreach(Object obj in objects) {
-            if (obj is Initializable) {
-                obj.init();
-            }
+    public void set_buildable_property(Gtk.Builder builder, string name, Value value) {
+        base.set_buildable_property(builder, name, value);
+        if (name == "default-height") {
+            btnSize = value.get_int() - 3;
         }
+    }
 
-        builder.connect_signals(null);
+    public void parser_finished(Gtk.Builder builder) {
         this.move(this.x, this.y);
-
         this.button_press_event.connect(on_button_press);
+        this.show_all();
     }
 
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
@@ -54,25 +51,18 @@ public class ValaBar : Gtk.Window
 
     public static int main(string[] args)
     {
-        ValaBar valabar;
         Gtk.Builder builder;
-        string _exePath;
+        //string _exePath;
 
         Gtk.init (ref args);
         builder = new Gtk.Builder ();
         try {
-            _exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
+            ValaBar.exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
-            css_provider.load_from_path(_exePath + "/style.css");
+            css_provider.load_from_path(ValaBar.exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
-            builder.add_from_file(_exePath + "/valabar.ui");
+            builder.add_from_file(ValaBar.exePath + "/valabar.ui");
             builder.connect_signals(null);
-            valabar = builder.get_object("window") as ValaBar;
-            if (valabar == null) {
-                throw new MarkupError.INVALID_CONTENT("Malformed valabar.ui");
-            }
-            valabar.init(builder, _exePath);
-            valabar.show_all ();
         } catch (Error e) {
             stderr.printf("Could not load UI: %s\n", e.message);
             return 1;

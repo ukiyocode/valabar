@@ -30,41 +30,50 @@ class Graph : Gtk.Button {
         this.width_request = 80 + cssPadding.left + cssPadding.right;
         histLength = this.time_range * 1000 / this.interval;
         history = new List<double?>();
-        for (int i = 0; i < histLength; i++) {
-            history.append(0);
-        }
-        if (data_file_delta) {
-            delta_history = new List<double?>();
-            for (int i = 0; i < histLength; i++) {
-                delta_history.append(0);
-            }
-        }
+        double initVal;
+        
         if (data_file == "default_network_device") {
             this.data_file = "/sys/class/net/" + getDefaultNetDev() + "/statistics/rx_bytes";
         }
+        for (int i = 0; i < histLength; i++) {
+            history.append(0);
+        }
+        initVal = getData();
+        if (data_file_delta) {
+            delta_history = new List<double?>();
+            for (int i = 0; i < histLength; i++) {
+                delta_history.append(initVal);
+            }
+        }
+        
         GLib.Timeout.add(interval, timerCallback);
+    }
+
+    private double getData() {
+        File dataFile = File.new_for_path(this.data_file);
+        double ret = 0;
+        try {
+            FileInputStream fis = dataFile.read();
+            DataInputStream dis = new DataInputStream(fis);
+            ret = double.parse(dis.read_line());
+        } catch (Error e) {
+            stderr.printf("Error while getting graph data: %s\n", e.message);
+        }
+        return ret;
     }
 
     public bool timerCallback() {
         double val;
-        File dataFile = File.new_for_path(this.data_file);
-        try {
-            FileInputStream fis = dataFile.read();
-            DataInputStream dis = new DataInputStream(fis);
-
-            if (data_file_delta) {
-                delta_history.append(double.parse(dis.read_line()));
-                delta_history.remove(delta_history.nth_data(0));
-                val = delta_history.nth_data(histLength - 1) - delta_history.nth_data(histLength - 2);
-                //print("%f - %f = %f\n", delta_history.nth_data(histLength - 1), delta_history.nth_data(histLength - 2), val);
-            } else {
-                val = double.parse(dis.read_line());
-            }
-            history.append(val);
-            history.remove(history.nth_data(0));
-        } catch (Error e) {
-            stderr.printf("Error while getting graph data: %s\n", e.message);
+        
+        if (data_file_delta) {
+            delta_history.append(getData());
+            delta_history.remove(delta_history.nth_data(0));
+            val = delta_history.nth_data(histLength - 1) - delta_history.nth_data(histLength - 2);
+        } else {
+            val = getData();
         }
+        history.append(val);
+        history.remove(history.nth_data(0));
 
         this.queue_draw();
         return true;

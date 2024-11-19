@@ -1,8 +1,8 @@
-public class TaskBar : Gtk.Box
+public class TaskBar : Gtk.Box, Initializable
 {
     private List<AppBox> _launchers;
 
-    public int init() {
+    public void init() {
         this._launchers = new List<AppBox>();
 
         foreach (Gtk.Widget child in this.get_children()) {
@@ -13,7 +13,7 @@ public class TaskBar : Gtk.Box
         Wnck.Screen scr = Wnck.Screen.get_default ();
         if (scr == null) {
             stderr.printf("Unable to get the default screen.\n");
-            return 1;
+            return;
         }
         scr.force_update();
 
@@ -23,7 +23,6 @@ public class TaskBar : Gtk.Box
         }
         scr.window_closed.connect(on_window_closed);
         scr.window_opened.connect(on_window_opened);
-        return 0;
     }
 
     private void on_window_closed(Wnck.Window win) {

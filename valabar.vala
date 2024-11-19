@@ -10,16 +10,8 @@ public class ValaBar : Gtk.Window
         exePath = _exePath;
         SList<weak Object> objects = builder.get_objects();
         foreach(Object obj in objects) {
-            switch(obj.get_type().name()) {
-                case "TaskBar":
-                    ((TaskBar)obj).init();
-                    break;
-                case "Graph":
-                    ((Graph)obj).init();
-                    break;
-                case "CPUUsageMeter":
-                    ((CPUUsageMeter)obj).init();
-                    break;
+            if (obj is Initializable) {
+                obj.init();
             }
         }
 

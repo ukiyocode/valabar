@@ -1,4 +1,4 @@
-class Graph : Gtk.Button {
+class Graph : Gtk.Button, Initializable {
     public string data_file { get; set; }
     public bool data_file_delta { get; set; default = false; }
     public uint data_token_number { get; set; default = 0; }

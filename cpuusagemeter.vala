@@ -1,4 +1,4 @@
-class CPUUsageMeter : Gtk.Button
+class CPUUsageMeter : Gtk.Button, Initializable
 {
     private IdleTotal[] values;
     private IdleTotal[] oldValues;

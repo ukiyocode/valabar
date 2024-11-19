@@ -1,4 +1,4 @@
-class Graph : Gtk.Button, Initializable {
+class Graph : Gtk.Button, Gtk.Buildable {
     public string data_file { get; set; }
     public bool data_file_delta { get; set; default = false; }
     public uint data_token_number { get; set; default = 0; }
@@ -16,17 +16,7 @@ class Graph : Gtk.Button, Initializable {
     private List<double?> delta_history;
     private Gtk.Border cssPadding;
 
-    private string getDefaultNetDev () {
-        string output;
-        try {
-            Process.spawn_command_line_sync ("ip route show default", out output);
-        } catch (SpawnError e) {
-            print ("Error while getting default network device: %s\n", e.message);
-        }
-        return output.split(" ")[4];
-    }
-
-    public void init() {
+    public void parser_finished(Gtk.Builder builder) {
         this.cssPadding = this.get_style_context().get_padding(Gtk.StateFlags.NORMAL);
         this.width_request = 80 + cssPadding.left + cssPadding.right;
         histLength = this.time_range * 1000 / this.interval;
@@ -48,6 +38,16 @@ class Graph : Gtk.Button, Initializable {
         }
 
         GLib.Timeout.add(interval, timerCallback);
+    }
+
+    private string getDefaultNetDev () {
+        string output;
+        try {
+            Process.spawn_command_line_sync ("ip route show default", out output);
+        } catch (SpawnError e) {
+            print ("Error while getting default network device: %s\n", e.message);
+        }
+        return output.split(" ")[4];
     }
 
     private double getData() {

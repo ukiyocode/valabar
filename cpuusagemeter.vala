@@ -1,4 +1,4 @@
-class CPUUsageMeter : Gtk.Button, Initializable
+class CPUUsageMeter : Gtk.Button, Gtk.Buildable
 {
     private IdleTotal[] values;
     private IdleTotal[] oldValues;
@@ -18,7 +18,7 @@ class CPUUsageMeter : Gtk.Button, Initializable
         }
     }
 
-    public void init() {
+    public void parser_finished(Gtk.Builder builder) {
         this.lines = getLines();
         this.numOfCPUCores = this.lines.length();
         this.values = new IdleTotal[this.numOfCPUCores];

@@ -2,23 +2,6 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
 {
     private List<AppBox> _launchers;
 
-    /*public void add_child (Gtk.Builder builder, Object child, string? type) {
-        //Type childType = Type.from_name(type);
-        //  AppBox abox = (AppBox)child;
-        //  this._launchers.append(abox);
-        //  abox.add (new AppButton.fromDesktopFile(abox.desktop_file));
-        print("add\n");
-    }
-    public Object construct_child (Gtk.Builder builder, string name) {
-        print("construct\n");
-        return new Object();
-    }
-    public unowned Object get_internal_child (Gtk.Builder builder, string childname) {
-        print("get\n");
-        //unowned Object oo = new Object();
-        return null;
-    }*/
-
     public void parser_finished(Gtk.Builder builder) {
         this._launchers = new List<AppBox>();
 

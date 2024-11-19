@@ -1,6 +1,6 @@
 public class ValaBar : Gtk.Window, Gtk.Buildable
 {
-    public static int btnSize = 0;
+    public static int btnSize;
     public static string exePath;
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
@@ -52,7 +52,6 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
     public static int main(string[] args)
     {
         Gtk.Builder builder;
-        //string _exePath;
 
         Gtk.init (ref args);
         builder = new Gtk.Builder ();

@@ -110,7 +110,7 @@ class Graph : Gtk.Button, Gtk.Buildable {
         base.draw(cr);
         int width = this.get_allocated_width() - cssPadding.left - cssPadding.right;
         int height = this.get_allocated_height() - cssPadding.top - cssPadding.bottom;
-        cr.set_source_rgb(1, 1, 1);
+        cr.set_source_rgb(0.8, 0.8, 0.8);
         cr.set_line_width(this.line_thickness);
         double step = calcStep(width);
         double x = calcX(0, width);
@@ -128,8 +128,9 @@ class Graph : Gtk.Button, Gtk.Buildable {
             x += step;
         }
         cr.stroke();
-        cr.select_font_face("monospace", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
-        cr.set_font_size(10);
+        cr.select_font_face("monospace", Cairo.FontSlant.NORMAL, Cairo.FontWeight.BOLD);
+        cr.set_font_size(12);
+        cr.set_source_rgb(1, 1, 1);
         cr.move_to(cssPadding.left, cssPadding.top + 10);
         double text_value = history.nth_data(histLength - 1) * this.unit_multiplier;
         cr.show_text(text_value.format(new char[20], "%.1f") + this.unit_symbol);

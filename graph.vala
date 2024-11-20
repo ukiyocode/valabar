@@ -10,6 +10,8 @@ class Graph : Gtk.Button, Gtk.Buildable {
     public uint interval { get; set; default = 2000; }
     public bool flip_x { get; set; default = false; }
     public bool flip_y { get; set; default = false; }
+    public string unit_symbol { get; set; default = ""; }
+    public double unit_multiplier { get; set; default = 1.0; }
 
     private uint histLength;
     private List<double?> history;
@@ -126,6 +128,11 @@ class Graph : Gtk.Button, Gtk.Buildable {
             x += step;
         }
         cr.stroke();
+        cr.select_font_face("monospace", Cairo.FontSlant.NORMAL, Cairo.FontWeight.NORMAL);
+        cr.set_font_size(10);
+        cr.move_to(cssPadding.left, cssPadding.top + 10);
+        double text_value = history.nth_data(histLength - 1) * this.unit_multiplier;
+        cr.show_text(text_value.format(new char[20], "%.1f") + this.unit_symbol);
 
         return true;
     }

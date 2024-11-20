@@ -75,6 +75,8 @@
             <property name="data_file">/sys/class/thermal/thermal_zone6/temp</property>
             <property name="min">0</property>
             <property name="max">100000</property>
+            <property name="unit_symbol">°C</property>
+            <property name="unit_multiplier">0.001</property>
           </object>
         </child>
         <child>
@@ -82,6 +84,7 @@
             <property name="data_file">/sys/class/drm/card1/gt_cur_freq_mhz</property>
             <property name="min">600</property>
             <property name="max">1300</property>
+            <property name="unit_symbol">MHz</property>
           </object>
         </child>
         <child>
@@ -89,6 +92,8 @@
             <property name="data_file">default_network_device</property>
             <property name="data_file_delta">true</property>
             <property name="dynamic_scale">true</property>
+            <property name="unit_symbol">kB/s</property>
+            <property name="unit_multiplier">0.0005</property>
           </object>
         </child>
         <child>
@@ -97,6 +102,8 @@
             <property name="data_file_delta">true</property>
             <property name="dynamic_scale">true</property>
             <property name="data_token_number">6</property>
+            <property name="unit_symbol">Sec/s</property>
+            <property name="unit_multiplier">0.5</property>
           </object>
         </child>
         <child>

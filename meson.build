@@ -27,6 +27,7 @@ sources = files(
     'cpuusagemeter.vala',
     'graph.vala',
     'systemtray.vala',
+    'statusnotifierwatcherproxy.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

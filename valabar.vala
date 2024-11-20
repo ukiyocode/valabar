@@ -67,6 +67,7 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             return 1;
         }
 
+        var proxy = new StatusNotifierWatcherProxy ();
         Gtk.main ();
 
         return 0;

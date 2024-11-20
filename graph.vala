@@ -106,6 +106,28 @@ class Graph : Gtk.Button, Gtk.Buildable {
         return height - y * height + cssPadding.bottom;
     }
 
+    private string toSI(double d, string format)
+    {
+        if (d == 0) {
+            return d.format(new char[20], format);
+        }
+        char[] incPrefixes = { 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
+        char[] decPrefixes = { 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' };
+
+        int degree = (int)Math.floor(GLib.Math.log10(d.abs()) / 3);
+        double scaled = d * Math.pow(1000, -degree);
+
+        char? prefix = null;
+        if (degree < 0) {
+            prefix = decPrefixes[-degree - 1];
+        } else {
+            prefix = incPrefixes[degree - 1];
+        }
+
+        return scaled.format(new char[20], format) + prefix.to_string();
+    }
+
+
     public override bool draw(Cairo.Context cr) {
         base.draw(cr);
         int width = this.get_allocated_width() - cssPadding.left - cssPadding.right;
@@ -132,8 +154,13 @@ class Graph : Gtk.Button, Gtk.Buildable {
         cr.set_font_size(12);
         cr.set_source_rgb(1, 1, 1);
         cr.move_to(cssPadding.left, cssPadding.top + 10);
-        double text_value = history.nth_data(histLength - 1) * this.unit_multiplier;
-        cr.show_text(text_value.format(new char[20], "%.1f") + this.unit_symbol);
+        double text_value;
+        if (this.dynamic_scale) {
+            text_value = this.max * this.unit_multiplier;
+        } else {
+            text_value = history.nth_data(histLength - 1) * this.unit_multiplier;
+        }
+        cr.show_text(toSI(text_value, "%.1f") + this.unit_symbol);
 
         return true;
     }

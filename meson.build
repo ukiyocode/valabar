@@ -2,9 +2,12 @@ project('valabar', 'vala', 'c')
 
 vapi_dir = meson.current_source_dir()
 add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
+#add_project_arguments(['-X', '-lm graph.vala'], language: 'vala')
 
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
 add_project_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language: 'c')
+#add_project_arguments('-lm', language: 'c')
+add_project_link_arguments('-lm', language: 'c')
 dependencies = [
     dependency('gio-unix-2.0'),
     dependency('glib-2.0'),

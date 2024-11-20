@@ -115,15 +115,19 @@ class Graph : Gtk.Button, Gtk.Buildable {
         char[] decPrefixes = { 'm', 'u', 'n', 'p', 'f', 'a', 'z', 'y' };
 
         int degree = (int)Math.floor(GLib.Math.log10(d.abs()) / 3);
+        degree = degree.clamp(-8, 8);
         double scaled = d * Math.pow(1000, -degree);
 
         char? prefix = null;
         if (degree < 0) {
             prefix = decPrefixes[-degree - 1];
-        } else {
+        } else if (degree > 0) {
             prefix = incPrefixes[degree - 1];
         }
 
+        if (prefix == null) {
+            return scaled.format(new char[20], format);
+        }
         return scaled.format(new char[20], format) + prefix.to_string();
     }
 
@@ -156,11 +160,11 @@ class Graph : Gtk.Button, Gtk.Buildable {
         cr.move_to(cssPadding.left, cssPadding.top + 10);
         double text_value;
         if (this.dynamic_scale) {
-            text_value = this.max * this.unit_multiplier;
+            text_value = this.max;
         } else {
-            text_value = history.nth_data(histLength - 1) * this.unit_multiplier;
+            text_value = history.nth_data(histLength - 1);
         }
-        cr.show_text(toSI(text_value, "%.1f") + this.unit_symbol);
+        cr.show_text(toSI(text_value * this.unit_multiplier, "%.1f") + this.unit_symbol);
 
         return true;
     }

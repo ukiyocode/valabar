@@ -67,7 +67,9 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             return 1;
         }
 
-        var proxy = new StatusNotifierWatcherProxy ();
+        //var proxy = new StatusNotifierWatcherProxy ();
+        string ss = "aaaa%d".printf(Gdk.CURRENT_TIME);
+        print("%s\n", ss);
         Gtk.main ();
 
         return 0;

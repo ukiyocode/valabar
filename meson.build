@@ -27,6 +27,7 @@ sources = files(
     'cpuusagemeter.vala',
     'graph.vala',
     'systemtray.vala',
+    'watcher.vala',
     'statusnotifierwatcherproxy.vala',
 )
 

@@ -46,12 +46,12 @@ public class Host: Object
         owned_name = Bus.own_name (BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE,
             on_bus_aquired,
             () => {
-                print("name\n");
+                print("nest\n");
                 watcher_registered = true;
                 is_nested_watcher = true;
             },
             () => {
-                print("noname\n");
+                print("out\n");
                 is_nested_watcher = false;
                 create_out_watcher();
             });
@@ -81,13 +81,8 @@ public class Host: Object
             return;
         }
     }
-    /*construct
+    construct
     {
-        is_nested_watcher = true;
-        watcher_registered = false;
-        create_nested_watcher();
-    }*/
-    public void connect() {
         is_nested_watcher = true;
         watcher_registered = false;
         create_nested_watcher();

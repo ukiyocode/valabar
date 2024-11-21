@@ -23,12 +23,10 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         host.watcher_item_added.connect(on_item_added);
         host.watcher_item_removed.connect(on_item_added);
         host.watcher_host_added.connect(on_host_added);
-        host.connect();
     }
 
     public void on_host_added() {
         string[] items = host.watcher_items();
-        print("%i\n", items.length);
         for (int i = 0; i < items.length; i++) {
             print("%s\n", items[i]);
         }

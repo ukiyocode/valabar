@@ -29,7 +29,8 @@ sources = files(
     'systemtray.vala',
     'watcher.vala',
     'host.vala',
-    'statusnotifierwatcherproxy.vala',
+    'item.vala',
+    'traybackend.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

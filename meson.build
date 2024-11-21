@@ -28,6 +28,7 @@ sources = files(
     'graph.vala',
     'systemtray.vala',
     'watcher.vala',
+    'host.vala',
     'statusnotifierwatcherproxy.vala',
 )
 

@@ -12,10 +12,29 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         }
     }
 
+    public Host host;
+
     public void parser_finished(Gtk.Builder builder) {
         this.move(this.x, this.y);
         this.button_press_event.connect(on_button_press);
         this.show_all();
+
+        host = new Host("org.kde.StatusNotifierWatcher");
+        host.watcher_item_added.connect(on_item_added);
+        host.watcher_item_removed.connect(on_item_added);
+        host.watcher_host_added.connect(on_host_added);
+        host.connect();
+    }
+
+    public void on_host_added() {
+        string[] items = host.watcher_items();
+        print("%i\n", items.length);
+        for (int i = 0; i < items.length; i++) {
+            print("%s\n", items[i]);
+        }
+    }
+    public void on_item_added(string id) {
+        print("%s\n", id);
     }
 
     private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
@@ -67,8 +86,6 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             return 1;
         }
 
-        var host = new Host("org.kde.StatusNotifierHost-itembox%d".printf(Gdk.CURRENT_TIME));
-        string[] items = host.watcher_items();
         Gtk.main ();
 
         return 0;

@@ -67,9 +67,9 @@ public class Watcher : Object
                                                         ping_iface.title.length <= 0)
                                                             remove(get_id(name,path));
                                                     });
-                                                } catch (Error e) {remove(get_id(name,path));}
+                                                } catch (Error e) { remove(get_id(name,path)); }
                                             },
-                                            () => {remove(get_id(name,path));}
+                                            () => { remove(get_id(name,path)); }
                                             );
         name_watcher.insert(id,name_handler);
         status_notifier_item_registered(id);

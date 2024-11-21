@@ -9,6 +9,7 @@ public class Host: Object
     private bool is_nested_watcher;
     public signal void watcher_item_added(string id);
     public signal void watcher_item_removed(string id);
+    public signal void watcher_host_added();
     public Host(string path)
     {
         Object(object_path: path);
@@ -31,10 +32,11 @@ public class Host: Object
     {
         try {
             nested_watcher = new Watcher();
+            nested_watcher.status_notifier_host_registered.connect(() => { watcher_host_added(); });
+            nested_watcher.status_notifier_item_registered.connect((id) => { watcher_item_added(id); });
+            nested_watcher.status_notifier_item_unregistered.connect((id) => { watcher_item_removed(id); });
             conn.register_object ("/StatusNotifierWatcher", nested_watcher);
             nested_watcher.register_status_notifier_host(object_path);
-            nested_watcher.status_notifier_item_registered.connect((id)=>{watcher_item_added(id);});
-            nested_watcher.status_notifier_item_unregistered.connect((id)=>{watcher_item_removed(id);});
         } catch (IOError e) {
             stderr.printf ("Could not register service. Waiting for external watcher\n");
         }
@@ -44,10 +46,12 @@ public class Host: Object
         owned_name = Bus.own_name (BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE,
             on_bus_aquired,
             () => {
+                print("name\n");
                 watcher_registered = true;
                 is_nested_watcher = true;
             },
             () => {
+                print("noname\n");
                 is_nested_watcher = false;
                 create_out_watcher();
             });
@@ -56,6 +60,9 @@ public class Host: Object
     {
         try{
             outer_watcher = Bus.get_proxy_sync(BusType.SESSION,"org.kde.StatusNotifierWatcher","/StatusNotifierWatcher");
+            outer_watcher.status_notifier_host_registered.connect(() => { watcher_host_added(); });
+            outer_watcher.status_notifier_item_registered.connect((id) => { watcher_item_added(id); });
+            outer_watcher.status_notifier_item_unregistered.connect((id) => { watcher_item_removed(id); });
             watched_name = Bus.watch_name(BusType.SESSION,"org.kde.StatusNotifierWatcher",GLib.BusNameWatcherFlags.NONE,
                                                     () => {
                                                         nested_watcher = null;
@@ -69,15 +76,18 @@ public class Host: Object
                                                         }
                                                     );
             outer_watcher.register_status_notifier_host(object_path);
-            outer_watcher.status_notifier_item_registered.connect((id)=>{watcher_item_added(id);});
-            outer_watcher.status_notifier_item_unregistered.connect((id)=>{watcher_item_removed(id);});
         } catch (Error e) {
             stderr.printf("%s\n",e.message);
             return;
         }
     }
-    construct
+    /*construct
     {
+        is_nested_watcher = true;
+        watcher_registered = false;
+        create_nested_watcher();
+    }*/
+    public void connect() {
         is_nested_watcher = true;
         watcher_registered = false;
         create_nested_watcher();

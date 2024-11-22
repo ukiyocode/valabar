@@ -17,7 +17,7 @@ public class Item : Gtk.FlowBoxChild
     Gtk.EventBox ebox;
     ValaDBusMenu.GtkClient? client;
     Gtk.Menu menu;
-    StatusNotifier.Proxy proxy;
+    Proxy proxy;
     public Item (string n, ObjectPath p)
     {
         Object(object_path: p, object_name: n);

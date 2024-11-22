@@ -30,7 +30,8 @@ sources = files(
     'watcher.vala',
     'host.vala',
     'item.vala',
-    'traybackend.vala',
+    'itemproxy.vala',
+    'menuserializer.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

@@ -36,7 +36,7 @@ public class NotifierWatcher : Object
     public bool is_status_notifier_host_registered { get; private set; default = true; }
     public int protocol_version { get { return 0; } }
     /* Public methods */
-    public void register_status_notifier_item(string service, BusName sender)
+    public void register_status_notifier_item(string service, BusName sender) throws GLib.Error
     {
         var is_path = (service[0] == '/') ? true : false;
         string path, name;

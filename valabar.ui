@@ -73,7 +73,7 @@
         <child>
           <object class="Graph" id="cpu-temp-graph">
             <property name="data_file">/sys/class/thermal/thermal_zone6/temp</property>
-            <property name="min">0</property>
+            <property name="min">20000</property>
             <property name="max">100000</property>
             <property name="unit_symbol">°C</property>
             <property name="unit_multiplier">0.001</property>

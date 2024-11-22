@@ -2,7 +2,16 @@ class NotifierItem {
     private DBusProxy proxy;
     
     public NotifierItem(string itemId) {
-        get_properties.begin(itemId);
+        get_properties.begin(itemId, on_properties_gotten);
+    }
+
+    private void on_properties_gotten(Object? obj, AsyncResult res) {
+        get_properties.end(res);
+        if (res == null) {
+            print("res is null\n");
+            return;
+        }
+        print("res type: %s\n", res.get_type().name());
     }
 
     public async void get_properties(string item_path) {
@@ -29,7 +38,7 @@ class NotifierItem {
             );
 
             // Get all properties
-            print_property("Category");
+            /*print_property("Category");
             print_property("Id");
             print_property("Title");
             print_property("Status");
@@ -44,7 +53,7 @@ class NotifierItem {
             print_property("ToolTip");
             print_property("ItemIsMenu");
             print_property("Menu");
-            print_property("IconThemePath");
+            print_property("IconThemePath");*/
 
         } catch (Error e) {
             stderr.printf("Error: %s\n", e.message);

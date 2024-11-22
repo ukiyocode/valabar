@@ -19,14 +19,14 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         this.button_press_event.connect(on_button_press);
         this.show_all();
 
-        notifierHost = new Host("org.kde.StatusNotifierWatcher");
+        notifierHost = new NotifierHost("org.kde.StatusNotifierWatcher");
         notifierHost.watcher_item_added.connect(on_item_added);
         //host.watcher_item_removed.connect(on_item_added);
         notifierHost.watcher_host_added.connect(on_host_added);
     }
 
     public void on_host_added() {
-        string[] items = host.watcher_items();
+        string[] items = notifierHost.watcher_items();
         for (int i = 0; i < items.length; i++) {
             new NotifierItem(items[i]);
         }

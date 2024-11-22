@@ -13,7 +13,7 @@ public class SystemTray : Gtk.FlowBox, Gtk.Buildable
     public const string FILTER_OVERRIDE = "filter-override";
     public class ItemBox : Gtk.FlowBox
     {
-        static Host host;
+        /*static Host host;
         ulong watcher_registration_handler;
         internal HashTable<string,unowned Item> items {get; private set;}
         public HashTable<string,Variant?> index_override {get; set;}
@@ -150,6 +150,6 @@ public class SystemTray : Gtk.FlowBox, Gtk.Buildable
                 }
             });
             return item;
-        }
+        }*/
     }
 }

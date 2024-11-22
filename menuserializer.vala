@@ -1,6 +1,6 @@
 namespace DBusMenu
 {
-    [DBus (use_string_marshalling = true)]
+    /*[DBus (use_string_marshalling = true)]
     public enum Status
     {
         [DBus (value = "normal")]
@@ -74,25 +74,25 @@ namespace DBusMenu
         [DBus (use_string_marshalling = true)]
         public Status status {get; internal set;}
         public string[] icon_theme_path {get; internal set;}
-        /* layout signature is "(ia{sv}av)" */
+        // layout signature is "(ia{sv}av)"
         public void get_layout(int parent_id,
                         int recursion_depth,
                         string[] property_names,
                         out uint revision,
                         [DBus (signature = "(ia{sv}av)")] out Variant layout)
         {
-            /* Does not use recursion_depth.*/
+            // Does not use recursion_depth.
             var parent_item = all_items.lookup(parent_id);
             layout = parent_item.serialize();
             revision = layout_revision;
         }
-        /* properties signature is "a(ia{sv})" */
+        // properties signature is "a(ia{sv})"
         public void get_group_properties(
                             int[] ids,
                             string[] property_names,
                             [DBus (signature = "a(ia{sv})")] out Variant properties)
         {
-            /*Return all properties instead of requested*/
+            // Return all properties instead of requested
             Variant[] items = {};
             foreach (var id in ids)
             {
@@ -111,13 +111,13 @@ namespace DBusMenu
         }
         public void event(int id, string event_id, Variant? data, uint timestamp)
         {
-            /* FIXME: Close/Open handler */
+            // FIXME: Close/Open handler
             if (event_id == "clicked")
                 all_items.lookup(id).activated();
             else if (event_id == "value-changed" && data != null)
                 all_items.lookup(id).value_changed(data.get_double());
         }
-        /* events signature is a(isvu) */
+        // events signature is a(isvu)
         public void event_group([DBus (signature = "a(isvu)")] Variant events,
                                         out int[] id_errors)
         {
@@ -132,7 +132,7 @@ namespace DBusMenu
         }
         public void about_to_show(int id, out bool need_update)
         {
-            /*FIXME: Stub. Always return true*/
+            // FIXME: Stub. Always return true
             need_update = true;
         }
         public void about_to_show_group(int[] ids, out int[] updates_needed, out int[] id_errors)
@@ -143,7 +143,7 @@ namespace DBusMenu
             id_errors = {};
             updates_needed = (int[])updates_bool;
         }
-        /*updated properties signature is a(ia{sv}), removed is a(ias)*/
+        // updated properties signature is a(ia{sv}), removed is a(ias)
         public signal void items_properties_updated(
                                 [DBus (signature = "a(ia{sv})")] Variant updated_props,
                                 [DBus (signature="a(ias)")] Variant removed_props);
@@ -210,5 +210,5 @@ namespace DBusMenu
         }
         private HashTable<int,ServerItem> all_items;
         private uint layout_revision;
-    }
+    }*/
 }

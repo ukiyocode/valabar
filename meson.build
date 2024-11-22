@@ -29,8 +29,7 @@ sources = files(
     'systemtray.vala',
     'watcher.vala',
     'host.vala',
-    'item.vala',
-    'itemproxy.vala',
+    'notifieritem.vala',
     'menuserializer.vala',
 )
 

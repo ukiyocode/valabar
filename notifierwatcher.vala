@@ -1,11 +1,11 @@
 [DBus (name = "org.kde.StatusNotifierItem")]
-private interface ItemIface : Object
+private interface NotifierItemIface : Object
 {
     public abstract string id { owned get; }
     public abstract string title { owned get; }
 }
 [DBus (name = "org.kde.StatusNotifierWatcher")]
-public interface WatcherIface: Object
+public interface NotifierWatcherIface: Object
 {
     /* Signals */
     public signal void status_notifier_item_registered(string item);
@@ -21,7 +21,7 @@ public interface WatcherIface: Object
     public abstract void register_status_notifier_host(string service) throws Error;
 }
 [DBus (name = "org.kde.StatusNotifierWatcher")]
-public class Watcher : Object
+public class NotifierWatcher : Object
 {
     /* Signals */
     public signal void status_notifier_item_registered(string item);
@@ -59,7 +59,7 @@ public class Watcher : Object
         var name_handler = Bus.watch_name(BusType.SESSION,name,GLib.BusNameWatcherFlags.NONE,
                                             ()=>{
                                                 try {
-                                                    ItemIface ping_iface = Bus.get_proxy_sync(BusType.SESSION,name,path);
+                                                    NotifierItemIface ping_iface = Bus.get_proxy_sync(BusType.SESSION,name,path);
                                                     ping_iface.notify.connect((pspec)=>{
                                                         if (ping_iface.id == null ||
                                                         ping_iface.title == null ||
@@ -114,7 +114,7 @@ public class Watcher : Object
             ret += item;
         return ret;
     }
-    ~Watcher()
+    ~NotifierWatcher()
     {
         name_watcher.foreach((k,v)=>{Bus.unwatch_name(v);});
         hosts.foreach((k,v)=>{Bus.unwatch_name(v);});

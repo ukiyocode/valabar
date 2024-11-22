@@ -12,17 +12,17 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         }
     }
 
-    public Host host;
+    public NotifierHost notifierHost;
 
     public void parser_finished(Gtk.Builder builder) {
         this.move(this.x, this.y);
         this.button_press_event.connect(on_button_press);
         this.show_all();
 
-        host = new Host("org.kde.StatusNotifierWatcher");
-        host.watcher_item_added.connect(on_item_added);
+        notifierHost = new Host("org.kde.StatusNotifierWatcher");
+        notifierHost.watcher_item_added.connect(on_item_added);
         //host.watcher_item_removed.connect(on_item_added);
-        host.watcher_host_added.connect(on_host_added);
+        notifierHost.watcher_host_added.connect(on_host_added);
     }
 
     public void on_host_added() {

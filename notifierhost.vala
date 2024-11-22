@@ -1,16 +1,16 @@
-public class Host: Object
+public class NotifierHost: Object
 {
     public string object_path {private get; construct;}
     public bool watcher_registered {get; private set;}
-    private Watcher nested_watcher;
-    private WatcherIface outer_watcher;
+    private NotifierWatcher nested_watcher;
+    private NotifierWatcherIface outer_watcher;
     private uint owned_name;
     private uint watched_name;
     private bool is_nested_watcher;
     public signal void watcher_item_added(string id);
     public signal void watcher_item_removed(string id);
     public signal void watcher_host_added();
-    public Host(string path)
+    public NotifierHost(string path)
     {
         Object(object_path: path);
     }
@@ -20,7 +20,7 @@ public class Host: Object
             return nested_watcher.registered_status_notifier_items;
         else
         {
-            WatcherIface? outer = null;
+            NotifierWatcherIface? outer = null;
             try
             {
                 outer = Bus.get_proxy_sync(BusType.SESSION,"org.kde.StatusNotifierWatcher","/StatusNotifierWatcher");
@@ -31,7 +31,7 @@ public class Host: Object
     private void on_bus_aquired(DBusConnection conn)
     {
         try {
-            nested_watcher = new Watcher();
+            nested_watcher = new NotifierWatcher();
             nested_watcher.status_notifier_host_registered.connect(() => { watcher_host_added(); });
             nested_watcher.status_notifier_item_registered.connect((id) => { watcher_item_added(id); });
             nested_watcher.status_notifier_item_unregistered.connect((id) => { watcher_item_removed(id); });
@@ -87,7 +87,7 @@ public class Host: Object
         watcher_registered = false;
         create_nested_watcher();
     }
-    ~Host()
+    ~NotifierHost()
     {
         if (is_nested_watcher)
             Bus.unown_name(owned_name);

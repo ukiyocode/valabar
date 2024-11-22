@@ -2,7 +2,7 @@ class NotifierItem {
     private DBusProxy proxy;
     
     public NotifierItem(string itemId) {
-        get_properties(itemId);
+        get_properties.begin(itemId);
     }
 
     public async void get_properties(string item_path) {
@@ -52,15 +52,11 @@ class NotifierItem {
     }
 
     private void print_property(string property_name) {
-        try {
-            Variant? value = proxy.get_cached_property(property_name);
-            if (value != null) {
-                stdout.printf("%s: %s\n", property_name, format_value(value));
-            } else {
-                stdout.printf("%s: <not available>\n", property_name);
-            }
-        } catch (Error e) {
-            stderr.printf("Error getting property %s: %s\n", property_name, e.message);
+        Variant? value = proxy.get_cached_property(property_name);
+        if (value != null) {
+            stdout.printf("%s: %s\n", property_name, format_value(value));
+        } else {
+            stdout.printf("%s: <not available>\n", property_name);
         }
     }
 

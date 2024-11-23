@@ -29,7 +29,7 @@ sources = files(
     'systemtray.vala',
     'notifierwatcher.vala',
     'notifierhost.vala',
-    'notifieritem.vala',
+    'traychild.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

@@ -57,7 +57,6 @@ class Clock : Gtk.ToggleButton, Gtk.Buildable {
   
         this.get_allocation(out a);
         this.get_window().get_origin(out x, out y);
-        print("%i\n", pa.width);
         x += a.x;
         y += a.y;
         y-=pa.height;

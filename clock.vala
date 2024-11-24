@@ -60,7 +60,7 @@ class Clock : Gtk.ToggleButton, Gtk.Buildable {
         x += a.x;
         y += a.y;
         y-=pa.height;
-        x-=pa.width - this.get_allocated_width();
+        x-=(pa.width - this.get_allocated_width()) / 2;
         unowned Gdk.Monitor monitor = this.get_display().get_monitor_at_point(x,y);
         a = (Gtk.Allocation)monitor.get_workarea();
         x = x.clamp(a.x,a.x + a.width - pa.width);

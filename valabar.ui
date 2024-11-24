@@ -112,6 +112,10 @@
             <property name="orientation">GTK_ORIENTATION_VERTICAL</property> <!-- for some reason this has to be set vertical to be horizontal ¯\_(ツ)_/¯ -->
           </object>
         </child>
+        <child>
+          <object class="Clock">
+          </object>
+        </child>
       </object>
     </child>
   </object>

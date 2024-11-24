@@ -30,6 +30,7 @@ sources = files(
     'notifierwatcher.vala',
     'notifierhost.vala',
     'traychild.vala',
+    'clock.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

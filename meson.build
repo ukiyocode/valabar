@@ -16,6 +16,7 @@ dependencies = [
     dependency('gmodule-2.0'),
     dependency('libwnck-3.0'),
     dependency('libbamf3'),
+    dependency('alsa'),
 ]
 
 sources = files(
@@ -31,6 +32,7 @@ sources = files(
     'notifierhost.vala',
     'traychild.vala',
     'clock.vala',
+    'volume.vala',
 )
 
 configure_file(input : 'style.css', output : 'style.css', copy: true)

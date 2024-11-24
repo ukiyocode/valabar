@@ -113,7 +113,13 @@
           </object>
         </child>
         <child>
+          <object class="Volume">
+            <property name="width_request">60</property>
+          </object>
+        </child>
+        <child>
           <object class="Clock">
+            <property name="width_request">60</property>
           </object>
         </child>
       </object>

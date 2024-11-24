@@ -21,8 +21,7 @@ class Clock : Gtk.ToggleButton, Gtk.Buildable {
     private void on_toggled() {
         if (this.get_active()) {
             calendar_win = new Gtk.Window(Gtk.WindowType.POPUP);
-            calendar_win.set_default_size(180, 180);
-            calendar_win.set_border_width(5);
+            calendar_win.set_default_size(10, 10);
             Gtk.Calendar calendar = new Gtk.Calendar();
             DateTime now = new DateTime.now_local();
             calendar.set_display_options(Gtk.CalendarDisplayOptions.SHOW_WEEK_NUMBERS

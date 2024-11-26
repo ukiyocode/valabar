@@ -58,7 +58,7 @@ public class AppButton : Gtk.Button
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
         if (this.isRunning()) {
             try {
-                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale(ValaBar.exePath + "/border.svg", this._imgSize, this._imgSize, true);
+                Gdk.Pixbuf overlay = new Gdk.Pixbuf.from_file_at_scale(ValaBar.exePath + "/images/border.svg", this._imgSize, this._imgSize, true);
                 overlay.composite(background, 0, 0, background.width, background.height, 0, 0, 1, 1, Gdk.InterpType.BILINEAR, 250);
             } catch (Error e) {
                 stderr.printf ("Error while getting border.svg file: %s\n", e.message);

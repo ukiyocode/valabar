@@ -89,7 +89,6 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
         }
         
         int n_fds = mixer.poll_descriptors_count();
-        print("%i\n", n_fds);
         Posix.pollfd[] fds = new Posix.pollfd[n_fds];
 
         channels = new IOChannel[n_fds];

@@ -45,7 +45,7 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
     private void updateButton(long curVolume) {
         string imgPath = ValaBar.exePath;
 
-        if (curVolume == 0) {
+        if (curVolume <= 0) {
             imgPath += "/images/audio-volume-muted-symbolic.svg";
         } else if (curVolume <= 30) {
             imgPath += "/images/audio-volume-low-symbolic.svg";
@@ -60,6 +60,7 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
             this.buttonBox.remove(this.buttonImage);
             this.buttonImage = new Gtk.Image.from_file(imgPath);
             this.buttonBox.add(this.buttonImage);
+            this.show_all();
         }
     }
 

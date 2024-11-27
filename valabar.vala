@@ -5,6 +5,21 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
 
+    private enum Struts {
+        LEFT,
+        RIGHT,
+        TOP,
+        BOTTOM,
+        LEFT_START,
+        LEFT_END,
+        RIGHT_START,
+        RIGHT_END,
+        TOP_START,
+        TOP_END,
+        BOTTOM_START,
+        BOTTOM_END
+    }
+
     public void set_buildable_property(Gtk.Builder builder, string name, Value value) {
         base.set_buildable_property(builder, name, value);
         if (name == "default-height") {
@@ -15,6 +30,19 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
     public void parser_finished(Gtk.Builder builder) {
         this.move(this.x, this.y);
         this.button_press_event.connect(on_button_press);
+
+        int scale = this.get_scale_factor();
+        Gdk.Rectangle primary_monitor = this.screen.get_display().get_primary_monitor().get_geometry();
+        long struts[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        struts[Struts.BOTTOM] = (this.default_height + this.screen.get_height() - primary_monitor.y - primary_monitor.height) * scale;
+        struts[Struts.BOTTOM_START] = primary_monitor.x * scale;
+        struts[Struts.BOTTOM_END] = (primary_monitor.x + primary_monitor.width) * scale - 1;
+        this.realize();
+        Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT", false), Gdk.Atom.intern("CARDINAL", false),
+            32, Gdk.PropMode.REPLACE, (uint8[])struts, 4);
+        Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT_PARTIAL", false), Gdk.Atom.intern("CARDINAL", false),
+            32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);
+    
         this.show_all();
     }
 
@@ -51,12 +79,20 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
 
     public static int main(string[] args)
     {
+        try {
+            ValaBar.exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
+        } catch (FileError fe) {
+            error("Couldn't get exePath: %s", fe.message);
+        }
+        print("%s\n", ValaBar.exePath);
+        Logger.init_logging();
+        debug("test");
+
         Gtk.Builder builder;
 
         Gtk.init (ref args);
         builder = new Gtk.Builder ();
         try {
-            ValaBar.exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
             css_provider.load_from_path(ValaBar.exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);

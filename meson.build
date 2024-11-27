@@ -16,6 +16,7 @@ dependencies = [
     dependency('libbamf3'),
     dependency('alsa'),
     meson.get_compiler('vala').find_library('posix'),
+    dependency('libpulse'),
 ]
 
 sources = files(
@@ -32,6 +33,7 @@ sources = files(
     'traychild.vala',
     'clock.vala',
     'volume.vala',
+    'logger.vala',
 )
 
 

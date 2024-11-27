@@ -24,9 +24,8 @@ class Clock : Gtk.ToggleButton, Gtk.Buildable {
             calendar_win.set_default_size(10, 10);
             Gtk.Calendar calendar = new Gtk.Calendar();
             DateTime now = new DateTime.now_local();
-            calendar.set_display_options(Gtk.CalendarDisplayOptions.SHOW_WEEK_NUMBERS
-                                        | Gtk.CalendarDisplayOptions.SHOW_DAY_NAMES
-                                        | Gtk.CalendarDisplayOptions.SHOW_HEADING);
+            calendar.set_display_options(Gtk.CalendarDisplayOptions.SHOW_WEEK_NUMBERS | Gtk.CalendarDisplayOptions.SHOW_DAY_NAMES |
+                Gtk.CalendarDisplayOptions.SHOW_HEADING);
             calendar.mark_day(now.get_day_of_month());
             calendar_win.add(calendar);
             calendar_win.set_type_hint(Gdk.WindowTypeHint.UTILITY);

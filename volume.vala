@@ -7,6 +7,7 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
     private Gtk.Box buttonBox;
     private Gtk.Label buttonLabel;
     private Gtk.Image buttonImage;
+    private Popup audioPopup;
 
     PulseAudio.MainLoop pulseLoop;
     PulseAudio.Context pulseContext;
@@ -66,9 +67,11 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
 
     private void on_toggled() {
         if (this.get_active()) {
-            
+            this.audioPopup = new Popup(this);
+            this.audioPopup.show_all();
         } else {
-
+            this.audioPopup.destroy();
+            this.audioPopup = null;
         }
     }
 

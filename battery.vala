@@ -86,9 +86,10 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
     private void on_toggled() {
         if (this.get_active()) {
             this.batteriesPopup = new Popup(this);
+            this.batteriesPopup.show_all();
         } else {
-            batteriesPopup.destroy();
-            batteriesPopup = null;
+            this.batteriesPopup.destroy();
+            this.batteriesPopup = null;
         }
     }
 

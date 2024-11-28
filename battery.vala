@@ -9,6 +9,7 @@ class BatteryInfo {
     public string model_name { get; private set; }
     public string capacity { get; private set; }
     public string status { get; private set; }
+    public string name { get; private set; }
     public string percentage {
         owned get {
             return (uint.parse(capacity) / 10 * 10).to_string();
@@ -18,29 +19,30 @@ class BatteryInfo {
 
     public BatteryInfo(string dirPath) {
         this.dirPath = dirPath;
+        this.name = Path.get_basename(dirPath);
         updateData();
     }
 
     public void updateData() {
-        string manufacturer = ValaBar.get_line_from_file(this.dirPath + "manufacturer");
+        string manufacturer = ValaBar.get_line_from_file(Path.build_filename(this.dirPath, "manufacturer"));
         if (manufacturer == "") {
             this.manufacturer = "Unknown";
         } else {
             this.manufacturer = manufacturer;
         }
-        string model_name = ValaBar.get_line_from_file(this.dirPath + "model_name");
+        string model_name = ValaBar.get_line_from_file(Path.build_filename(this.dirPath, "model_name"));
         if (model_name == "") {
             this.model_name = "Unknown";
         } else {
             this.model_name = model_name;
         }
-        string capacity = ValaBar.get_line_from_file(this.dirPath + "capacity");
+        string capacity = ValaBar.get_line_from_file(Path.build_filename(this.dirPath, "capacity"));
         if (capacity == "") {
             this.capacity = "??";
         } else {
             this.capacity = capacity;
         }
-        string status = ValaBar.get_line_from_file(this.dirPath + "status");
+        string status = ValaBar.get_line_from_file(Path.build_filename(this.dirPath, "status"));
         if (status == "") {
             this.status = "Unknown";
         } else {
@@ -53,6 +55,7 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
     private Gtk.Box buttonBox;
     private Gtk.Label buttonLabel;
     private Gtk.Image buttonImage;
+    private HashTable<string, BatteryInfo> batteries;
     private BatteryInfo info;
     public uint interval { get; set; default = 2000; }
     private uint backlightMax;
@@ -62,7 +65,12 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
 
     public void parser_finished(Gtk.Builder builder) {
         this.events |= Gdk.EventMask.SCROLL_MASK;
-        this.info = new BatteryInfo("/sys/class/power_supply/BAT0/");
+        batteries = getBatteries();
+        if (batteries.contains("BAT0")) {
+            this.info = batteries.get("BAT0");
+        } else {
+            error("In battery.vala. Couldn't fint BAT0 battery.");
+        }
         this.buttonBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
         this.buttonLabel = new Gtk.Label("");
         this.buttonImage = new Gtk.Image();
@@ -87,6 +95,11 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
         if (this.get_active()) {
             this.batteriesPopup = new Popup(this);
             Gtk.Box contentBox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            batteries.foreach ((key, val) => {
+                Gtk.Button butt = new Gtk.Button.with_label(val.manufacturer + " " + val.model_name + " " + val.capacity + "%\n" + val.status); 
+                butt.get_child().halign = Gtk.Align.START;
+                contentBox.add(butt);
+            });
             Gtk.Scale backlightScale = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, new Gtk.Adjustment(1, 1, 101, 1, 1, 1));
             backlightScale.width_request = 250;
             contentBox.add(backlightScale);
@@ -146,5 +159,28 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
             this.buttonBox.add(this.buttonImage);
             this.show_all();
         }
+    }
+
+    private HashTable<string, BatteryInfo> getBatteries() {
+        HashTable<string, BatteryInfo> ret = new HashTable<string, BatteryInfo>(str_hash, str_equal);
+        string dirPath = "/sys/class/power_supply";
+        Dir dir;
+        try {
+            dir = Dir.open(dirPath);
+        }
+        catch (FileError e) {
+            error("In battery.vala. Could not open %s! %s", dirPath, e.message);
+        }
+        string name;
+        while ((name = dir.read_name()) != null) {
+            string dirPath2 = Path.build_filename(dirPath, name);
+            string path = Path.build_filename(dirPath2, "type");
+            File file = File.new_for_path(path);
+            if (file.query_exists() && (ValaBar.get_line_from_file(path).down() == "battery")) {
+                BatteryInfo info = new BatteryInfo(dirPath2);
+                ret.set(info.name, info);
+            }
+        }
+        return ret;
     }
 }

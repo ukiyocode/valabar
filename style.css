@@ -1,24 +1,28 @@
-button{
-    padding-left: 2px;
-    padding-right: 2px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+button {
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
 }
 
-progressbar trough{
-    min-width: 5px;
-    min-height: 20px;
-    border-left-color: rgba(0,0,0,0);
-    border-right-color: rgba(0,0,0,0);
-    border-top-color: rgba(0,0,0,0);
-    border-bottom-color: rgba(0,0,0,0);
-    background-color: rgba(0,0,0,0);
-  }
-  progressbar progress{
-    min-width: 5px;
-    background-color: #ffffff;
-  }
+scale {
+  padding-bottom: 20px;
+}
+
+progressbar trough {
+  min-width: 5px;
+  min-height: 20px;
+  border-left-color: rgba(0,0,0,0);
+  border-right-color: rgba(0,0,0,0);
+  border-top-color: rgba(0,0,0,0);
+  border-bottom-color: rgba(0,0,0,0);
+  background-color: rgba(0,0,0,0);
+}
+progressbar progress {
+  min-width: 5px;
+  background-color: #ffffff;
+}

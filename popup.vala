@@ -6,7 +6,7 @@ class Popup : Gtk.Window {
         Object(type: Gtk.WindowType.POPUP);
         this.parent_widget = parent_widget;
         this.parent_window = (Gtk.Window)parent_widget.get_toplevel();
-        this.set_default_size(100, 100);
+        this.set_default_size(100, 20);
         this.set_type_hint(Gdk.WindowTypeHint.UTILITY);
         this.set_transient_for(parent_window);
         this.set_attached_to(parent_window);

@@ -86,6 +86,11 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
     private void on_toggled() {
         if (this.get_active()) {
             this.batteriesPopup = new Popup(this);
+            Gtk.Box contentBox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+            Gtk.Scale backlightScale = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, new Gtk.Adjustment(1, 1, 101, 1, 1, 1));
+            backlightScale.width_request = 250;
+            contentBox.add(backlightScale);
+            batteriesPopup.add(contentBox);
             this.batteriesPopup.show_all();
         } else {
             this.batteriesPopup.destroy();

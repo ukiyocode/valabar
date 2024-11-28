@@ -83,7 +83,6 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             ValaBar.exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
         } catch (FileError fe) {
             error("Couldn't get exePath: %s", fe.message);
-            return 1;
         }
         Logger.init_logging();
         
@@ -99,7 +98,6 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             builder.connect_signals(null);
         } catch (Error e) {
             error("Could not load UI: %s\n", e.message);
-            return 1;
         }
 
         Gtk.main ();

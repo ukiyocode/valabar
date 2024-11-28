@@ -68,6 +68,7 @@
         </child>
         <child>
           <object class="CPUUsageMeter" id="cpu-usage-meter">
+            <property name="interval">2000</property>
           </object>
         </child>
         <child>
@@ -115,6 +116,12 @@
         <child>
           <object class="Volume">
             <property name="width_request">60</property>
+          </object>
+        </child>
+        <child>
+          <object class="Battery">
+            <property name="width_request">60</property>
+            <property name="interval">5000</property>
           </object>
         </child>
         <child>

@@ -34,6 +34,7 @@ sources = files(
     'clock.vala',
     'volume.vala',
     'logger.vala',
+    'battery.vala',
 )
 
 

@@ -7,6 +7,7 @@ class CPUUsageMeter : Gtk.Button, Gtk.Buildable
     private uint numOfCPUCores;
     private Gtk.ProgressBar[] coreBars;
     private Gtk.Box contentsBox;
+    public uint interval { get; set; default = 2000; }
 
     class IdleTotal {
         public uint64 idle { get; }
@@ -32,7 +33,7 @@ class CPUUsageMeter : Gtk.Button, Gtk.Buildable
             this.contentsBox.add(coreBars[i]);
         }
         this.add(contentsBox);
-        GLib.Timeout.add(2000, perCoreCPUUsageCallback);
+        GLib.Timeout.add(interval, perCoreCPUUsageCallback);
     }
 
     private IdleTotal parseStatLine(string line) {
@@ -60,7 +61,7 @@ class CPUUsageMeter : Gtk.Button, Gtk.Buildable
                 rets.append(line);
             }
         } catch (Error e) {
-            print ("Error in CPU Usage Callback: %s\n", e.message);
+            error("Error in CPU Usage getLines: %s\n", e.message);
         }
         return rets;
     }

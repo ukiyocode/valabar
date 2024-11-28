@@ -14,8 +14,6 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
 
     public void parser_finished(Gtk.Builder builder) {
         this.events |= Gdk.EventMask.SCROLL_MASK;
-        this.toggled.connect(on_toggled);
-        this.scroll_event.connect(on_scroll);
         this.buttonBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
 
         asound_initialize();
@@ -33,6 +31,8 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
         //      print( "pa_context_connect() failed: %s\n", PulseAudio.strerror(pulseContext.errno()));
         //  }
         //pulseContext.get_sink_info_list(on_sink_info);
+        this.toggled.connect(on_toggled);
+        this.scroll_event.connect(on_scroll);
     }
 
     private void on_pulse_state(PulseAudio.Context c) {

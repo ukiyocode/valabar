@@ -35,6 +35,7 @@ sources = files(
     'volume.vala',
     'logger.vala',
     'battery.vala',
+    'popup.vala',
 )
 
 

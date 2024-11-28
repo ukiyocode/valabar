@@ -20,6 +20,22 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         BOTTOM_END
     }
 
+    public static string get_line_from_file(string filePath) {
+        File file = File.new_for_path (filePath);
+        if (!file.query_exists()) {
+            return "";
+        }
+        string ret = "";
+        try {
+            FileInputStream fis = file.read();
+            DataInputStream dis = new DataInputStream(fis);
+            ret = dis.read_line();
+        } catch (Error e) {
+            error("Error in battery get_line_from_file: %s\n", e.message);
+        }
+        return ret;
+    }
+
     public void set_buildable_property(Gtk.Builder builder, string name, Value value) {
         base.set_buildable_property(builder, name, value);
         if (name == "default-height") {
@@ -34,7 +50,7 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         int scale = this.get_scale_factor();
         Gdk.Rectangle primary_monitor = this.screen.get_display().get_primary_monitor().get_geometry();
         long struts[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        struts[Struts.BOTTOM] = (this.default_height + this.screen.get_height() - primary_monitor.y - primary_monitor.height) * scale;
+        struts[Struts.BOTTOM] = this.default_height * scale;
         struts[Struts.BOTTOM_START] = primary_monitor.x * scale;
         struts[Struts.BOTTOM_END] = (primary_monitor.x + primary_monitor.width) * scale - 1;
         this.realize();

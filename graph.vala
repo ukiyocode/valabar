@@ -24,7 +24,6 @@ class Graph : Gtk.Button, Gtk.Buildable {
         histLength = this.time_range * 1000 / this.interval;
         history = new List<double?>();
         double initVal;
-        
         if (data_file == "default_network_device") {
             this.data_file = "/sys/class/net/" + getDefaultNetDev() + "/statistics/rx_bytes";
         }
@@ -44,16 +43,29 @@ class Graph : Gtk.Button, Gtk.Buildable {
 
     private string getDefaultNetDev () {
         string output;
+        string[] elems;
         try {
-            Process.spawn_command_line_sync ("ip route show default", out output);
+            Process.spawn_command_line_sync("ip route show default", out output);
         } catch (SpawnError e) {
             print ("Error while getting default network device: %s\n", e.message);
         }
-        return output.split(" ")[4];
+        if ((output == null) || (output == "")) {
+            return "";
+        }
+        MatchInfo match;
+        if (/defult via [0-9.]+ dev ([^ ]+)/.match(output, 0, out match)) {
+            if (match.get_match_count() == 2) {
+                return match.fetch(1);
+            }
+        }
+        return "";
     }
 
     private double getData() {
         File dataFile = File.new_for_path(this.data_file);
+        if (!dataFile.query_exists()) {
+            return 0.0;
+        }
         double ret = 0;
         try {
             FileInputStream fis = dataFile.read();

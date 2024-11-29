@@ -136,10 +136,10 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
 
     private void setBacklight(uint backlight) {
         try {
-            login1 = Bus.get_proxy_sync(BusType.SYSTEM, "org.freedesktop.login1", "/org/freedesktop/login1/session/self");
+            login1 = Bus.get_proxy_sync(BusType.SYSTEM, "org.freedesktop.login1", "/org/freedesktop/login1/session/auto");
             login1.SetBrightness("backlight", "intel_backlight", backlight.clamp(backlightStep, backlightMax));
         } catch (Error e) {
-            error("In battery.vala. Error while setting backlight");
+            error("In battery.vala. Error while setting backlight: %s", e.message);
         }
     }
 

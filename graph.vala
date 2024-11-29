@@ -49,13 +49,13 @@ class Graph : Gtk.Button, Gtk.Buildable {
         } catch (SpawnError e) {
             print ("Error while getting default network device: %s\n", e.message);
         }
-        if ((output == null) || (output == "")) {
+        if (output == null) {
             return "";
         }
-        MatchInfo match;
-        if (/defult via [0-9.]+ dev ([^ ]+)/.match(output, 0, out match)) {
-            if (match.get_match_count() == 2) {
-                return match.fetch(1);
+        MatchInfo regexMatch;
+        if (/defult via [0-9.]+ dev ([^ ]+)/.match(output, 0, out regexMatch)) {
+            if (regexMatch.get_match_count() == 2) {
+                return regexMatch.fetch(1);
             }
         }
         return "";
@@ -64,7 +64,7 @@ class Graph : Gtk.Button, Gtk.Buildable {
     private double getData() {
         File dataFile = File.new_for_path(this.data_file);
         if (!dataFile.query_exists()) {
-            return 0.0;
+            return 0;
         }
         double ret = 0;
         try {

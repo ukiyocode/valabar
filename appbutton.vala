@@ -26,7 +26,7 @@ public class AppButton : Gtk.Button
             try {
                 this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this.appInfo.get_icon(), this._imgSize, 0).load_icon());
             } catch (Error e) {
-                stderr.printf("Error while loading icon is appbuton init: %s\n", e.message);
+                stderr.printf("Error while loading icon in appbuton init: %s\n", e.message);
             }
             this.set_tooltip_text(this.appInfo.get_display_name());
         }

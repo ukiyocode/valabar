@@ -12,8 +12,7 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
         }
         Wnck.Screen scr = Wnck.Screen.get_default ();
         if (scr == null) {
-            stderr.printf("Unable to get the default screen.\n");
-            return;
+            error("Unable to get the default screen.\n");
         }
         scr.force_update();
 

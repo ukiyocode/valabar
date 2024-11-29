@@ -24,7 +24,9 @@ public class NotifierHost: Object
             try
             {
                 outer = Bus.get_proxy_sync(BusType.SESSION,"org.kde.StatusNotifierWatcher","/StatusNotifierWatcher");
-            } catch (Error e) {stderr.printf("%s\n",e.message);}
+            } catch (Error e) {
+                debug("%s\n",e.message);
+            }
             return (outer != null) ? outer.registered_status_notifier_items : outer_watcher.registered_status_notifier_items;
         }
     }
@@ -38,7 +40,7 @@ public class NotifierHost: Object
             conn.register_object ("/StatusNotifierWatcher", nested_watcher);
             nested_watcher.register_status_notifier_host(object_path);
         } catch (Error e) {
-            stderr.printf ("Could not register service. Waiting for external watcher\n");
+            debug("Could not register service. Waiting for external watcher\n");
         }
     }
     private void create_nested_watcher()
@@ -46,12 +48,10 @@ public class NotifierHost: Object
         owned_name = Bus.own_name (BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE,
             on_bus_aquired,
             () => {
-                print("nest\n");
                 watcher_registered = true;
                 is_nested_watcher = true;
             },
             () => {
-                print("out\n");
                 is_nested_watcher = false;
                 create_out_watcher();
             });

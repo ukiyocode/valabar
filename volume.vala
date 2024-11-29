@@ -9,10 +9,6 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
     private Gtk.Image buttonImage;
     private Popup audioPopup;
 
-    PulseAudio.MainLoop pulseLoop;
-    PulseAudio.Context pulseContext;
-    IOChannel pulseChannel;
-
     public void parser_finished(Gtk.Builder builder) {
         this.events |= Gdk.EventMask.SCROLL_MASK;
         this.buttonBox = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
@@ -23,25 +19,9 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
         this.buttonBox.add(this.buttonLabel);
         this.buttonBox.add(this.buttonImage);
         this.add(buttonBox);
-        //  this.pulseLoop = new PulseAudio.MainLoop();
-        //this.pulseChannel = new IOChannel.unix_new(new Posix.pollfd().fd);
-        //this.pulseLoop.set_poll_func(pulseChannel);
-        //  this.pulseContext = new PulseAudio.Context(pulseLoop.get_api(), null);
-        //  this.pulseContext.set_state_callback(on_pulse_state);
-        //  if (this.pulseContext.connect(null, PulseAudio.Context.Flags.NOFAIL, null) < 0) {
-        //      print( "pa_context_connect() failed: %s\n", PulseAudio.strerror(pulseContext.errno()));
-        //  }
-        //pulseContext.get_sink_info_list(on_sink_info);
         this.toggled.connect(on_toggled);
         this.scroll_event.connect(on_scroll);
     }
-
-    private void on_pulse_state(PulseAudio.Context c) {
-        print("%s\n", c.get_state().to_string());
-    }
-    private void on_sink_info(PulseAudio.Context c, PulseAudio.SinkInfo? i, int eol) {
-        print("sink\n");
-    } 
 
     private void updateButton(long curVolume) {
         string imgPath = ValaBar.exePath;

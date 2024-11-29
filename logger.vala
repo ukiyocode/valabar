@@ -16,6 +16,7 @@ public class Logger {
                 // Write log message to file
                 log_file.printf("[%s] %s: %s\n", timestamp, level.to_string(), message);
                 log_file.flush();
+                stderr.printf("[%s] %s: %s\n", timestamp, level.to_string(), message);
             }
         });
     }

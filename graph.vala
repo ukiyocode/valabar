@@ -43,11 +43,10 @@ class Graph : Gtk.Button, Gtk.Buildable {
 
     private string getDefaultNetDev () {
         string output;
-        string[] elems;
         try {
             Process.spawn_command_line_sync("ip route show default", out output);
         } catch (SpawnError e) {
-            print ("Error while getting default network device: %s\n", e.message);
+            debug("Failed getting default network device: %s\n", e.message);
         }
         if (output == null) {
             return "";
@@ -73,7 +72,7 @@ class Graph : Gtk.Button, Gtk.Buildable {
 
             ret = double.parse(dis.read_line().tokenize_and_fold("", null)[this.data_token_number]);
         } catch (Error e) {
-            stderr.printf("Error while getting graph data: %s\n", e.message);
+            error("Error while getting graph data: %s\n", e.message);
         }
         return ret;
     }

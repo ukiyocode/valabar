@@ -62,6 +62,7 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
     private uint backlightStep;
     private Login1Iface login1;
     private Popup batteriesPopup;
+    private Gtk.Scale backlightScale;
 
     public void parser_finished(Gtk.Builder builder) {
         this.events |= Gdk.EventMask.SCROLL_MASK;
@@ -91,23 +92,30 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
         this.scroll_event.connect(on_scroll);
     }
 
+    private void on_blscale_changed() {
+        setBacklight((uint)backlightScale.get_value());
+    }
+
     private void on_toggled() {
         if (this.get_active()) {
             this.batteriesPopup = new Popup(this);
             Gtk.Box contentBox = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
             batteries.foreach ((key, val) => {
-                Gtk.Button butt = new Gtk.Button.with_label(val.manufacturer + " " + val.model_name + " " + val.capacity + "%\n" + val.status); 
+                Gtk.Button butt = new Gtk.Button.with_label(val.manufacturer + " " + val.model_name + "\n" + val.capacity + "% " + val.status); 
                 butt.get_child().halign = Gtk.Align.START;
                 contentBox.add(butt);
             });
-            Gtk.Scale backlightScale = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, new Gtk.Adjustment(1, 1, 101, 1, 1, 1));
+            backlightScale = new Gtk.Scale(Gtk.Orientation.HORIZONTAL, new Gtk.Adjustment((double)getBacklight(), (double)backlightStep,
+            (double)backlightMax, (double)backlightStep, (double)backlightStep, (double)backlightStep));
             backlightScale.width_request = 250;
+            backlightScale.value_changed.connect(on_blscale_changed);
             contentBox.add(backlightScale);
             batteriesPopup.add(contentBox);
             this.batteriesPopup.show_all();
         } else {
             this.batteriesPopup.destroy();
             this.batteriesPopup = null;
+            this.backlightScale = null;
         }
     }
 
@@ -120,6 +128,9 @@ class Battery : Gtk.ToggleButton, Gtk.Buildable {
             newBacklight += backlightStep;
         }
         setBacklight(newBacklight);
+        if (backlightScale != null) {
+            backlightScale.set_value((double)newBacklight);
+        }
         return true;
     }
 

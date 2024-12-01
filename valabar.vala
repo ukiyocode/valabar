@@ -45,7 +45,7 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
 
     public void parser_finished(Gtk.Builder builder) {
         this.move(this.x, this.y);
-        this.button_press_event.connect(on_button_press);
+        this.button_release_event.connect(on_button_release);
 
         int scale = this.get_scale_factor();
         Gdk.Rectangle primary_monitor = this.screen.get_display().get_primary_monitor().get_geometry();
@@ -62,10 +62,10 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         this.show_all();
     }
 
-    private bool on_button_press(Gtk.Widget widget, Gdk.EventButton event) {
-        if (event.type == Gdk.EventType.BUTTON_PRESS)
+    private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {
+        if (event.type == Gdk.EventType.BUTTON_RELEASE)
         {
-            if ((event.button == 3) && event.triggers_context_menu()) { //right button
+            if (event.button == 3) { //right button
                 Gtk.Menu menu = new Gtk.Menu();
                 Gtk.MenuItem mitem_favs = new Gtk.MenuItem.with_label("Favs");
                 mitem_favs.button_release_event.connect(on_mitem_favs);

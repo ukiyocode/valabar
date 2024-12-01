@@ -17,6 +17,7 @@ class Graph : Gtk.Button, Gtk.Buildable {
     private List<double?> history;
     private List<double?> delta_history;
     private Gtk.Border cssPadding;
+    //private bool defNetDevice = false;
 
     public void parser_finished(Gtk.Builder builder) {
         this.cssPadding = this.get_style_context().get_padding(Gtk.StateFlags.NORMAL);
@@ -24,9 +25,6 @@ class Graph : Gtk.Button, Gtk.Buildable {
         histLength = this.time_range * 1000 / this.interval;
         history = new List<double?>();
         double initVal;
-        if (data_file == "default_network_device") {
-            this.data_file = "/sys/class/net/" + getDefaultNetDev() + "/statistics/rx_bytes";
-        }
         for (int i = 0; i < histLength; i++) {
             history.append(0);
         }
@@ -49,18 +47,21 @@ class Graph : Gtk.Button, Gtk.Buildable {
             debug("Failed getting default network device: %s\n", e.message);
         }
         if (output == null) {
-            return "";
+            return "default_network_device";
         }
         MatchInfo regexMatch;
-        if (/defult via [0-9.]+ dev ([^ ]+)/.match(output, 0, out regexMatch)) {
+        if (/default via [0-9.]+ dev ([^ ]+)/.match(output, 0, out regexMatch)) {
             if (regexMatch.get_match_count() == 2) {
                 return regexMatch.fetch(1);
             }
         }
-        return "";
+        return "default_network_device";
     }
 
     private double getData() {
+        if (this.data_file.contains("default_network_device")) {
+            this.data_file = "/sys/class/net/" + getDefaultNetDev() + "/statistics/rx_bytes";
+        }
         File dataFile = File.new_for_path(this.data_file);
         if (!dataFile.query_exists()) {
             return 0;

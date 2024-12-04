@@ -10,9 +10,9 @@ class TrayChild : Gtk.EventBox {
     public string dBusPath;
     private string activateName;
     private DBusProxy proxy;
+    private string menuPath;
     
     public TrayChild(string itemId) {
-        print("%s\n", itemId);
         this.dBusPath = itemId;
         getIntrospect.begin(itemId);
     }
@@ -49,7 +49,6 @@ class TrayChild : Gtk.EventBox {
             dmi = dii.lookup_method("SecondaryActivate");
         }
         this.activateName = dmi.name;
-        print(dmi.name);
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }
@@ -73,8 +72,12 @@ class TrayChild : Gtk.EventBox {
                 if (this.image != null) {
                     image.pixel_size = ValaBar.btnSize;
                     this.add(this.image);
-                    //props_gotten();
                 }
+            }
+            v = proxy.get_cached_property("Menu");
+            if (v != null) {
+                this.menuPath = v.get_string();
+                print("%s\n", this.menuPath);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);

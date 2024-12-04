@@ -110,7 +110,7 @@
         </child>
         <child>
           <object class="SystemTray">
-            <property name="orientation">GTK_ORIENTATION_VERTICAL</property> <!-- for some reason this has to be set vertical to be horizontal ¯\_(ツ)_/¯ -->
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property> <!-- for some reason this has to be set vertical to be horizontal ¯\_(ツ)_/¯ -->
           </object>
         </child>
         <child>

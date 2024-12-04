@@ -3,6 +3,15 @@ private interface Introspectable : Object {
     public abstract string Introspect() throws Error;
 }
 
+class DBusObject : Object {
+    public string busName { get; construct set; }
+    public string objectPath { get; construct set; }
+    public DBusObject(string busName, string objectPath) {
+        this.busName = busName;
+        this.objectPath = objectPath;
+    }
+}
+
 class TrayChild : Gtk.EventBox {
     private Gtk.Image image;
     private string iconName;
@@ -10,35 +19,29 @@ class TrayChild : Gtk.EventBox {
     public string dBusPath;
     private string activateName;
     private DBusProxy proxy;
-    private string menuPath;
     
     public TrayChild(string itemId) {
         this.dBusPath = itemId;
-        getIntrospect.begin(itemId);
+        get_properties.begin(this.dBusPath, on_properties_gotten);
     }
 
-    private async void getIntrospect(string item_path) {
-        Introspectable proxy = null;
-        string xml_data = "";
-        try {
-            string[] parts = item_path.split("/", 2);
-            if (parts.length != 2) {
-                debug("Invalid input format in TrayChild.vala. Expected 'bus_name/object_path'\n");
-                return;
-            }
-            string bus_name = parts[0];
-            string object_path = "/" + parts[1];
-            proxy = yield Bus.get_proxy(BusType.SESSION, bus_name, object_path);
-            xml_data = proxy.Introspect();
-            DBusNodeInfo dni = new DBusNodeInfo.for_xml(xml_data);
-            DBusInterfaceInfo dii = dni.lookup_interface("org.kde.StatusNotifierItem");
-            if (dii != null) {
-                get_properties.begin(item_path, dii, on_properties_gotten);
-            }
+    private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
+        try{
+            Introspectable proxy = yield Bus.get_proxy(BusType.SESSION, busName, objectPath);
+            string xmlData = proxy.Introspect();
+            DBusNodeInfo dni = new DBusNodeInfo.for_xml(xmlData);
+            return dni.lookup_interface(interfaceName);
         } catch (Error e) {
-            error("Error in TrayChild.vala while introspecting StatusNotifierItem: %s\n", e.message);
+            error("Error in TrayChild.vala while introspecting: %s\n", e.message);
         }
-        return;
+    }
+
+    private DBusObject splitPath(string itemPath) {
+        string[] parts = itemPath.split("/", 2);
+        if (parts.length != 2) {
+            error("Invalid input format in TrayChild.vala. Expected 'busName/objectPath'\n");
+        }
+        return new DBusObject(parts[0], "/"+parts[1]);
     }
 
     private void on_properties_gotten(Object? obj, AsyncResult res) {
@@ -53,18 +56,12 @@ class TrayChild : Gtk.EventBox {
         props_gotten();
     }
 
-    private async DBusProxy get_properties(string item_path, DBusInterfaceInfo dii) {
+    private async DBusProxy get_properties(string itemPath) {
+        DBusObject dobj = splitPath(itemPath);
+        DBusInterfaceInfo dii = yield getInterfaceInfo(dobj.busName, dobj.objectPath, "org.kde.StatusNotifierItem");
         DBusProxy proxy = null;
         try {
-            string[] parts = item_path.split("/", 2);
-            if (parts.length != 2) {
-                debug("Invalid input format in TrayChild.vala. Expected 'bus_name/object_path'\n");
-                return proxy;
-            }
-            string bus_name = parts[0];
-            string object_path = "/" + parts[1];
-
-            proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, bus_name, object_path, "org.kde.StatusNotifierItem", null);
+            proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, dobj.busName, dobj.objectPath, "org.kde.StatusNotifierItem", null);
             Variant? v = proxy.get_cached_property("IconName");
             if (v != null) {
                 this.iconName = v.get_string();
@@ -76,13 +73,22 @@ class TrayChild : Gtk.EventBox {
             }
             v = proxy.get_cached_property("Menu");
             if (v != null) {
-                this.menuPath = v.get_string();
-                print("%s\n", this.menuPath);
+                get_menu.begin(dobj.busName, v.get_string());
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
         }
         return proxy;
+    }
+
+    private async void get_menu(string busName, string menuPath) {
+        DBusProxy menuProxy = null;
+        try {
+        menuProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, null, busName, menuPath, "com.canonical.dbusmenu", null);
+        print("%s\n", menuProxy.get_cached_property("Status").get_string());
+        } catch (Error e) {
+            error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
+        }
     }
 
     private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {

@@ -21,6 +21,7 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
         this.add(buttonBox);
         this.toggled.connect(on_toggled);
         this.scroll_event.connect(on_scroll);
+        updateButton(asound_get_volume());
     }
 
     private void updateButton(long curVolume) {

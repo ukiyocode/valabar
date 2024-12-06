@@ -3,6 +3,17 @@ private interface Introspectable : Object {
     public abstract string Introspect() throws Error;
 }
 
+struct Props {
+    public int32 a;
+    public HashTable<string, Variant> b;
+    public Variant[] c;
+}
+
+[DBus (name = "com.canonical.dbusmenu")]
+private interface DBusMenuIface : Object {
+    public abstract void GetLayout(int32 parentId, int32 recursionDepth, string[] propertyNames, out uint32 revision, out Props layout) throws Error;
+}
+
 class DBusObject : Object {
     public string busName { get; construct set; }
     public string objectPath { get; construct set; }
@@ -73,7 +84,7 @@ class TrayChild : Gtk.EventBox {
             }
             v = proxy.get_cached_property("Menu");
             if (v != null) {
-                get_menu.begin(dobj.busName, v.get_string());
+                get_menu_layout.begin(dobj.busName, v.get_string());
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
@@ -81,14 +92,65 @@ class TrayChild : Gtk.EventBox {
         return proxy;
     }
 
-    private async void get_menu(string busName, string menuPath) {
-        DBusProxy menuProxy = null;
+    private async void get_menu_layout(string busName, string menuPath) {
+        DBusInterfaceInfo dii = yield getInterfaceInfo(busName, menuPath, "com.canonical.dbusmenu");
+        uint32 revision;
+        Variant layout;
+
         try {
-        menuProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, null, busName, menuPath, "com.canonical.dbusmenu", null);
-        print("%s\n", menuProxy.get_cached_property("Status").get_string());
+            DBusMenuIface proxy = yield Bus.get_proxy(BusType.SESSION, busName, menuPath);
+            string methodName = "GetLayout";
+            DBusMethodInfo? dmi = dii.lookup_method(methodName);
+            if (dmi != null) {
+                proxy.GetLayout(0, -1, {}, out revision, out layout);
+                makeMenu(layout);
+            }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
+    }
+
+    private Gtk.Menu makeMenu(Variant layout) {
+        int32 id = 0;
+        string key;
+        Variant val;
+        VariantIter iter = layout.iterator();
+        VariantIter iter2;
+        Gtk.MenuItem menuItem;
+        Gtk.Box menuItemContents;
+        iter.next("i", out id);
+        print("id: %i | ", id);
+        iter.next("a{sv}", out iter2);
+        if (iter2.n_children() > 0) {
+            menuItem = new Gtk.MenuItem();
+            menuItemContents = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
+            menuItem.add(menuItemContents);
+        }
+        while (iter2.next ("{sv}", out key, out val)) {
+            switch (key) {
+                case "icon-name":
+                    print ("Item '%s' has value '%s'\n", key, val.get_string());
+                    break;
+                case "label":
+                    print ("Item '%s' has value '%s'\n", key, val.get_string());
+                    break;
+                case "type":
+                    if (val.get_string() == "separator") {
+                        menuItem = new Gtk.SeparatorMenuItem();
+                    } else {
+                        error("Unknown menuitem \"type: %s\"", val.get_string());
+                    }
+                    break;
+                case "enabled":
+                    print ("Item '%s' has value '%s'\n", key, val.get_boolean().to_string());
+                    break;
+            }
+        }
+        iter.next("av", out iter2);
+        while (iter2.next ("v", out val)) {
+            makeMenu(val);
+        }
+        return null;
     }
 
     private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {

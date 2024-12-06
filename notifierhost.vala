@@ -83,9 +83,10 @@ public class NotifierHost: Object
     }
     construct
     {
-        is_nested_watcher = true;
+        //  is_nested_watcher = true;
         watcher_registered = false;
-        create_nested_watcher();
+        //  create_nested_watcher();
+        create_out_watcher();
     }
     ~NotifierHost()
     {

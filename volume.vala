@@ -98,6 +98,7 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
             }
         }
         if (!meFound) {
+            debug("ME not found!!");
             return false;
         }
         

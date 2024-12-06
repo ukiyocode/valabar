@@ -60,15 +60,6 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);
     
         this.show_all();
-        /*Variant v;// = new Variant("as");
-        blep(out v);
-        string[] vv = v.get_strv();
-        print("%s\n", vv[2]);
-    }
-
-    private void blep(out Variant v) {
-        string[] strs = new string[3];//{"111", "222", "333"};
-        v = new Variant.strv({"111", "222", "333"});*/
     }
 
     private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {

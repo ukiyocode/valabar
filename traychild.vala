@@ -30,6 +30,7 @@ class TrayChild : Gtk.EventBox {
     public string dBusPath;
     private string activateName;
     private DBusProxy proxy;
+    private Gtk.Menu menu;
     
     public TrayChild(string itemId) {
         this.dBusPath = itemId;
@@ -103,54 +104,69 @@ class TrayChild : Gtk.EventBox {
             DBusMethodInfo? dmi = dii.lookup_method(methodName);
             if (dmi != null) {
                 proxy.GetLayout(0, -1, {}, out revision, out layout);
-                makeMenu(layout);
+                Gtk.MenuItem mi;
+                this.menu = makeMenu(layout, true, out mi);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
     }
 
-    private Gtk.Menu makeMenu(Variant layout) {
+    private Gtk.Menu makeMenu(Variant layout, bool root, out Gtk.MenuItem mItem) {
         int32 id = 0;
         string key;
         Variant val;
         VariantIter iter = layout.iterator();
         VariantIter iter2;
-        Gtk.MenuItem menuItem;
-        Gtk.Box menuItemContents;
+        Gtk.Menu menu = null;
+        Gtk.Menu subMenu = null;
+        Gtk.MenuItem menuItem = null;
+        Gtk.Box menuItemContents = null;
         iter.next("i", out id);
-        print("id: %i | ", id);
+        print("id: %i\n", id);
         iter.next("a{sv}", out iter2);
         if (iter2.n_children() > 0) {
             menuItem = new Gtk.MenuItem();
             menuItemContents = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
             menuItem.add(menuItemContents);
-        }
-        while (iter2.next ("{sv}", out key, out val)) {
-            switch (key) {
-                case "icon-name":
-                    print ("Item '%s' has value '%s'\n", key, val.get_string());
-                    break;
-                case "label":
-                    print ("Item '%s' has value '%s'\n", key, val.get_string());
-                    break;
-                case "type":
-                    if (val.get_string() == "separator") {
-                        menuItem = new Gtk.SeparatorMenuItem();
-                    } else {
-                        error("Unknown menuitem \"type: %s\"", val.get_string());
-                    }
-                    break;
-                case "enabled":
-                    print ("Item '%s' has value '%s'\n", key, val.get_boolean().to_string());
-                    break;
+
+            while (iter2.next ("{sv}", out key, out val)) {
+                switch (key) {
+                    case "icon-name":
+                        menuItemContents.add(new Gtk.Image.from_icon_name(val.get_string(), Gtk.IconSize.BUTTON));
+                        //print ("Item '%s' has value '%s'\n", key, val.get_string());
+                        break;
+                    case "label":
+                        menuItemContents.add(new Gtk.Label(val.get_string()));
+                        //print ("Item '%s' has value '%s'\n", key, val.get_string());
+                        break;
+                    case "type":
+                        if (val.get_string() == "separator") {
+                            menuItem = new Gtk.SeparatorMenuItem();
+                        } else {
+                            error("Unknown menuitem \"type: %s\"", val.get_string());
+                        }
+                        break;
+                    case "enabled":
+                        menuItem.sensitive = val.get_boolean();
+                        //print ("Item '%s' has value '%s'\n", key, val.get_boolean().to_string());
+                        break;
+                }
             }
+            mItem = menuItem;
         }
         iter.next("av", out iter2);
-        while (iter2.next ("v", out val)) {
-            makeMenu(val);
+        if (iter2.n_children() > 0) {
+            menu = new Gtk.Menu();
+            while (iter2.next ("v", out val)) {
+                subMenu = makeMenu(val, false, out menuItem);
+                if (subMenu != null) {
+                    menuItem.set_submenu(subMenu);
+                }
+                menu.add(menuItem);
+            }
         }
-        return null;
+        return menu;
     }
 
     private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {
@@ -160,10 +176,12 @@ class TrayChild : Gtk.EventBox {
                 this.proxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
                 return true;
             } else if (event.button == 3) { //right button
-                //try {
-                    //this.proxy.ContextMenu(0, 0);
-                //} catch (Error e) {
-                //}
+                if (this.menu != null) {
+                    this.menu.deactivate.connect(menu.destroy);
+                    this.menu.attach_to_widget(widget, null);
+                    this.menu.show_all ();
+                    this.menu.popup_at_widget (widget, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH, event);
+                }
                 return true;
             }
         }

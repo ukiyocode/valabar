@@ -10,7 +10,6 @@ public class SystemTray : Gtk.Box, Gtk.Buildable
         notifierHost.watcher_item_removed.connect(on_item_removed);
         notifierHost.watcher_host_added.connect(on_host_added);
         this.show_all();
-        new TrayChild(":1.72/org/blueman/sni");
     }
 
     public void on_host_added() {

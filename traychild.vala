@@ -9,9 +9,21 @@ struct Props {
     public Variant[] c;
 }
 
+struct UpdProp {
+    public int32 a;
+    public HashTable<string, Variant> b;
+}
+
+struct RemProp {
+    public int32 a;
+    public string[] b;
+}
+
 [DBus (name = "com.canonical.dbusmenu")]
 private interface DBusMenuIface : Object {
     public abstract void GetLayout(int32 parentId, int32 recursionDepth, string[] propertyNames, out uint32 revision, out Props layout) throws Error;
+    public signal void LayoutUpdated(ref uint32 revision, ref int32 parent);
+    public signal int ItemsPropertiesUpdated(out UpdProp[] updatedProps, out RemProp[] removedProps);
 }
 
 class DBusObject : Object {
@@ -30,6 +42,7 @@ class TrayChild : Gtk.EventBox {
     public string dBusPath;
     private string activateName;
     private DBusProxy proxy;
+    private DBusMenuIface menuProxy;
     private Variant menuLayout;
     
     public TrayChild(string itemId) {
@@ -96,17 +109,27 @@ class TrayChild : Gtk.EventBox {
     private async void get_menu_layout(string busName, string menuPath) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(busName, menuPath, "com.canonical.dbusmenu");
         uint32 revision;
+        int32 parent;
+        UpdProp[] updProps;
+        RemProp[] remProps;
 
         try {
-            DBusMenuIface proxy = yield Bus.get_proxy(BusType.SESSION, busName, menuPath);
+            this.menuProxy = yield Bus.get_proxy(BusType.SESSION, busName, menuPath);
             string methodName = "GetLayout";
             DBusMethodInfo? dmi = dii.lookup_method(methodName);
             if (dmi != null) {
-                proxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
+                this.menuProxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
+                this.menuProxy.LayoutUpdated.connect((ref revision, ref parent) => {print("upd\n");});
+                this.menuProxy.ItemsPropertiesUpdated.connect(onPropsUpd);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
+    }
+
+    private int onPropsUpd(out UpdProp[] updProps, out RemProp[] remProps) {
+        print("updprop\n");
+        return 0;
     }
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {

@@ -30,7 +30,7 @@ class TrayChild : Gtk.EventBox {
     public string dBusPath;
     private string activateName;
     private DBusProxy proxy;
-    private Gtk.Menu menu;
+    private Variant menuLayout;
     
     public TrayChild(string itemId) {
         this.dBusPath = itemId;
@@ -96,23 +96,21 @@ class TrayChild : Gtk.EventBox {
     private async void get_menu_layout(string busName, string menuPath) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(busName, menuPath, "com.canonical.dbusmenu");
         uint32 revision;
-        Variant layout;
 
         try {
             DBusMenuIface proxy = yield Bus.get_proxy(BusType.SESSION, busName, menuPath);
             string methodName = "GetLayout";
             DBusMethodInfo? dmi = dii.lookup_method(methodName);
             if (dmi != null) {
-                proxy.GetLayout(0, -1, {}, out revision, out layout);
-                Gtk.MenuItem mi;
-                this.menu = makeMenu(layout, true, out mi);
+                proxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
     }
 
-    private Gtk.Menu makeMenu(Variant layout, bool root, out Gtk.MenuItem mItem) {
+    private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {
+        mItem = null;
         int32 id = 0;
         string key;
         Variant val;
@@ -123,7 +121,6 @@ class TrayChild : Gtk.EventBox {
         Gtk.MenuItem menuItem = null;
         Gtk.Box menuItemContents = null;
         iter.next("i", out id);
-        print("id: %i\n", id);
         iter.next("a{sv}", out iter2);
         if (iter2.n_children() > 0) {
             menuItem = new Gtk.MenuItem();
@@ -134,11 +131,9 @@ class TrayChild : Gtk.EventBox {
                 switch (key) {
                     case "icon-name":
                         menuItemContents.add(new Gtk.Image.from_icon_name(val.get_string(), Gtk.IconSize.BUTTON));
-                        //print ("Item '%s' has value '%s'\n", key, val.get_string());
                         break;
                     case "label":
                         menuItemContents.add(new Gtk.Label(val.get_string()));
-                        //print ("Item '%s' has value '%s'\n", key, val.get_string());
                         break;
                     case "type":
                         if (val.get_string() == "separator") {
@@ -149,7 +144,6 @@ class TrayChild : Gtk.EventBox {
                         break;
                     case "enabled":
                         menuItem.sensitive = val.get_boolean();
-                        //print ("Item '%s' has value '%s'\n", key, val.get_boolean().to_string());
                         break;
                 }
             }
@@ -159,7 +153,7 @@ class TrayChild : Gtk.EventBox {
         if (iter2.n_children() > 0) {
             menu = new Gtk.Menu();
             while (iter2.next ("v", out val)) {
-                subMenu = makeMenu(val, false, out menuItem);
+                subMenu = makeMenu(val, out menuItem);
                 if (subMenu != null) {
                     menuItem.set_submenu(subMenu);
                 }
@@ -176,11 +170,14 @@ class TrayChild : Gtk.EventBox {
                 this.proxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
                 return true;
             } else if (event.button == 3) { //right button
-                if (this.menu != null) {
-                    this.menu.deactivate.connect(menu.destroy);
-                    this.menu.attach_to_widget(widget, null);
-                    this.menu.show_all ();
-                    this.menu.popup_at_widget (widget, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH, event);
+                Gtk.MenuItem mi;
+                Gtk.Menu menu = makeMenu(this.menuLayout, out mi);
+                if (menu != null) {
+                    menu.attach_to_widget(widget, null);
+                    menu.deactivate.connect(menu.destroy);
+                    menu.show_all();
+                    //menu.popup_at_widget(widget, Gdk.Gravity.NORTH_EAST, Gdk.Gravity.SOUTH_EAST, event);
+                    menu.popup_at_pointer(event);
                 }
                 return true;
             }

@@ -17,7 +17,6 @@ class Graph : Gtk.Button, Gtk.Buildable {
     private List<double?> history;
     private List<double?> delta_history;
     private Gtk.Border cssPadding;
-    //private bool defNetDevice = false;
 
     public void parser_finished(Gtk.Builder builder) {
         this.cssPadding = this.get_style_context().get_padding(Gtk.StateFlags.NORMAL);

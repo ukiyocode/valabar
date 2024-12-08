@@ -22,8 +22,8 @@ struct RemProp {
 [DBus (name = "com.canonical.dbusmenu")]
 private interface DBusMenuIface : Object {
     public abstract void GetLayout(int32 parentId, int32 recursionDepth, string[] propertyNames, out uint32 revision, out Props layout) throws Error;
-    public signal void LayoutUpdated(ref uint32 revision, ref int32 parent);
-    public signal int ItemsPropertiesUpdated(out UpdProp[] updatedProps, out RemProp[] removedProps);
+    //public signal void LayoutUpdated(ref uint32 revision, ref int32 parent);
+    //public signal int ItemsPropertiesUpdated(out UpdProp[] updatedProps, out RemProp[] removedProps);
 }
 
 class DBusObject : Object {
@@ -119,8 +119,8 @@ class TrayChild : Gtk.EventBox {
             DBusMethodInfo? dmi = dii.lookup_method(methodName);
             if (dmi != null) {
                 this.menuProxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
-                this.menuProxy.LayoutUpdated.connect((ref revision, ref parent) => {print("upd\n");});
-                this.menuProxy.ItemsPropertiesUpdated.connect(onPropsUpd);
+                //this.menuProxy.LayoutUpdated.connect((ref revision, ref parent) => {print("upd\n");});
+                //this.menuProxy.ItemsPropertiesUpdated.connect(onPropsUpd);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
@@ -148,6 +148,7 @@ class TrayChild : Gtk.EventBox {
         if (iter2.n_children() > 0) {
             menuItem = new Gtk.MenuItem();
             menuItemContents = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
+            menuItemContents.halign = Gtk.Align.START;
             menuItem.add(menuItemContents);
 
             while (iter2.next ("{sv}", out key, out val)) {

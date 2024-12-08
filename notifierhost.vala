@@ -39,7 +39,6 @@ public class NotifierHost: Object
             nested_watcher.status_notifier_item_unregistered.connect((id) => { watcher_item_removed(id); });
             conn.register_object("/StatusNotifierWatcher", nested_watcher);
             nested_watcher.register_status_notifier_host(object_path);
-            print("nest\n");
         } catch (Error e) {
             debug("Could not register service. Waiting for external watcher\n");
         }

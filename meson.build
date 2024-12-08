@@ -16,7 +16,7 @@ dependencies = [
     dependency('libbamf3'),
     dependency('alsa'),
     meson.get_compiler('vala').find_library('posix'),
-    dependency('dbusmenu-glib-0.4'),
+    #dependency('dbusmenu-glib-0.4'),
     dependency('libpulse'),
 ]
 

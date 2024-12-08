@@ -37,15 +37,16 @@ public class NotifierHost: Object
             nested_watcher.status_notifier_host_registered.connect(() => { watcher_host_added(); });
             nested_watcher.status_notifier_item_registered.connect((id) => { watcher_item_added(id); });
             nested_watcher.status_notifier_item_unregistered.connect((id) => { watcher_item_removed(id); });
-            conn.register_object ("/StatusNotifierWatcher", nested_watcher);
+            conn.register_object("/StatusNotifierWatcher", nested_watcher);
             nested_watcher.register_status_notifier_host(object_path);
+            print("nest\n");
         } catch (Error e) {
             debug("Could not register service. Waiting for external watcher\n");
         }
     }
     private void create_nested_watcher()
     {
-        owned_name = Bus.own_name (BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE,
+        owned_name = Bus.own_name(BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE,
             on_bus_aquired,
             () => {
                 watcher_registered = true;
@@ -83,9 +84,9 @@ public class NotifierHost: Object
     }
     construct
     {
-        //  is_nested_watcher = true;
+        is_nested_watcher = true;
         watcher_registered = false;
-        //  create_nested_watcher();
+        create_nested_watcher();
         create_out_watcher();
     }
     ~NotifierHost()

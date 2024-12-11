@@ -45,7 +45,11 @@ public class NotifierHost: Object
     }
     private void create_nested_watcher()
     {
-        owned_name = Bus.own_name(BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE, on_bus_aquired, () => { watcher_registered = true; is_nested_watcher = true; }, null);
+        owned_name = Bus.own_name(BusType.SESSION, "org.kde.StatusNotifierWatcher", BusNameOwnerFlags.NONE, on_bus_aquired, 
+            () => {
+                watcher_registered = true;
+                is_nested_watcher = true;
+            }, null);
     }
     private void create_out_watcher()
     {

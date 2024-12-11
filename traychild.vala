@@ -77,6 +77,7 @@ class TrayChild : Gtk.EventBox {
             dmi = dii.lookup_method("SecondaryActivate");
         }
         this.activateName = dmi.name;
+        proxy.g_signal.connect(() => {print("sig\n");});
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }

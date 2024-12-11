@@ -9,6 +9,7 @@
     in
     {
       devShells.${sys}.default = with nixpkgs.legacyPackages.${sys}; mkShell {
+        nativeBuildInputs = [ pipewire ];
         buildInputs = [
           pkg-config
           gcc
@@ -16,7 +17,6 @@
           glib
           meson
           ninja
-          gtk3
           libwnck
           bamf
           librsvg

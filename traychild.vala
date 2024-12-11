@@ -77,9 +77,18 @@ class TrayChild : Gtk.EventBox {
             dmi = dii.lookup_method("SecondaryActivate");
         }
         this.activateName = dmi.name;
-        proxy.g_signal.connect(() => {print("sig\n");});
+        proxy.g_signal.connect(on_g_signal);
+        proxy.g_properties_changed.connect(on_properties_changed);
         this.button_release_event.connect(on_button_release);
         props_gotten();
+    }
+
+    private void on_properties_changed(Variant changed_properties, string[] invalidated_properties) {
+        print("props changed\n");
+    }
+
+    private void on_g_signal(string? sender_name, string signal_name, Variant parameters) {
+        print("sender: %s | signame: %s\n", sender_name, signal_name);
     }
 
     private async DBusProxy get_properties(string itemPath) {

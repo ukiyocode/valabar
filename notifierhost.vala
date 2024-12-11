@@ -49,7 +49,11 @@ public class NotifierHost: Object
             () => {
                 watcher_registered = true;
                 is_nested_watcher = true;
-            }, null);
+            },
+            () => {
+                is_nested_watcher = false;
+                create_out_watcher();
+            });
     }
     private void create_out_watcher()
     {

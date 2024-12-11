@@ -1,5 +1,7 @@
 project('valabar', 'vala', 'c')
 
+add_project_arguments('-D__USE_TIME_BITS32', language: 'c')
+add_project_arguments('-O', language: 'c')
 vapi_dir = meson.current_source_dir()
 add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
@@ -17,7 +19,7 @@ dependencies = [
     dependency('alsa'),
     meson.get_compiler('vala').find_library('posix'),
     #dependency('dbusmenu-glib-0.4'),
-    dependency('libpulse'),
+    #dependency('libpulse'),
 ]
 
 sources = files(

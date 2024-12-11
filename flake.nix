@@ -10,15 +10,16 @@
     {
       devShells.${sys}.default = with nixpkgs.legacyPackages.${sys}; mkShell {
         buildInputs = [
+          pkg-config
           gcc
+          vala
           glib
-          gobject-introspection
-          gtk3
-          libwnck
           meson
           ninja
-          nix-info
-          vala
+          gtk3
+          libwnck
+          bamf
+          librsvg
         ];
       };
     };

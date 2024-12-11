@@ -55,6 +55,9 @@ public class AppButton : Gtk.Button
     }
 
     private Gtk.Image prepare_image(Gdk.Pixbuf image) {
+        if (image == null) {
+            print("imgnull\n");
+        }
         Gdk.Pixbuf background = image.scale_simple(this._imgSize, this._imgSize, Gdk.InterpType.BILINEAR);
         if (this.isRunning()) {
             try {

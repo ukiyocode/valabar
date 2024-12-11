@@ -60,6 +60,8 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);
     
         this.show_all();
+        
+        print("hhhh\n");
     }
 
     private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {

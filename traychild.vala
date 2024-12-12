@@ -65,7 +65,7 @@ class TrayChild : Gtk.EventBox {
     
     public TrayChild(string itemId) {
         this.dBusObj = new DBusObject(itemId);
-        get_properties.begin(new MyList<string>("IconName", "Title", "Menu"), on_properties_gotten);
+        get_properties.begin(new MyList<string>("IconName", "Title", "ToolTip", "Menu"), on_properties_gotten);
     }
 
     private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
@@ -103,6 +103,9 @@ class TrayChild : Gtk.EventBox {
             case "NewIcon":
                 get_properties(new MyList<string>("IconName"));
                 break;
+            case "NewToolTip":
+                get_properties(new MyList<string>("ToolTip"));
+                break;
         }
     }
 
@@ -127,6 +130,16 @@ class TrayChild : Gtk.EventBox {
                             break;
                         case "Title":
                             this.tooltip_text = v.get_string();
+                            break;
+                        case "ToolTip":
+                            VariantIter iter = v.iterator();
+                            string s = "";
+                            iter.next("s");
+                            iter.next("a(iiay)");
+                            iter.next("s", out s);
+                            if (s != "") {
+                                this.tooltip_text = s;
+                            }
                             break;
                         case "Menu":
                             get_menu_layout.begin(this.dBusObj.busName, v.get_string());

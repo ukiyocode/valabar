@@ -73,19 +73,19 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
     bool asound_initialize()
     {
         if (Alsa.SimpleElementId.alloc(out sid) < 0) {
-            error("Alsa.SimpleElementId.alloc error");
+            warning("Alsa.SimpleElementId.alloc error");
         }
         if (Alsa.Mixer.open(out mixer, 0) < 0) {
-            error("Alsa.Mixer.open error");
+            warning("Alsa.Mixer.open error");
         }
         if (mixer.attach() < 0) {
-            error("mixer.attach error");
+            warning("mixer.attach error");
         }
         if (mixer.register() < 0) {
-            error("mixer.register error");
+            warning("mixer.register error");
         }
         if (mixer.load() < 0) {
-            error("mixer.load error");
+            warning("mixer.load error");
         }
 
         bool meFound = false;

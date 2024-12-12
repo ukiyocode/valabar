@@ -29,25 +29,43 @@ private interface DBusMenuIface : Object {
 class DBusObject : Object {
     public string busName { get; construct set; }
     public string objectPath { get; construct set; }
-    public DBusObject(string busName, string objectPath) {
-        this.busName = busName;
-        this.objectPath = objectPath;
+    public DBusObject(string dBusPath) {
+        string[] parts = dBusPath.split("/", 2);
+        if (parts.length != 2) {
+            error("Invalid input format in TrayChild.vala. Expected 'busName/objectPath'\n");
+        }
+        this.busName = parts[0];
+        this.objectPath = "/"+parts[1];
+    }
+}
+
+class MyList<T> : Object {
+    private List<T> list;
+    public MyList(T a, ...) {
+        this.list = new List<T>();
+        this.list.append(a);
+        var vArgList = va_list();
+        for (T? arg = vArgList.arg<T?>(); arg != null ; arg = vArgList.arg<T?>()) {
+            this.list.append(arg);
+        }
+    }
+    public void @foreach(Func<T> func){
+        list.foreach(func);
     }
 }
 
 class TrayChild : Gtk.EventBox {
     private Gtk.Image image;
-    private string iconName;
     public signal void props_gotten();
-    public string dBusPath;
+    public DBusObject dBusObj;
     private string activateName;
-    private DBusProxy proxy;
+    private DBusProxy sNIProxy;
     private DBusMenuIface menuProxy;
     private Variant menuLayout;
     
     public TrayChild(string itemId) {
-        this.dBusPath = itemId;
-        get_properties.begin(this.dBusPath, on_properties_gotten);
+        this.dBusObj = new DBusObject(itemId);
+        get_properties.begin(new MyList<string>("IconName", "Menu"), on_properties_gotten);
     }
 
     private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
@@ -61,24 +79,16 @@ class TrayChild : Gtk.EventBox {
         }
     }
 
-    private DBusObject splitPath(string itemPath) {
-        string[] parts = itemPath.split("/", 2);
-        if (parts.length != 2) {
-            error("Invalid input format in TrayChild.vala. Expected 'busName/objectPath'\n");
-        }
-        return new DBusObject(parts[0], "/"+parts[1]);
-    }
-
     private void on_properties_gotten(Object? obj, AsyncResult res) {
-        this.proxy = get_properties.end(res);
-        DBusInterfaceInfo dii = proxy.get_interface_info();
+        this.sNIProxy = get_properties.end(res);
+        DBusInterfaceInfo dii = this.sNIProxy.get_interface_info();
         DBusMethodInfo? dmi = dii.lookup_method("Activate");
         if (dmi == null) {
             dmi = dii.lookup_method("SecondaryActivate");
         }
         this.activateName = dmi.name;
-        proxy.g_signal.connect(on_g_signal);
-        proxy.g_properties_changed.connect(on_properties_changed);
+        this.sNIProxy.g_signal.connect(on_g_signal);
+        this.sNIProxy.g_properties_changed.connect(on_properties_changed);
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }
@@ -89,27 +99,37 @@ class TrayChild : Gtk.EventBox {
 
     private void on_g_signal(string? sender_name, string signal_name, Variant parameters) {
         print("sender: %s | signame: %s\n", sender_name, signal_name);
+        switch (signal_name) {
+            case "NewIcon":
+                get_properties(new MyList<string>("IconName"));
+                break;
+        }
     }
 
-    private async DBusProxy get_properties(string itemPath) {
-        DBusObject dobj = splitPath(itemPath);
-        DBusInterfaceInfo dii = yield getInterfaceInfo(dobj.busName, dobj.objectPath, "org.kde.StatusNotifierItem");
+    private async DBusProxy get_properties(MyList<string> properties) {
+        DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem");
         DBusProxy proxy = null;
         try {
-            proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, dobj.busName, dobj.objectPath, "org.kde.StatusNotifierItem", null);
-            Variant? v = proxy.get_cached_property("IconName");
-            if (v != null) {
-                this.iconName = v.get_string();
-                this.image = new Gtk.Image.from_icon_name(this.iconName, Gtk.IconSize.BUTTON);
-                if (this.image != null) {
-                    image.pixel_size = ValaBar.btnSize;
-                    this.add(this.image);
+            proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
+            properties.foreach((prop) => {
+                Variant? v = proxy.get_cached_property(prop);
+                if (v != null) {
+                    switch(prop) {
+                        case "IconName":
+                            if (this.get_children().length() != 0) {
+                                this.remove(this.image);
+                            }
+                            this.image = new Gtk.Image.from_icon_name(v.get_string(), Gtk.IconSize.BUTTON);
+                            this.image.pixel_size = ValaBar.btnSize;
+                            this.add(this.image);
+                            this.show_all();
+                            break;
+                        case "Menu":
+                            get_menu_layout.begin(this.dBusObj.busName, v.get_string());
+                            break;
+                    }
                 }
-            }
-            v = proxy.get_cached_property("Menu");
-            if (v != null) {
-                get_menu_layout.begin(dobj.busName, v.get_string());
-            }
+            });
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
         }
@@ -201,7 +221,7 @@ class TrayChild : Gtk.EventBox {
         if (event.type == Gdk.EventType.BUTTON_RELEASE)
         {
             if (event.button == 1) { //left button
-                this.proxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
+                this.sNIProxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
                 return true;
             } else if (event.button == 3) { //right button
                 Gtk.MenuItem mi;

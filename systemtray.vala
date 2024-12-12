@@ -26,7 +26,8 @@ public class SystemTray : Gtk.Box, Gtk.Buildable
     private void on_item_removed(string id) {
         foreach (Gtk.Widget widget in this.get_children()) {
             TrayChild tc = (TrayChild)widget;
-            if (tc.dBusPath == id) {
+            DBusObject dbo = new DBusObject(id);
+            if (tc.dBusObj.busName == dbo.busName) {
                 this.remove(tc);
                 tc = null;
             }

@@ -17,9 +17,11 @@
           glib
           meson
           ninja
+          gtk3
           libwnck
           bamf
           librsvg
+          alsa-lib
         ];
       };
     };

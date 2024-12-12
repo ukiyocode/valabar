@@ -74,18 +74,23 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
     {
         if (Alsa.SimpleElementId.alloc(out sid) < 0) {
             warning("Alsa.SimpleElementId.alloc error");
+            return false;
         }
         if (Alsa.Mixer.open(out mixer, 0) < 0) {
             warning("Alsa.Mixer.open error");
+            return false;
         }
         if (mixer.attach() < 0) {
             warning("mixer.attach error");
+            return false;
         }
         if (mixer.register() < 0) {
             warning("mixer.register error");
+            return false;
         }
         if (mixer.load() < 0) {
             warning("mixer.load error");
+            return false;
         }
 
         bool meFound = false;
@@ -98,7 +103,7 @@ class Volume : Gtk.ToggleButton, Gtk.Buildable {
             }
         }
         if (!meFound) {
-            debug("ME not found!!");
+            warning("master_element not found!!");
             return false;
         }
         

@@ -65,7 +65,7 @@ class TrayChild : Gtk.EventBox {
     
     public TrayChild(string itemId) {
         this.dBusObj = new DBusObject(itemId);
-        get_properties.begin(new MyList<string>("IconName", "Menu"), on_properties_gotten);
+        get_properties.begin(new MyList<string>("IconName", "Title", "Menu"), on_properties_gotten);
     }
 
     private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
@@ -98,7 +98,7 @@ class TrayChild : Gtk.EventBox {
     }
 
     private void on_g_signal(string? sender_name, string signal_name, Variant parameters) {
-        print("sender: %s | signame: %s\n", sender_name, signal_name);
+        //print("sender: %s | signame: %s\n", sender_name, signal_name);
         switch (signal_name) {
             case "NewIcon":
                 get_properties(new MyList<string>("IconName"));
@@ -109,6 +109,7 @@ class TrayChild : Gtk.EventBox {
     private async DBusProxy get_properties(MyList<string> properties) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem");
         DBusProxy proxy = null;
+        string? tooltip = null;
         try {
             proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
             properties.foreach((prop) => {
@@ -123,6 +124,9 @@ class TrayChild : Gtk.EventBox {
                             this.image.pixel_size = ValaBar.btnSize;
                             this.add(this.image);
                             this.show_all();
+                            break;
+                        case "Title":
+                            this.tooltip_text = v.get_string();
                             break;
                         case "Menu":
                             get_menu_layout.begin(this.dBusObj.busName, v.get_string());

@@ -57,19 +57,11 @@ class TrayChild : Gtk.EventBox {
     }
 
     private void on_properties_gotten(Object? obj, AsyncResult res) {
-        this.sNIProxy = get_properties.end(res);
-        DBusInterfaceInfo dii = this.sNIProxy.get_interface_info();
-        DBusMethodInfo? dmi = dii.lookup_method("Activate");
-        if (dmi == null) {
-            dmi = dii.lookup_method("SecondaryActivate");
-        }
-        this.activateName = dmi.name;
-        this.sNIProxy.g_signal.connect(on_g_signal);
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }
 
-    private void on_g_signal(string? sender_name, string signal_name, Variant parameters) {
+    private void on_prop_signal(string? sender_name, string signal_name, Variant parameters) {
         switch (signal_name) {
             case "NewIcon":
                 get_properties.begin(new MyList<string>("IconName"));
@@ -80,13 +72,12 @@ class TrayChild : Gtk.EventBox {
         }
     }
 
-    private async DBusProxy get_properties(MyList<string> properties) {
+    private async void get_properties(MyList<string> properties) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem");
-        DBusProxy proxy = null;
         try {
-            proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
+            this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
             properties.foreach((prop) => {
-                Variant? v = proxy.get_cached_property(prop);
+                Variant? v = this.sNIProxy.get_cached_property(prop);
                 if (v != null) {
                     switch(prop) {
                         case "IconName":
@@ -117,10 +108,15 @@ class TrayChild : Gtk.EventBox {
                     }
                 }
             });
+            DBusMethodInfo? dmi = dii.lookup_method("Activate");
+            if (dmi == null) {
+                dmi = dii.lookup_method("SecondaryActivate");
+            }
+            this.activateName = dmi.name;
+            this.sNIProxy.g_signal.connect(on_prop_signal);
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
         }
-        return proxy;
     }
 
     private async void get_menu_layout(string busName, string menuPath) {
@@ -130,7 +126,6 @@ class TrayChild : Gtk.EventBox {
             this.menuProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, busName, menuPath, "com.canonical.dbusmenu", null);
             DBusMethodInfo? dmi = dii.lookup_method("GetLayout");
             if (dmi != null) {
-                //this.menuProxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
                 this.menuLayout = yield this.menuProxy.call("GetLayout", new Variant ("(ii^as)", 0, -1, new string[0]), DBusCallFlags.NONE, 5000, null);
                 VariantIter iter = this.menuLayout.iterator();
                 iter.next("u");

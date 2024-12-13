@@ -162,9 +162,13 @@ class TrayChild : Gtk.EventBox {
             menuItemContents = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 5);
             menuItemContents.halign = Gtk.Align.START;
             menuItem.add(menuItemContents);
+            menuItem.button_press_event.connect((event) => {
+                print("clicked\n");
+                return true;
+            });
 
-            while (iter2.next ("{sv}", out key, out val)) {
-                switch (key) {
+            while (iter2.next("{sv}", out key, out val)) {
+                switch(key) {
                     case "label":
                         menuItemContents.pack_end(new Gtk.Label(val.get_string()), true, true, 5);
                         break;

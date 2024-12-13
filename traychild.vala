@@ -57,6 +57,7 @@ class TrayChild : Gtk.EventBox {
     }
 
     private void on_properties_gotten(Object? obj, AsyncResult res) {
+        DBusInterfaceInfo dii = this.sNIProxy.get_interface_info();
         DBusMethodInfo? dmi = dii.lookup_method("Activate");
         if (dmi == null) {
             dmi = dii.lookup_method("SecondaryActivate");
@@ -130,13 +131,17 @@ class TrayChild : Gtk.EventBox {
                 VariantIter iter = this.menuLayout.iterator();
                 iter.next("u");
                 this.menuLayout = iter.next_value();
-                print("%s\n", this.menuLayout.get_type_string());
+                this.menuProxy.g_signal.connect(on_menu_signal);
                 //this.menuProxy.LayoutUpdated.connect((ref revision, ref parent) => {print("upd\n");});
                 //this.menuProxy.ItemsPropertiesUpdated.connect(onPropsUpd);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
+    }
+
+    private void on_menu_signal(string? sender_name, string signal_name, Variant parameters) {
+        print("sender: %s, menu signal: %s\n", sender_name, signal_name);
     }
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {

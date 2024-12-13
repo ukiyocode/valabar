@@ -57,6 +57,12 @@ class TrayChild : Gtk.EventBox {
     }
 
     private void on_properties_gotten(Object? obj, AsyncResult res) {
+        DBusMethodInfo? dmi = dii.lookup_method("Activate");
+        if (dmi == null) {
+            dmi = dii.lookup_method("SecondaryActivate");
+        }
+        this.activateName = dmi.name;
+        this.sNIProxy.g_signal.connect(on_prop_signal);
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }
@@ -108,12 +114,6 @@ class TrayChild : Gtk.EventBox {
                     }
                 }
             });
-            DBusMethodInfo? dmi = dii.lookup_method("Activate");
-            if (dmi == null) {
-                dmi = dii.lookup_method("SecondaryActivate");
-            }
-            this.activateName = dmi.name;
-            this.sNIProxy.g_signal.connect(on_prop_signal);
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
         }

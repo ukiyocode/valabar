@@ -132,8 +132,6 @@ class TrayChild : Gtk.EventBox {
                 iter.next("u");
                 this.menuLayout = iter.next_value();
                 this.menuProxy.g_signal.connect(on_menu_signal);
-                //this.menuProxy.LayoutUpdated.connect((ref revision, ref parent) => {print("upd\n");});
-                //this.menuProxy.ItemsPropertiesUpdated.connect(onPropsUpd);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
@@ -163,7 +161,7 @@ class TrayChild : Gtk.EventBox {
             menuItemContents.halign = Gtk.Align.START;
             menuItem.add(menuItemContents);
             menuItem.button_press_event.connect((event) => {
-                print("clicked\n");
+                this.menuProxy.call.begin("Event", new Variant ("(isvu)", id, "clicked", new Variant.string(""), Gtk.get_current_event_time()), DBusCallFlags.NONE, 5000, null);
                 return true;
             });
 

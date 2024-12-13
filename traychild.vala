@@ -3,29 +3,6 @@ private interface Introspectable : Object {
     public abstract string Introspect() throws Error;
 }
 
-struct Props {
-    public int32 a;
-    public HashTable<string, Variant> b;
-    public Variant[] c;
-}
-
-struct UpdProp {
-    public int32 a;
-    public HashTable<string, Variant> b;
-}
-
-struct RemProp {
-    public int32 a;
-    public string[] b;
-}
-
-[DBus (name = "com.canonical.dbusmenu")]
-private interface DBusMenuIface : Object {
-    public abstract void GetLayout(int32 parentId, int32 recursionDepth, string[] propertyNames, out uint32 revision, out Props layout) throws Error;
-    //public signal void LayoutUpdated(ref uint32 revision, ref int32 parent);
-    //public signal int ItemsPropertiesUpdated(out UpdProp[] updatedProps, out RemProp[] removedProps);
-}
-
 class DBusObject : Object {
     public string busName { get; construct set; }
     public string objectPath { get; construct set; }
@@ -60,7 +37,7 @@ class TrayChild : Gtk.EventBox {
     public DBusObject dBusObj;
     private string activateName;
     private DBusProxy sNIProxy;
-    private DBusMenuIface menuProxy;
+    private DBusProxy menuProxy;
     private Variant menuLayout;
     
     public TrayChild(string itemId) {
@@ -88,23 +65,17 @@ class TrayChild : Gtk.EventBox {
         }
         this.activateName = dmi.name;
         this.sNIProxy.g_signal.connect(on_g_signal);
-        this.sNIProxy.g_properties_changed.connect(on_properties_changed);
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }
 
-    private void on_properties_changed(Variant changed_properties, string[] invalidated_properties) {
-        print("props changed\n");
-    }
-
     private void on_g_signal(string? sender_name, string signal_name, Variant parameters) {
-        //print("sender: %s | signame: %s\n", sender_name, signal_name);
         switch (signal_name) {
             case "NewIcon":
-                get_properties(new MyList<string>("IconName"));
+                get_properties.begin(new MyList<string>("IconName"));
                 break;
             case "NewToolTip":
-                get_properties(new MyList<string>("ToolTip"));
+                get_properties.begin(new MyList<string>("ToolTip"));
                 break;
         }
     }
@@ -112,7 +83,6 @@ class TrayChild : Gtk.EventBox {
     private async DBusProxy get_properties(MyList<string> properties) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem");
         DBusProxy proxy = null;
-        string? tooltip = null;
         try {
             proxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
             properties.foreach((prop) => {
@@ -155,28 +125,23 @@ class TrayChild : Gtk.EventBox {
 
     private async void get_menu_layout(string busName, string menuPath) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(busName, menuPath, "com.canonical.dbusmenu");
-        uint32 revision;
-        int32 parent;
-        UpdProp[] updProps;
-        RemProp[] remProps;
 
         try {
-            this.menuProxy = yield Bus.get_proxy(BusType.SESSION, busName, menuPath);
-            string methodName = "GetLayout";
-            DBusMethodInfo? dmi = dii.lookup_method(methodName);
+            this.menuProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, busName, menuPath, "com.canonical.dbusmenu", null);
+            DBusMethodInfo? dmi = dii.lookup_method("GetLayout");
             if (dmi != null) {
-                this.menuProxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
+                //this.menuProxy.GetLayout(0, -1, {}, out revision, out this.menuLayout);
+                this.menuLayout = yield this.menuProxy.call("GetLayout", new Variant ("(ii^as)", 0, -1, new string[0]), DBusCallFlags.NONE, 5000, null);
+                VariantIter iter = this.menuLayout.iterator();
+                iter.next("u");
+                this.menuLayout = iter.next_value();
+                print("%s\n", this.menuLayout.get_type_string());
                 //this.menuProxy.LayoutUpdated.connect((ref revision, ref parent) => {print("upd\n");});
                 //this.menuProxy.ItemsPropertiesUpdated.connect(onPropsUpd);
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
-    }
-
-    private int onPropsUpd(out UpdProp[] updProps, out RemProp[] remProps) {
-        print("updprop\n");
-        return 0;
     }
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {

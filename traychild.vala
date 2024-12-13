@@ -63,7 +63,6 @@ class TrayChild : Gtk.EventBox {
             dmi = dii.lookup_method("SecondaryActivate");
         }
         this.activateName = dmi.name;
-        this.sNIProxy.g_signal.connect(on_prop_signal);
         this.button_release_event.connect(on_button_release);
         props_gotten();
     }
@@ -83,6 +82,7 @@ class TrayChild : Gtk.EventBox {
         DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem");
         try {
             this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
+            this.sNIProxy.g_signal.connect(on_prop_signal);
             properties.foreach((prop) => {
                 Variant? v = this.sNIProxy.get_cached_property(prop);
                 if (v != null) {
@@ -139,7 +139,7 @@ class TrayChild : Gtk.EventBox {
     }
 
     private void on_menu_signal(string? sender_name, string signal_name, Variant parameters) {
-        print("sender: %s, menu signal: %s\n", sender_name, signal_name);
+        //print("sender: %s, menu signal: %s\n", sender_name, signal_name);
     }
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {

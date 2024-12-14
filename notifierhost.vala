@@ -16,10 +16,9 @@ public class NotifierHost: Object
     }
     public string[] watcher_items()
     {
-        if (is_nested_watcher)
+        if (is_nested_watcher) {
             return nested_watcher.registered_status_notifier_items;
-        else
-        {
+        } else {
             NotifierWatcherIface? outer = null;
             try
             {
@@ -40,7 +39,7 @@ public class NotifierHost: Object
             conn.register_object("/StatusNotifierWatcher", nested_watcher);
             nested_watcher.register_status_notifier_host(object_path);
         } catch (Error e) {
-            debug("Could not register service. Waiting for external watcher\n");
+            debug("Could not register service. Waiting for external watcher: %s\n", e.message);
         }
     }
     private void create_nested_watcher()

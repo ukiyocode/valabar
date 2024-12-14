@@ -14,12 +14,14 @@ public class SystemTray : Gtk.Box, Gtk.Buildable
 
     public void on_host_added() {
         string[] items = notifierHost.watcher_items();
+        print("items ln: %i\n", items.length);
         for (int i = 0; i < items.length; i++) {
             add_tray_child(items[i]);
         }
     }
 
     private void on_item_added(string id) {
+        print("iii\n");
         add_tray_child(id);
     }
 

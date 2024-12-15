@@ -32,7 +32,7 @@ public class NotifierWatcher : Object
     public void register_status_notifier_host(string service) throws Error
     {
         /* FIXME: Hosts management untested with non-ValaPanel hosts*/
-        hosts.insert(service,Bus.watch_name(BusType.SESSION,service, BusNameWatcherFlags.NONE,
+        hosts.insert(service,Bus.watch_name(BusType.SESSION, service, BusNameWatcherFlags.NONE,
                 (connection, name, name_owner) => {print("name: %s, namown: %s\n", name, name_owner);},
                 () => {remove_host(service);}
                 ));

@@ -5,10 +5,12 @@ public class SystemTray : Gtk.Box, Gtk.Buildable
 
     public void parser_finished(Gtk.Builder builder) {
         items = new List<TrayChild>();
-        notifierHost = new NotifierHost("org.kde.StatusNotifierWatcher");
+        StatusNotifierWatcher snw = new StatusNotifierWatcher();
+        snw.RegisterStatusNotifierHost("org.kde.StatusNotifierWatcher");
+        /*notifierHost = new NotifierHost("org.kde.StatusNotifierWatcher");
         notifierHost.watcher_item_added.connect(on_item_added);
         notifierHost.watcher_item_removed.connect(on_item_removed);
-        notifierHost.watcher_host_added.connect(on_host_added);
+        notifierHost.watcher_host_added.connect(on_host_added);*/
         this.show_all();
     }
 

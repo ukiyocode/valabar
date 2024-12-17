@@ -1,41 +1,42 @@
 public class SystemTray : Gtk.Box, Gtk.Buildable
 {
     private List<TrayChild> items;
-    private NotifierHost notifierHost;
+    //private NotifierHost notifierHost;
+    private StatusNotifierWatcher notifierWatcher;
 
     public void parser_finished(Gtk.Builder builder) {
-        items = new List<TrayChild>();
-        StatusNotifierWatcher snw = new StatusNotifierWatcher();
-        snw.RegisterStatusNotifierHost("org.kde.StatusNotifierWatcher");
-        /*notifierHost = new NotifierHost("org.kde.StatusNotifierWatcher");
-        notifierHost.watcher_item_added.connect(on_item_added);
-        notifierHost.watcher_item_removed.connect(on_item_removed);
-        notifierHost.watcher_host_added.connect(on_host_added);*/
+        this.items = new List<TrayChild>();
+        this.notifierWatcher = new StatusNotifierWatcher();
+        this.notifierWatcher.StatusNotifierItemRegistered.connect(on_item_added);
+        this.notifierWatcher.StatusNotifierItemUnregistered.connect(on_item_removed);
+        //this.notifierWatcher.StatusNotifierHostRegistered.connect(on_host_added);
         this.show_all();
     }
 
-    public void on_host_added() {
-        string[] items = notifierHost.watcher_items();
-        print("items ln: %i\n", items.length);
+    public bool on_host_added() {
+        string[] items = notifierWatcher.RegisteredStatusNotifierItems;
         for (int i = 0; i < items.length; i++) {
             add_tray_child(items[i]);
         }
+        return true;
     }
 
-    private void on_item_added(string id) {
-        print("iii\n");
+    private bool on_item_added(string id) {
         add_tray_child(id);
+        return true;
     }
 
-    private void on_item_removed(string id) {
+    private bool on_item_removed(string id) {
         foreach (Gtk.Widget widget in this.get_children()) {
             TrayChild tc = (TrayChild)widget;
             DBusObject dbo = new DBusObject(id);
             if (tc.dBusObj.busName == dbo.busName) {
                 this.remove(tc);
                 tc = null;
+                return true;
             }
         }
+        return false;
     }
 
     private void add_tray_child(string id) {

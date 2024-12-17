@@ -18,7 +18,6 @@ dependencies = [
     dependency('libbamf3'),
     dependency('alsa'),
     meson.get_compiler('vala').find_library('posix'),
-    #dependency('dbusmenu-glib-0.4'),
     #dependency('libpulse'),
 ]
 
@@ -31,8 +30,6 @@ sources = files(
     'cpuusagemeter.vala',
     'graph.vala',
     'systemtray.vala',
-    'notifierwatcher.vala',
-    'notifierhost.vala',
     'traychild.vala',
     'clock.vala',
     'volume.vala',

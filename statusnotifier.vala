@@ -62,14 +62,17 @@ public class StatusNotifierWatcher : Object
         owned_name = Bus.own_name(BusType.SESSION, service, BusNameOwnerFlags.DO_NOT_QUEUE,
             null, //on_bus_acquired
             (connection) => { //on_name_acquired
+                print("in\n");
                 try {
                     connection.register_object(snwPath, this);
                     this.StatusNotifierHostRegistered();
                 } catch (IOError e) {
-                    error("Could not register StatusNotifierWatcher service: %s\n", e.message);
+                    error("Could not register StatusNotifierWatcher service: %s", e.message);
                 }
             },
-            null //on_name_lost
+            () => { //on_name_lost
+                error("Could not own StatusNotifierWatcher name.");
+            }
         );
     }
 

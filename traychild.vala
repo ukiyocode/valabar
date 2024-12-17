@@ -131,16 +131,21 @@ class TrayChild : Gtk.EventBox {
                 VariantIter iter = this.menuLayout.iterator();
                 iter.next("u");
                 this.menuLayout = iter.next_value();
-                this.menuProxy.g_signal.connect(on_menu_signal);
+                this.menuProxy.g_signal.connect((sender_name, signal_name) => {
+                    if (signal_name == "LayoutUpdated") {
+                        get_menu_layout.begin(busName, menuPath);
+                    }
+                });
             }
         } catch (Error e) {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
     }
 
-    private void on_menu_signal(string? sender_name, string signal_name, Variant parameters) {
-        //print("sender: %s, menu signal: %s\n", sender_name, signal_name);
-    }
+    /*private void on_menu_signal(string? sender_name, string signal_name, Variant parameters) {
+        print("sender: %s, menu signal: %s\n", sender_name, signal_name);
+        
+    }*/
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {
         mItem = null;

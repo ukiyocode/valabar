@@ -29,7 +29,6 @@ public class StatusNotifierWatcher : Object
         string busName = (string)sender;
         string servicePath = busName + service;
         uint watchedNameID = 0;
-        print("%s\n", servicePath);
     
         if (watchedNamesIDs.contains(servicePath)) {
             warning("Trying to register already registered item. Reregistering new...");
@@ -62,7 +61,6 @@ public class StatusNotifierWatcher : Object
         owned_name = Bus.own_name(BusType.SESSION, service, BusNameOwnerFlags.DO_NOT_QUEUE,
             null, //on_bus_acquired
             (connection) => { //on_name_acquired
-                print("in\n");
                 try {
                     connection.register_object(snwPath, this);
                     this.StatusNotifierHostRegistered();
@@ -71,7 +69,7 @@ public class StatusNotifierWatcher : Object
                 }
             },
             () => { //on_name_lost
-                error("Could not own StatusNotifierWatcher name.");
+                error("Could not own \"org.kde.StatusNotifierWatcher\" name. Is there another system tray application running?");
             }
         );
     }

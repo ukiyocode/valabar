@@ -3,10 +3,10 @@ private interface Introspectable : Object {
     public abstract string Introspect() throws Error;
 }
 
-class DBusObject : Object {
+class DBusPath : Object {
     public string busName { get; construct set; }
     public string objectPath { get; construct set; }
-    public DBusObject(string dBusPath) {
+    public DBusPath(string dBusPath) {
         string[] parts = dBusPath.split("/", 2);
         if (parts.length != 2) {
             error("Invalid input format in TrayChild.vala. Expected 'busName/objectPath'\n");
@@ -34,15 +34,32 @@ class MyList<T> : Object {
 class TrayChild : Gtk.EventBox {
     private Gtk.Image image;
     public signal void props_gotten();
-    public DBusObject dBusObj;
+    public DBusPath dBusPath;
     private string activateName;
     private DBusProxy sNIProxy;
     private DBusProxy menuProxy;
     private Variant menuLayout;
+    private StatusNotifierItem statusNotifierItem;
     
-    public TrayChild(string itemId) {
-        this.dBusObj = new DBusObject(itemId);
-        get_properties.begin(new MyList<string>("IconName", "Title", "ToolTip", "Menu"), on_properties_gotten);
+    public TrayChild(string dBusPath) {
+        this.dBusPath = new DBusPath(dBusPath);
+        this.statusNotifierItem = new StatusNotifierItem(dBusPath);
+        this.statusNotifierItem.itemReady.connect(onItemReady);
+        print("iii\n");
+        //get_properties.begin(new MyList<string>("IconName", "Title", "ToolTip", "Menu"), on_properties_gotten);
+    }
+
+    private void onItemReady() {
+        print("jjj\n");
+        if (this.get_children().length() != 0) {
+            this.remove(this.image);
+        }
+        this.image = new Gtk.Image.from_icon_name(this.statusNotifierItem.iconName, Gtk.IconSize.BUTTON);
+        this.image.pixel_size = ValaBar.btnSize;
+        this.add(this.image);
+
+        this.tooltip_text = this.statusNotifierItem.toolTip;
+        this.show_all();
     }
 
     private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
@@ -79,9 +96,9 @@ class TrayChild : Gtk.EventBox {
     }
 
     private async void get_properties(MyList<string> properties) {
-        DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem");
+        DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem");
         try {
-            this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusObj.busName, this.dBusObj.objectPath, "org.kde.StatusNotifierItem", null);
+            this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem", null);
             this.sNIProxy.g_signal.connect(on_prop_signal);
             properties.foreach((prop) => {
                 Variant? v = this.sNIProxy.get_cached_property(prop);
@@ -110,7 +127,7 @@ class TrayChild : Gtk.EventBox {
                             }
                             break;
                         case "Menu":
-                            get_menu_layout.begin(this.dBusObj.busName, v.get_string());
+                            get_menu_layout.begin(this.dBusPath.busName, v.get_string());
                             break;
                     }
                 }
@@ -141,11 +158,6 @@ class TrayChild : Gtk.EventBox {
             error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
         }
     }
-
-    /*private void on_menu_signal(string? sender_name, string signal_name, Variant parameters) {
-        print("sender: %s, menu signal: %s\n", sender_name, signal_name);
-        
-    }*/
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {
         mItem = null;

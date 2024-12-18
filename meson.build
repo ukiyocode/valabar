@@ -36,7 +36,8 @@ sources = files(
     'logger.vala',
     'battery.vala',
     'popup.vala',
-    'statusnotifier.vala',
+    'statusnotifierwatcher.vala',
+    'statusnotifieritem.vala',
 )
 
 

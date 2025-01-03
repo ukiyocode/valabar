@@ -41,7 +41,7 @@ public class SystemTray : Gtk.Box, Gtk.Buildable
 
     private void add_tray_child(string id) {
         TrayChild tc = new TrayChild(id);
-        tc.props_gotten.connect((tc) => {
+        tc.propertiesChanged.connect((tc) => {
             this.pack_end(tc, true, true, 5);
             this.show_all();
         });

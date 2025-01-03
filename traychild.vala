@@ -33,10 +33,9 @@ class MyList<T> : Object {
 
 class TrayChild : Gtk.EventBox {
     private Gtk.Image image;
-    public signal void props_gotten();
+    public signal void propertiesChanged();
     public DBusPath dBusPath;
-    private string activateName;
-    private DBusProxy sNIProxy;
+    //private DBusProxy sNIProxy;
     private DBusProxy menuProxy;
     private Variant menuLayout;
     private StatusNotifierItem statusNotifierItem;
@@ -45,12 +44,12 @@ class TrayChild : Gtk.EventBox {
         this.dBusPath = new DBusPath(dBusPath);
         this.statusNotifierItem = new StatusNotifierItem(dBusPath);
         this.statusNotifierItem.itemReady.connect(onItemReady);
-        print("iii\n");
+        //this.statusNotifierItem.updateProperties();
+        this.statusNotifierItem.getSNIProperties.begin((obj, res) => { this.statusNotifierItem.getSNIProperties.end(res); });
         //get_properties.begin(new MyList<string>("IconName", "Title", "ToolTip", "Menu"), on_properties_gotten);
     }
 
     private void onItemReady() {
-        print("jjj\n");
         if (this.get_children().length() != 0) {
             this.remove(this.image);
         }
@@ -59,7 +58,9 @@ class TrayChild : Gtk.EventBox {
         this.add(this.image);
 
         this.tooltip_text = this.statusNotifierItem.toolTip;
-        this.show_all();
+
+        this.button_release_event.connect(on_button_release);
+        propertiesChanged();
     }
 
     private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
@@ -73,7 +74,7 @@ class TrayChild : Gtk.EventBox {
         }
     }
 
-    private void on_properties_gotten(Object? obj, AsyncResult res) {
+    /*private void on_properties_gotten(Object? obj, AsyncResult res) {
         DBusInterfaceInfo dii = this.sNIProxy.get_interface_info();
         DBusMethodInfo? dmi = dii.lookup_method("Activate");
         if (dmi == null) {
@@ -81,21 +82,21 @@ class TrayChild : Gtk.EventBox {
         }
         this.activateName = dmi.name;
         this.button_release_event.connect(on_button_release);
-        props_gotten();
-    }
+        propertiesChanged();
+    }*/
 
     private void on_prop_signal(string? sender_name, string signal_name, Variant parameters) {
         switch (signal_name) {
             case "NewIcon":
-                get_properties.begin(new MyList<string>("IconName"));
+                //get_properties.begin(new MyList<string>("IconName"));
                 break;
             case "NewToolTip":
-                get_properties.begin(new MyList<string>("ToolTip"));
+                //get_properties.begin(new MyList<string>("ToolTip"));
                 break;
         }
     }
 
-    private async void get_properties(MyList<string> properties) {
+    /*private async void get_properties(MyList<string> properties) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem");
         try {
             this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem", null);
@@ -135,7 +136,7 @@ class TrayChild : Gtk.EventBox {
         } catch (Error e) {
             error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
         }
-    }
+    }*/
 
     private async void get_menu_layout(string busName, string menuPath) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(busName, menuPath, "com.canonical.dbusmenu");
@@ -222,7 +223,8 @@ class TrayChild : Gtk.EventBox {
         if (event.type == Gdk.EventType.BUTTON_RELEASE)
         {
             if (event.button == 1) { //left button
-                this.sNIProxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
+                //this.sNIProxy.call.begin(this.statusNotifierItem.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
+                this.statusNotifierItem.activate();
                 return true;
             } else if (event.button == 3) { //right button
                 Gtk.MenuItem mi;

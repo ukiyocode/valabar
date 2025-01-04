@@ -7,8 +7,8 @@ public class StatusNotifierItem : Object {
     private string? activateName;
     private const string sNIInterface = "org.kde.StatusNotifierItem";
     private const int asyncWait = 2000;
-    private string busName;
-    private string objectPath;
+    public string busName { get; private set; }
+    public string objectPath { get; private set; }
     DBusProxy sNIProxy;
 
     public StatusNotifierItem(string dBusPath) {
@@ -24,7 +24,9 @@ public class StatusNotifierItem : Object {
     }
 
     public void activate() {
-        this.sNIProxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, asyncWait);
+        if (this.activateName != null) {
+            this.sNIProxy.call.begin(this.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, asyncWait);
+        }
     }
 
     private async DBusInterfaceInfo? getInterfaceInfo(string interfaceName) {
@@ -43,12 +45,19 @@ public class StatusNotifierItem : Object {
         }
     }
 
+    private void onSNISignal(string? sender_name, string signal_name, Variant parameters) {
+        if ((signal_name == "NewIcon") || (signal_name == "NewToolTip")) {
+            this.getSNIProperties.begin();
+        }
+    }
+
     public async void getSNIProperties() {
         Variant? v;
         DBusInterfaceInfo dii;
         try {
             dii = yield getInterfaceInfo(sNIInterface);
             this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.busName, this.objectPath, sNIInterface);
+            this.sNIProxy.g_signal.connect(onSNISignal);
             v = this.sNIProxy.get_cached_property("Title");
             if (v != null) {
                 this.title = v.get_string();
@@ -72,6 +81,7 @@ public class StatusNotifierItem : Object {
             if (v != null) {
                 this.menuPath = v.get_string();
             }
+            this.activateName = null;
             //DBusInterfaceInfo dii = this.sNIProxy.get_interface_info();
             DBusMethodInfo? dmi = dii.lookup_method("Activate");
             if (dmi == null) {
@@ -80,7 +90,6 @@ public class StatusNotifierItem : Object {
             if (dmi != null) {
                 this.activateName = dmi.name;
             } else {
-                this.activateName = null;
                 warning("Couldn't find activateName in getSNIProperties() in StatusNotifierItem");
             }
             this.itemReady();

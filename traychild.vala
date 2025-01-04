@@ -16,37 +16,19 @@ class DBusPath : Object {
     }
 }
 
-class MyList<T> : Object {
-    private List<T> list;
-    public MyList(T a, ...) {
-        this.list = new List<T>();
-        this.list.append(a);
-        var vArgList = va_list();
-        for (T? arg = vArgList.arg<T?>(); arg != null ; arg = vArgList.arg<T?>()) {
-            this.list.append(arg);
-        }
-    }
-    public void @foreach(Func<T> func){
-        list.foreach(func);
-    }
-}
-
 class TrayChild : Gtk.EventBox {
-    private Gtk.Image image;
     public signal void propertiesChanged();
-    public DBusPath dBusPath;
-    //private DBusProxy sNIProxy;
+    public StatusNotifierItem statusNotifierItem { get; construct set; }
+    private Gtk.Image image;
     private DBusProxy menuProxy;
     private Variant menuLayout;
-    private StatusNotifierItem statusNotifierItem;
+    private ulong btnReleaseHandlerID; 
     
     public TrayChild(string dBusPath) {
-        this.dBusPath = new DBusPath(dBusPath);
         this.statusNotifierItem = new StatusNotifierItem(dBusPath);
         this.statusNotifierItem.itemReady.connect(onItemReady);
-        //this.statusNotifierItem.updateProperties();
         this.statusNotifierItem.getSNIProperties.begin((obj, res) => { this.statusNotifierItem.getSNIProperties.end(res); });
-        //get_properties.begin(new MyList<string>("IconName", "Title", "ToolTip", "Menu"), on_properties_gotten);
+        btnReleaseHandlerID = 0;
     }
 
     private void onItemReady() {
@@ -56,10 +38,11 @@ class TrayChild : Gtk.EventBox {
         this.image = new Gtk.Image.from_icon_name(this.statusNotifierItem.iconName, Gtk.IconSize.BUTTON);
         this.image.pixel_size = ValaBar.btnSize;
         this.add(this.image);
-
         this.tooltip_text = this.statusNotifierItem.toolTip;
 
-        this.button_release_event.connect(on_button_release);
+        if (btnReleaseHandlerID == 0) {
+            this.btnReleaseHandlerID = this.button_release_event.connect(on_button_release);
+        }
         propertiesChanged();
     }
 
@@ -85,7 +68,7 @@ class TrayChild : Gtk.EventBox {
         propertiesChanged();
     }*/
 
-    private void on_prop_signal(string? sender_name, string signal_name, Variant parameters) {
+    /*private void on_prop_signal(string? sender_name, string signal_name, Variant parameters) {
         switch (signal_name) {
             case "NewIcon":
                 //get_properties.begin(new MyList<string>("IconName"));
@@ -94,7 +77,7 @@ class TrayChild : Gtk.EventBox {
                 //get_properties.begin(new MyList<string>("ToolTip"));
                 break;
         }
-    }
+    }*/
 
     /*private async void get_properties(MyList<string> properties) {
         DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem");

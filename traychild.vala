@@ -1,8 +1,3 @@
-[DBus (name = "org.freedesktop.DBus.Introspectable")]
-private interface Introspectable : Object {
-    public abstract string Introspect() throws Error;
-}
-
 class DBusPath : Object {
     public string busName { get; construct set; }
     public string objectPath { get; construct set; }
@@ -20,14 +15,12 @@ class TrayChild : Gtk.EventBox {
     public signal void propertiesChanged();
     public StatusNotifierItem statusNotifierItem { get; construct set; }
     private Gtk.Image image;
-    private DBusProxy menuProxy;
-    private Variant menuLayout;
     private ulong btnReleaseHandlerID; 
     
     public TrayChild(string dBusPath) {
         this.statusNotifierItem = new StatusNotifierItem(dBusPath);
         this.statusNotifierItem.itemReady.connect(onItemReady);
-        this.statusNotifierItem.getSNIProperties.begin((obj, res) => { this.statusNotifierItem.getSNIProperties.end(res); });
+        this.statusNotifierItem.getSNIProperties.begin(true, (obj, res) => { this.statusNotifierItem.getSNIProperties.end(res); });
         btnReleaseHandlerID = 0;
     }
 
@@ -44,103 +37,6 @@ class TrayChild : Gtk.EventBox {
             this.btnReleaseHandlerID = this.button_release_event.connect(on_button_release);
         }
         propertiesChanged();
-    }
-
-    private async DBusInterfaceInfo? getInterfaceInfo(string busName, string objectPath, string interfaceName) {
-        try{
-            Introspectable proxy = yield Bus.get_proxy(BusType.SESSION, busName, objectPath);
-            string xmlData = proxy.Introspect();
-            DBusNodeInfo dni = new DBusNodeInfo.for_xml(xmlData);
-            return dni.lookup_interface(interfaceName);
-        } catch (Error e) {
-            error("Error in TrayChild.vala while introspecting: %s\n", e.message);
-        }
-    }
-
-    /*private void on_properties_gotten(Object? obj, AsyncResult res) {
-        DBusInterfaceInfo dii = this.sNIProxy.get_interface_info();
-        DBusMethodInfo? dmi = dii.lookup_method("Activate");
-        if (dmi == null) {
-            dmi = dii.lookup_method("SecondaryActivate");
-        }
-        this.activateName = dmi.name;
-        this.button_release_event.connect(on_button_release);
-        propertiesChanged();
-    }*/
-
-    /*private void on_prop_signal(string? sender_name, string signal_name, Variant parameters) {
-        switch (signal_name) {
-            case "NewIcon":
-                //get_properties.begin(new MyList<string>("IconName"));
-                break;
-            case "NewToolTip":
-                //get_properties.begin(new MyList<string>("ToolTip"));
-                break;
-        }
-    }*/
-
-    /*private async void get_properties(MyList<string> properties) {
-        DBusInterfaceInfo dii = yield getInterfaceInfo(this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem");
-        try {
-            this.sNIProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, this.dBusPath.busName, this.dBusPath.objectPath, "org.kde.StatusNotifierItem", null);
-            this.sNIProxy.g_signal.connect(on_prop_signal);
-            properties.foreach((prop) => {
-                Variant? v = this.sNIProxy.get_cached_property(prop);
-                if (v != null) {
-                    switch(prop) {
-                        case "IconName":
-                            if (this.get_children().length() != 0) {
-                                this.remove(this.image);
-                            }
-                            this.image = new Gtk.Image.from_icon_name(v.get_string(), Gtk.IconSize.BUTTON);
-                            this.image.pixel_size = ValaBar.btnSize;
-                            this.add(this.image);
-                            this.show_all();
-                            break;
-                        case "Title":
-                            this.tooltip_text = v.get_string();
-                            break;
-                        case "ToolTip":
-                            VariantIter iter = v.iterator();
-                            string s = "";
-                            iter.next("s");
-                            iter.next("a(iiay)");
-                            iter.next("s", out s);
-                            if (s != "") {
-                                this.tooltip_text = s;
-                            }
-                            break;
-                        case "Menu":
-                            get_menu_layout.begin(this.dBusPath.busName, v.get_string());
-                            break;
-                    }
-                }
-            });
-        } catch (Error e) {
-            error("Error in TrayChild.vala while getting StatusNotifierItem properties: %s\n", e.message);
-        }
-    }*/
-
-    private async void get_menu_layout(string busName, string menuPath) {
-        DBusInterfaceInfo dii = yield getInterfaceInfo(busName, menuPath, "com.canonical.dbusmenu");
-
-        try {
-            this.menuProxy = yield new DBusProxy.for_bus(BusType.SESSION, DBusProxyFlags.NONE, dii, busName, menuPath, "com.canonical.dbusmenu", null);
-            DBusMethodInfo? dmi = dii.lookup_method("GetLayout");
-            if (dmi != null) {
-                this.menuLayout = yield this.menuProxy.call("GetLayout", new Variant ("(ii^as)", 0, -1, new string[0]), DBusCallFlags.NONE, 5000, null);
-                VariantIter iter = this.menuLayout.iterator();
-                iter.next("u");
-                this.menuLayout = iter.next_value();
-                this.menuProxy.g_signal.connect((sender_name, signal_name) => {
-                    if (signal_name == "LayoutUpdated") {
-                        get_menu_layout.begin(busName, menuPath);
-                    }
-                });
-            }
-        } catch (Error e) {
-            error("Error in TrayChild.vala while getting dbusMenu: %s\n", e.message);
-        }
     }
 
     private Gtk.Menu makeMenu(Variant layout, out Gtk.MenuItem mItem) {
@@ -162,7 +58,7 @@ class TrayChild : Gtk.EventBox {
             menuItemContents.halign = Gtk.Align.START;
             menuItem.add(menuItemContents);
             menuItem.button_press_event.connect((event) => {
-                this.menuProxy.call.begin("Event", new Variant ("(isvu)", id, "clicked", new Variant.string(""), Gtk.get_current_event_time()), DBusCallFlags.NONE, 5000, null);
+                this.statusNotifierItem.menuItemClicked(id);
                 return true;
             });
 
@@ -206,17 +102,15 @@ class TrayChild : Gtk.EventBox {
         if (event.type == Gdk.EventType.BUTTON_RELEASE)
         {
             if (event.button == 1) { //left button
-                //this.sNIProxy.call.begin(this.statusNotifierItem.activateName, new Variant("(ii)", 0, 0), DBusCallFlags.NONE, 5000);
                 this.statusNotifierItem.activate();
                 return true;
             } else if (event.button == 3) { //right button
                 Gtk.MenuItem mi;
-                Gtk.Menu menu = makeMenu(this.menuLayout, out mi);
+                Gtk.Menu menu = makeMenu(this.statusNotifierItem.menuLayout, out mi);
                 if (menu != null) {
                     menu.attach_to_widget(widget, null);
                     menu.deactivate.connect(menu.destroy);
                     menu.show_all();
-                    //menu.popup_at_widget(widget, Gdk.Gravity.NORTH_EAST, Gdk.Gravity.SOUTH_EAST, event);
                     menu.popup_at_pointer(event);
                 }
                 return true;

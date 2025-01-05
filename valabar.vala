@@ -4,6 +4,7 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
     public static string exePath;
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
+    public string monitor { get; set; default = "0"; }
 
     private enum Struts {
         LEFT,
@@ -43,22 +44,38 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         }
     }
 
-    public void parser_finished(Gtk.Builder builder) {
-        this.move(this.x, this.y);
-        this.button_release_event.connect(on_button_release);
+    private Gdk.Rectangle getGeometry() {
+        Gdk.Display disp = this.screen.get_display();
+        int monitorNum = 0;
+        int monitorCount = disp.get_n_monitors();
 
+        if (this.monitor == "primary") {
+            return disp.get_primary_monitor().get_geometry();
+        }
+        for (int i = 0; i < monitorCount; i++) {
+            if (this.monitor.casefold() == disp.get_monitor(i).model.casefold()) {
+                return disp.get_monitor(i).get_geometry();
+            }
+        }
+        int.try_parse(this.monitor, out monitorNum);
+        return Gdk.Display.get_default().get_monitor(monitorNum).get_geometry();
+    }
+
+    public void parser_finished(Gtk.Builder builder) {
         int scale = this.get_scale_factor();
-        Gdk.Rectangle primary_monitor = this.screen.get_display().get_primary_monitor().get_geometry();
+        Gdk.Rectangle monitorGeometry = this.getGeometry();
         long struts[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         struts[Struts.BOTTOM] = this.default_height * scale;
-        struts[Struts.BOTTOM_START] = primary_monitor.x * scale;
-        struts[Struts.BOTTOM_END] = (primary_monitor.x + primary_monitor.width) * scale - 1;
+        struts[Struts.BOTTOM_START] = monitorGeometry.x * scale;
+        struts[Struts.BOTTOM_END] = (monitorGeometry.x + monitorGeometry.width) * scale - 1;
         this.realize();
         Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT", false), Gdk.Atom.intern("CARDINAL", false),
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 4);
         Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT_PARTIAL", false), Gdk.Atom.intern("CARDINAL", false),
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);
     
+        this.move(this.x + monitorGeometry.x, this.y + monitorGeometry.y);
+        this.button_release_event.connect(on_button_release);
         this.show_all();
     }
 

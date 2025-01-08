@@ -65,7 +65,7 @@ class TrayChild : Gtk.EventBox {
             while (iter2.next("{sv}", out key, out val)) {
                 switch(key) {
                     case "label":
-                        menuItemContents.pack_end(new Gtk.Label(val.get_string()), true, true, 5);
+                        menuItemContents.pack_end(new Gtk.Label(val.get_string().replace("_", "")), true, true, 5);
                         break;
                     case "icon-name":
                         menuItemContents.pack_start(new Gtk.Image.from_icon_name(val.get_string(), Gtk.IconSize.BUTTON), true, true, 5);

@@ -44,6 +44,21 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         }
     }
 
+    /*private int getScreenHeight(Gdk.Screen screen) {
+        Gdk.Display disp = this.screen.get_display();
+        int monitorCount = disp.get_n_monitors();
+        int screenHeight = 0;
+        Gdk.Rectangle geom;
+
+        for (int i = 0; i < monitorCount; i++) {
+            geom = disp.get_monitor(i).get_geometry();
+            if ((geom.y + geom.height) > screenHeight) {
+                screenHeight = geom.y + geom.height;
+            }
+        }
+        return screenHeight;
+    }*/
+
     private Gdk.Rectangle getGeometry() {
         Gdk.Display disp = this.screen.get_display();
         int monitorNum = 0;
@@ -65,10 +80,11 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         int scale = this.get_scale_factor();
         Gdk.Rectangle monitorGeometry = this.getGeometry();
         long struts[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        this.realize();
+        //print("%i\n", (this.getScreenHeight(this.screen) - (monitorGeometry.y + this.y)) * scale);
         struts[Struts.BOTTOM] = this.default_height * scale;
         struts[Struts.BOTTOM_START] = monitorGeometry.x * scale;
         struts[Struts.BOTTOM_END] = (monitorGeometry.x + monitorGeometry.width) * scale - 1;
-        this.realize();
         Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT", false), Gdk.Atom.intern("CARDINAL", false),
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 4);
         Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT_PARTIAL", false), Gdk.Atom.intern("CARDINAL", false),

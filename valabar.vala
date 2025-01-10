@@ -128,6 +128,7 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
 
     public static int main(string[] args)
     {
+        print("%s\n", GLib.Environment.get_variable("XDG_SESSION_TYPE"));
         try {
             ValaBar.exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
         } catch (FileError fe) {

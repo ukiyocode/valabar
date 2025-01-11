@@ -37,8 +37,10 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         return ret;
     }
 
-    public void set_buildable_property(Gtk.Builder builder, string name, Value value) {
+    /*public void set_buildable_property(Gtk.Builder builder, string name, Value value) {
+        print("ggg %s\n", name);
         base.set_buildable_property(builder, name, value);
+        print("zzz\n");
         if (name == "default-height") {
             btnSize = value.get_int() - 3;
         }
@@ -60,20 +62,23 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
     }*/
 
     private Gdk.Rectangle getGeometry() {
-        Gdk.Display disp = this.screen.get_display();
-        int monitorNum = 0;
-        int monitorCount = disp.get_n_monitors();
+        Gdk.Display disp = this.display;
+        ListModel monitors = disp.get_monitors();
+        uint monitorNum = 0;
+        uint monitorCount = monitors.get_n_items();
 
-        if (this.monitor == "primary") {
-            return disp.get_primary_monitor().get_geometry();
-        }
-        for (int i = 0; i < monitorCount; i++) {
-            if (this.monitor.casefold() == disp.get_monitor(i).model.casefold()) {
+        for (uint i = 0; i < monitorCount; i++) {
+            Gdk.Monitor mon = (Gdk.Monitor)monitors.get_item(i);
+            print("desc: %s\n", mon.description);
+            print("connector: %s\n", mon.connector);
+            print("model: %s\n", mon.model);
+            print("manuf: %s\n", mon.manufacturer);
+            /*if (this.monitor.casefold() == disp.get_monitor(i).model.casefold()) {
                 return disp.get_monitor(i).get_geometry();
-            }
+            }*/
         }
-        int.try_parse(this.monitor, out monitorNum);
-        return Gdk.Display.get_default().get_monitor(monitorNum).get_geometry();
+        //int.try_parse(this.monitor, out monitorNum);
+        return ((Gdk.Monitor)monitors.get_item(0)).geometry;//disp.get_monitor(monitorNum).get_geometry();
     }
 
     public void parser_finished(Gtk.Builder builder) {
@@ -85,17 +90,17 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         struts[Struts.BOTTOM] = this.default_height * scale;
         struts[Struts.BOTTOM_START] = monitorGeometry.x * scale;
         struts[Struts.BOTTOM_END] = (monitorGeometry.x + monitorGeometry.width) * scale - 1;
-        Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT", false), Gdk.Atom.intern("CARDINAL", false),
+        /*Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT", false), Gdk.Atom.intern("CARDINAL", false),
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 4);
         Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT_PARTIAL", false), Gdk.Atom.intern("CARDINAL", false),
-            32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);
+            32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);*/
     
-        this.move(this.x + monitorGeometry.x, this.y + monitorGeometry.y);
-        this.button_release_event.connect(on_button_release);
-        this.show_all();
+        //this.move(this.x + monitorGeometry.x, this.y + monitorGeometry.y);
+        //this.button_release_event.connect(on_button_release);
+        //this.show_all();
     }
 
-    private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {
+    /*private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {
         if (event.type == Gdk.EventType.BUTTON_RELEASE)
         {
             if (event.button == 3) { //right button
@@ -124,9 +129,9 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         }
         dialog.close ();
         return true;
-    }
+    }*/
 
-    public static int main(string[] args)
+    /*public static int main(string[] args)
     {
         print("%s\n", GLib.Environment.get_variable("XDG_SESSION_TYPE"));
         try {
@@ -138,9 +143,9 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         
         Gtk.Builder builder;
 
-        Gtk.init (ref args);
+        Gtk.init();
         builder = new Gtk.Builder ();
-        try {
+        /*try {
             Gtk.CssProvider css_provider = new Gtk.CssProvider();
             css_provider.load_from_path(ValaBar.exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
@@ -153,5 +158,5 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         Gtk.main ();
 
         return 0;
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-public class ValaBar : Gtk.Window, Gtk.Buildable
+public class ValaBar : Gtk.ApplicationWindow, Gtk.Buildable
 {
     public static int btnSize;
     public static string exePath;
@@ -69,24 +69,27 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
 
         for (uint i = 0; i < monitorCount; i++) {
             Gdk.Monitor mon = (Gdk.Monitor)monitors.get_item(i);
-            print("desc: %s\n", mon.description);
-            print("connector: %s\n", mon.connector);
-            print("model: %s\n", mon.model);
-            print("manuf: %s\n", mon.manufacturer);
-            /*if (this.monitor.casefold() == disp.get_monitor(i).model.casefold()) {
-                return disp.get_monitor(i).get_geometry();
-            }*/
+            if (this.monitor.casefold() == mon.connector.casefold()) {
+                return mon.get_geometry();
+            }
         }
-        //int.try_parse(this.monitor, out monitorNum);
-        return ((Gdk.Monitor)monitors.get_item(0)).geometry;//disp.get_monitor(monitorNum).get_geometry();
+        int.try_parse(this.monitor, out monitorNum);;
+        return ((Gdk.Monitor)monitors.get_item(monitorNum)).geometry;
     }
 
     public void parser_finished(Gtk.Builder builder) {
         int scale = this.get_scale_factor();
         Gdk.Rectangle monitorGeometry = this.getGeometry();
         long struts[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        this.realize();
-        //print("%i\n", (this.getScreenHeight(this.screen) - (monitorGeometry.y + this.y)) * scale);
+    
+        this.present();
+        if (this.display is Gdk.X11.Display) {
+            unowned X.Display xdisplay = ((Gdk.X11.Display)display).get_xdisplay();
+            Gdk.Surface surface = this.get_surface();
+            if (surface is Gdk.X11.Surface) {
+                xdisplay.move_window(((Gdk.X11.Surface)surface).get_xid(), this.x + monitorGeometry.x, this.y + monitorGeometry.y);
+            }
+        }
         struts[Struts.BOTTOM] = this.default_height * scale;
         struts[Struts.BOTTOM_START] = monitorGeometry.x * scale;
         struts[Struts.BOTTOM_END] = (monitorGeometry.x + monitorGeometry.width) * scale - 1;
@@ -94,10 +97,8 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 4);
         Gdk.property_change(this.get_window(), Gdk.Atom.intern("_NET_WM_STRUT_PARTIAL", false), Gdk.Atom.intern("CARDINAL", false),
             32, Gdk.PropMode.REPLACE, (uint8[])struts, 12);*/
-    
-        //this.move(this.x + monitorGeometry.x, this.y + monitorGeometry.y);
+
         //this.button_release_event.connect(on_button_release);
-        //this.show_all();
     }
 
     /*private bool on_button_release(Gtk.Widget widget, Gdk.EventButton event) {
@@ -129,34 +130,5 @@ public class ValaBar : Gtk.Window, Gtk.Buildable
         }
         dialog.close ();
         return true;
-    }*/
-
-    /*public static int main(string[] args)
-    {
-        print("%s\n", GLib.Environment.get_variable("XDG_SESSION_TYPE"));
-        try {
-            ValaBar.exePath = GLib.Path.get_dirname(GLib.FileUtils.read_link("/proc/self/exe"));
-        } catch (FileError fe) {
-            error("Couldn't get exePath: %s", fe.message);
-        }
-        Logger.init_logging();
-        
-        Gtk.Builder builder;
-
-        Gtk.init();
-        builder = new Gtk.Builder ();
-        /*try {
-            Gtk.CssProvider css_provider = new Gtk.CssProvider();
-            css_provider.load_from_path(ValaBar.exePath + "/style.css");
-            Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
-            builder.add_from_file(ValaBar.exePath + "/valabar.ui");
-            builder.connect_signals(null);
-        } catch (Error e) {
-            error("Could not load UI: %s\n", e.message);
-        }
-
-        Gtk.main ();
-
-        return 0;
     }*/
 }

@@ -21,6 +21,11 @@ public class ValaBarApp : Gtk.Application {
             css_provider.load_from_path(ValaBar.exePath + "/style.css");
             Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
             builder.add_from_file(ValaBar.exePath + "/valabar.ui");
+            Gtk.Window window = builder.get_object("window") as Gtk.ApplicationWindow;
+            if (window == null) {
+                error("Failed to load the main window.");
+            }
+            window.application = this;
             //builder.connect_signals(null);
         } catch (Error e) {
             error("Could not load UI: %s\n", e.message);

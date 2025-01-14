@@ -9,15 +9,17 @@ add_project_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language: 'c')
 add_project_link_arguments('-lm', language: 'c')
 
 dependencies = [
-    dependency('gio-unix-2.0'),
+    dependency('x11'),
+    #dependency('gio-unix-2.0'),
     dependency('glib-2.0'),
-    dependency('gobject-2.0'),
+    #dependency('gobject-2.0'),
     dependency('gtk4'),
+    dependency('gtk4-x11'),
     dependency('gmodule-2.0'),
     #dependency('libwnck-3.0'),
     dependency('libbamf3'),
-    dependency('alsa'),
-    meson.get_compiler('vala').find_library('posix'),
+    #dependency('alsa'),
+    #meson.get_compiler('vala').find_library('posix'),
     
     #dependency('libpulse'),
 ]

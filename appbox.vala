@@ -13,21 +13,18 @@ public class AppBox : Gtk.Box
             this._appInfo = new GLib.DesktopAppInfo.from_filename(this.desktop_file);
         }
         button.appInfo = this._appInfo;
-        this.add(button);
-    }
-
-    public AppButton getFirstChild() { 
-        return (AppButton)this.get_children().nth_data(0);
+        this.append(button);
     }
 
     public bool hasChildren() {
-        if (this.get_children().length() == 0) {
+        if (this.get_first_child() == null) {
             return false;
         }
         return true;
     }
 
     public uint getChildrenCount() {
-        return this.get_children().length();
+        return this.observe_children().get_n_items();
+        //return this.get_children().length();
     }
 }

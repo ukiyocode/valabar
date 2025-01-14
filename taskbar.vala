@@ -5,12 +5,14 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
     public void parser_finished(Gtk.Builder builder) {
         this._launchers = new List<AppBox>();
 
-        foreach (Gtk.Widget child in this.get_children()) {
+        Gtk.Widget child = this.get_first_child();
+        while (child != null) {
             AppBox abox = (AppBox)child;
             this._launchers.append(abox);
-            abox.add (new AppButton.fromDesktopFile(abox.desktop_file));
+            abox.append(new AppButton.fromDesktopFile(abox.desktop_file));
+            child = child.get_next_sibling();
         }
-        Wnck.Screen scr = Wnck.Screen.get_default ();
+        /*Wnck.Screen scr = Wnck.Screen.get_default ();
         if (scr == null) {
             error("Unable to get the default screen.\n");
         }
@@ -21,10 +23,10 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
             on_window_opened(win);
         }
         scr.window_closed.connect(on_window_closed);
-        scr.window_opened.connect(on_window_opened);
+        scr.window_opened.connect(on_window_opened);*/
     }
 
-    private void on_window_closed(Wnck.Window win) {
+    /*private void on_window_closed(Wnck.Window win) {
         foreach (Gtk.Widget widget in this.get_children()) {
             AppBox abox = (AppBox)widget;
             foreach (Gtk.Widget child in abox.get_children()) {
@@ -53,7 +55,7 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
             string desktop_file = Bamf.Matcher.get_default().get_application_for_xid((uint32)win.get_xid()).get_desktop_file();
             foreach (Gtk.Widget widget in this.get_children()) {
                 AppBox abox = (AppBox)widget;
-                AppButton abutt = abox.getFirstChild();
+                AppButton abutt = abox.get_first_child();
                 if (abox.desktop_file == desktop_file) {
                     if (!abutt.isRunning()) {
                         abutt.init_for_window(win);
@@ -69,5 +71,5 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
             this.add(new AppBox.with_button(new AppButton(win))); 
             this.show_all();
         }
-    }
+    }*/
 }

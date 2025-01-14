@@ -10,7 +10,7 @@ add_project_link_arguments('-lm', language: 'c')
 
 dependencies = [
     dependency('x11'),
-    #dependency('gio-unix-2.0'),
+    dependency('gio-unix-2.0'),
     dependency('glib-2.0'),
     #dependency('gobject-2.0'),
     dependency('gtk4'),
@@ -28,9 +28,9 @@ sources = files(
     'valabarapp.vala',
     'valabar.vala',
     #'appchooser.vala',
-    #'taskbar.vala',
-    #'appbutton.vala',
-    #'appbox.vala',
+    'taskbar.vala',
+    'appbutton.vala',
+    'appbox.vala',
     #'cpuusagemeter.vala',
     #'graph.vala',
     #'systemtray.vala',

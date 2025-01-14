@@ -17,12 +17,11 @@
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <!--
         <child>
           <object class="TaskBar" id="taskbar">
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <property name="spacing">1</property>
-            <child>
+            <!--child>
               <object class="AppBox">
                 <property name="desktop-file">/usr/share/applications/nemo.desktop</property>
               </object>
@@ -62,14 +61,15 @@
                 <property name="desktop-file">/usr/share/applications/codium.desktop</property>
               </object>
             </child>
+          -->
           </object>
-          <packing>
+          <!--packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">0</property>
-          </packing>
+          </packing-->
         </child>
-        <child>
+        <!--child>
           <object class="CPUUsageMeter" id="cpu-usage-meter">
             <property name="interval">2000</property>
           </object>

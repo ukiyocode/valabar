@@ -1,6 +1,6 @@
 public class ValaBar : Gtk.ApplicationWindow, Gtk.Buildable
 {
-    public static int btnSize;
+    public const int btnSizeDelta = 3;
     public static string exePath;
     public int x { get; set; default = 0; }
     public int y { get; set; default = 0; }
@@ -35,15 +35,6 @@ public class ValaBar : Gtk.ApplicationWindow, Gtk.Buildable
             error("Error in battery get_line_from_file: %s\n", e.message);
         }
         return ret;
-    }
-
-    /*public void set_buildable_property(Gtk.Builder builder, string name, Value value) {
-        print("ggg %s\n", name);
-        base.set_buildable_property(builder, name, value);
-        print("zzz\n");
-        if (name == "default-height") {
-            btnSize = value.get_int() - 3;
-        }
     }
 
     /*private int getScreenHeight(Gdk.Screen screen) {

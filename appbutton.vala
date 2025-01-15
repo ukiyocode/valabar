@@ -2,13 +2,13 @@ public class AppButton : Gtk.Button
 {
     public ulong xid { get; }
     //public Wnck.Application app { get; }
-    //public Wnck.Window window { get; }
+    public Bamf.Window window { get; }
     public DesktopAppInfo appInfo { get; set; }
     private int _imgSize;
 
-    /*public AppButton(Wnck.Window window) {
+    public AppButton(Bamf.Window window) {
         this.init_for_window(window);
-    }*/
+    }
 
     public AppButton.fromDesktopFile(string dFileName) {
         this.init_for_dfile(dFileName);
@@ -38,8 +38,8 @@ public class AppButton : Gtk.Button
         //this.button_press_event.connect(onButtonPress);*/
     }
 
-    /*public void init_for_window(Wnck.Window window) {
-        this._app = window.get_application();
+    public void init_for_window(Bamf.Window window) {
+        /*this._app = window.get_application();
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
         this._imgSize = ValaBar.btnSize;
@@ -49,13 +49,13 @@ public class AppButton : Gtk.Button
         this.set_tooltip_text(this._window.get_name());
         this._window.icon_changed.connect(on_icon_changed);
         this._window.name_changed.connect(on_name_changed);
-        this.button_press_event.connect(onButtonPress);
-    }*/
+        this.button_press_event.connect(onButtonPress);*/
+    }
 
     public bool isRunning() {
-        /*if (this._window != null) {
+        if (this._window != null) {
             return true;
-        }*/
+        }
         return false;
     }
 

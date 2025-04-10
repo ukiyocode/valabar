@@ -11,7 +11,8 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
         while (child != null) {
             AppBox abox = (AppBox)child;
             this.launchers.append(abox);
-            abox.append(new AppButton.fromDesktopFile(abox.bamfApp.get_desktop_file()));
+            //abox.append(new AppButton.fromDesktopFile(abox.bamfApp.get_desktop_file()));
+            abox.append(new AppButton.fromDesktopFile(abox.desktop_file));
             child = child.get_next_sibling();
         }
         
@@ -19,10 +20,7 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
         foreach (Bamf.Window win in windows) {
             on_window_opened(win);
         }
-        /*unowned List<Wnck.Window> windows = scr.get_windows();
-        foreach (Wnck.Window win in windows) {
-            on_window_opened(win);
-        }
+        /*
         scr.window_closed.connect(on_window_closed);
         scr.window_opened.connect(on_window_opened);*/
     }
@@ -53,15 +51,19 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
 
     private void on_window_opened(Bamf.Window win) {
         if (win.is_user_visible()) {
-            //string desktop_file = matcher.get_application_for_xid(win.get_xid()).get_desktop_file();
+            print("---------------------------------------------------------------------\n");
             Bamf.Application bamfApp = matcher.get_application_for_xid(win.get_xid());
-            //print("%s\n", desktop_file);
+            print("win name: %s\n", win.get_name());
+            print("app name: %s\n", bamfApp.get_name());
             Gtk.Widget child = this.get_first_child();
+            int ii = 0;
             while (child != null) {
+                print("i: %i\n", ii);
+                ii++;
                 AppBox abox = (AppBox)child;
+                print("namee: %s\n", abox.bamfApp.get_name());
                 AppButton abutt = (AppButton)abox.get_first_child();
-                if (abox.bamfApp == bamfApp) {
-                    print("name: %s\n", bamfApp.get_name());
+                if (abox.bamfApp.get_name() == bamfApp.get_name()) {
                     /*if (!abutt.isRunning()) {
                         abutt.init_for_window(win);
                         //this.show_all(); queue_draw()??
@@ -74,21 +76,6 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
                 }
                 child = child.get_next_sibling();
             }
-            /*foreach (Gtk.Widget widget in this.get_children()) {
-                AppBox abox = (AppBox)widget;
-                AppButton abutt = abox.get_first_child();
-                if (abox.desktop_file == desktop_file) {
-                    if (!abutt.isRunning()) {
-                        abutt.init_for_window(win);
-                        this.show_all();
-                        return;
-                    } else {
-                        abox.addButton(new AppButton(win));
-                        this.show_all();
-                        return;
-                    }
-                }
-            }*/
             this.append(new AppBox.with_button(new AppButton(win))); 
             //this.show_all();
         }

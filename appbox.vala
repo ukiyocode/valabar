@@ -1,11 +1,11 @@
 public class AppBox : Gtk.Box
 {
-    //public string desktop_file { get; set; }
+    public string desktop_file { get; set; }
     public Bamf.Application bamfApp { get; private set; }
     private DesktopAppInfo _appInfo;
 
     public AppBox.with_button(AppButton button) {
-        //this.desktop_file = Bamf.Matcher.get_default().get_application_for_xid((uint32)button.xid).get_desktop_file();
+        this.desktop_file = Bamf.Matcher.get_default().get_application_for_xid((uint32)button.xid).get_desktop_file();
         this.bamfApp = Bamf.Matcher.get_default().get_application_for_xid((uint32)button.xid);
         this.addButton(button);
     }

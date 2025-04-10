@@ -4,6 +4,7 @@ public class AppButton : Gtk.Button
     //public Wnck.Application app { get; }
     public Bamf.Window window { get; }
     public DesktopAppInfo appInfo { get; set; }
+    private Gtk.Image image;
     private int _imgSize;
 
     public AppButton(Bamf.Window window) {
@@ -15,27 +16,30 @@ public class AppButton : Gtk.Button
     }
 
     public void init_for_dfile(string dFileName) {
-        /*//this._app = null;
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
 
-        print("default_height: %i", this.get_height());
         this._imgSize = 27;//ValaBar.btnSize;
-        //this._window = null;
+        this._window = null;
         this._xid = 0;
         if ((dFileName != "") && (dFileName != null)) {
             this.appInfo = new GLib.DesktopAppInfo.from_filename(dFileName);
-            try {
-                this.image = prepare_image(Gtk.IconTheme.get_default().lookup_by_gicon(this.appInfo.get_icon(), this._imgSize, 0).load_icon());
-            } catch (Error e) {
-                stderr.printf("Error while loading icon in appbuton init: %s\n", e.message);
+            GLib.Icon? gicon = appInfo.get_icon();
+            if (gicon == null) {
+                warning("Could not retrieve icon from desktop file: %s", dFileName);
+                // Create a fallback if icon retrieval fails
+            } else {
+                Gtk.Image iconImage = new Gtk.Image();
+                iconImage.set_from_gicon(gicon);
+                iconImage.set_pixel_size(this._imgSize);
+                this.set_child(iconImage);
             }
             this.set_tooltip_text(this.appInfo.get_display_name());
         }
-        Gtk.GestureClick buttonPressGesture = new Gtk.GestureClick() { button = 0 }; //Any Button
+        /*Gtk.GestureClick buttonPressGesture = new Gtk.GestureClick() { button = 0 }; //Any Button
         buttonPressGesture.released.connect(onButtonPress);
-        this.add_controller(buttonPressGesture);
-        //this.button_press_event.connect(onButtonPress);*/
+        this.add_controller(buttonPressGesture);*/
+        //this.button_press_event.connect(onButtonPress);
     }
 
     public void init_for_window(Bamf.Window window) {

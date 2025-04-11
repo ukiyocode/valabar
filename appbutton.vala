@@ -36,24 +36,26 @@ public class AppButton : Gtk.Button
             }
             this.set_tooltip_text(this.appInfo.get_display_name());
         }
-        /*Gtk.GestureClick buttonPressGesture = new Gtk.GestureClick() { button = 0 }; //Any Button
-        buttonPressGesture.released.connect(onButtonPress);
-        this.add_controller(buttonPressGesture);*/
+        Gtk.GestureClick buttonPressGesture = new Gtk.GestureClick();
+        buttonPressGesture.set_button(3); //3 = Right Button
+        buttonPressGesture.released.connect(onRightButtonPress);
+        this.add_controller(buttonPressGesture);
+        this.clicked.connect(onLeftButtonPress);
         //this.button_press_event.connect(onButtonPress);
     }
 
     public void init_for_window(Bamf.Window window) {
-        /*this._app = window.get_application();
+        //this._app = window.get_application();
         this.halign = Gtk.Align.START;
         this.valign = Gtk.Align.CENTER;
-        this._imgSize = ValaBar.btnSize;
+        this._imgSize = 27;//ValaBar.btnSize;
         this._window = window;
         this._xid = this._window.get_xid();
-        this.image = prepare_image(this._window.get_icon());
+        //this.image = prepare_image(this._window.get_icon());
         this.set_tooltip_text(this._window.get_name());
         this._window.icon_changed.connect(on_icon_changed);
         this._window.name_changed.connect(on_name_changed);
-        this.button_press_event.connect(onButtonPress);*/
+        //this.button_press_event.connect(onButtonPress);
     }
 
     public bool isRunning() {
@@ -127,7 +129,25 @@ public class AppButton : Gtk.Button
         return true;
     }
 
-    private bool onButtonPress(int n_press, double x, double y) {//Gtk.Widget widget, Gdk.EventButton event) {
+    private void onLeftButtonPress(Gtk.Button button) {
+        print("running?:%s\n", this.isRunning().to_string());
+        if (this.isRunning()) {
+            if (!this._window.is_active()) {
+                //this._window.activate(Gtk.get_current_event_time());           
+            }
+            else {
+                //this._window.minimize();
+            }
+        } else {
+            try {
+                this._appInfo.launch(null, new AppLaunchContext());
+            } catch (Error e) {
+                stderr.printf("Error while launching app: %s\n", e.message);
+            }
+        }
+    }
+    private void onRightButtonPress(int n_press, double x, double y) {//Gtk.Widget widget, Gdk.EventButton event) {
+        print("event butt %i\n", n_press);
         /*if (event.type == Gdk.EventType.BUTTON_PRESS)
         {
             AppButton ab = (AppButton)widget;
@@ -198,6 +218,5 @@ public class AppButton : Gtk.Button
                 return true;
             }
         }*/
-        return false;
     }
 }

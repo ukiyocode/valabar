@@ -42,6 +42,7 @@ sources = files(
     #'popup.vala',
     #'statusnotifierwatcher.vala',
     #'statusnotifieritem.vala',
+    'wmicon.vala',
 )
 
 

@@ -29,8 +29,7 @@ public class AppButton : Gtk.Button
                 warning("Could not retrieve icon from desktop file: %s", dFileName);
                 // Create a fallback if icon retrieval fails
             } else {
-                Gtk.Image iconImage = new Gtk.Image();
-                iconImage.set_from_gicon(gicon);
+                Gtk.Image iconImage = new Gtk.Image.from_gicon(gicon);
                 iconImage.set_pixel_size(this._imgSize);
                 this.set_child(iconImage);
             }
@@ -41,7 +40,6 @@ public class AppButton : Gtk.Button
         buttonPressGesture.released.connect(onRightButtonPress);
         this.add_controller(buttonPressGesture);
         this.clicked.connect(onLeftButtonPress);
-        //this.button_press_event.connect(onButtonPress);
     }
 
     public void init_for_window(Bamf.Window window) {
@@ -51,6 +49,12 @@ public class AppButton : Gtk.Button
         this._imgSize = 27;//ValaBar.btnSize;
         this._window = window;
         this._xid = this._window.get_xid();
+
+        Gtk.Image iconImage = new WMIcon(this._window.get_xid()).iconImage;
+        iconImage.set_pixel_size(this._imgSize);
+        this.set_child(iconImage);
+
+        print("icon: %s\n", this._window.get_icon());
         //this.image = prepare_image(this._window.get_icon());
         this.set_tooltip_text(this._window.get_name());
         this._window.icon_changed.connect(on_icon_changed);
@@ -60,7 +64,6 @@ public class AppButton : Gtk.Button
         buttonPressGesture.released.connect(onRightButtonPress);
         this.add_controller(buttonPressGesture);
         this.clicked.connect(onLeftButtonPress);
-        //this.button_press_event.connect(onButtonPress);
     }
 
     public bool isRunning() {
@@ -135,7 +138,6 @@ public class AppButton : Gtk.Button
     }
 
     private void onLeftButtonPress(Gtk.Button button) {
-        print("hhh running?:%s\n", this.isRunning().to_string());
         if (this.isRunning()) {
             if (!this._window.is_active()) {
                 //this._window.activate(Gtk.get_current_event_time());           

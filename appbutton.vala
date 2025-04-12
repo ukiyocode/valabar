@@ -55,6 +55,11 @@ public class AppButton : Gtk.Button
         this.set_tooltip_text(this._window.get_name());
         this._window.icon_changed.connect(on_icon_changed);
         this._window.name_changed.connect(on_name_changed);
+        Gtk.GestureClick buttonPressGesture = new Gtk.GestureClick();
+        buttonPressGesture.set_button(3); //3 = Right Button
+        buttonPressGesture.released.connect(onRightButtonPress);
+        this.add_controller(buttonPressGesture);
+        this.clicked.connect(onLeftButtonPress);
         //this.button_press_event.connect(onButtonPress);
     }
 
@@ -130,7 +135,7 @@ public class AppButton : Gtk.Button
     }
 
     private void onLeftButtonPress(Gtk.Button button) {
-        print("running?:%s\n", this.isRunning().to_string());
+        print("hhh running?:%s\n", this.isRunning().to_string());
         if (this.isRunning()) {
             if (!this._window.is_active()) {
                 //this._window.activate(Gtk.get_current_event_time());           

@@ -69,12 +69,10 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
                     AppButton abutt = (AppButton)abox.get_first_child();
                     if (abox.bamfApp.get_name() == bamfApp.get_name()) {
                         if (!abutt.isRunning()) {
-                            print("not running\n");
                             abutt.init_for_window(win);
                             //this.show_all(); queue_draw()??
                             return;
                         } else {
-                            print("running\n");
                             abox.addButton(new AppButton(win));
                             //this.show_all();
                             return;

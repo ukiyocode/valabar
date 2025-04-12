@@ -27,27 +27,22 @@ public class TaskBar : Gtk.Box, Gtk.Buildable
         if (view is Bamf.Window) {
             Bamf.Window win = (Bamf.Window)view;
             Gtk.Widget widget = this.get_first_child();
-            //foreach (Gtk.Widget widget in this.get_children()) {
             while (widget != null) {
                 AppBox abox = (AppBox)widget;
-                Gtk.Widget child = this.get_first_child();
+                Gtk.Widget child = abox.get_first_child();
                 while (child != null) {
-                //foreach (Gtk.Widget child in abox.get_children()) {
                     AppButton abutt = (AppButton)child;
                     if (abutt.xid == win.get_xid()) {
                         foreach (AppBox ln in this.launchers) {
                             if ((abox.desktop_file == ln.desktop_file) && (abox.getChildrenCount() == 1)) {
                                 abutt.init_for_dfile(abox.desktop_file);
-                                //this.show_all();
                                 return;
                             }
                         }
                         abox.remove(abutt);
-                        //this.show_all();
                         if (!abox.hasChildren()) {
                             this.remove(abox);
                         }
-                        //this.show_all();
                     }
                     child = child.get_next_sibling();
                 }

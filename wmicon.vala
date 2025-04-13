@@ -7,5 +7,8 @@ public class WMIcon : Object
         print("Xid: %lu\n", xid);
         iconName = "image-missing-symbolic";
         iconImage = new Gtk.Image.from_icon_name(iconName);
+
+        var disp = Gdk.Display.get_default();
+        print("disp: %s\n", disp.get_type().name());
     }
 }

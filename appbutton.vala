@@ -140,10 +140,28 @@ public class AppButton : Gtk.Button
     private void onLeftButtonPress(Gtk.Button button) {
         if (this.isRunning()) {
             if (!this._window.is_active()) {
-                //this._window.activate(Gtk.get_current_event_time());           
+                //this._window.activate(Gtk.get_current_event_time());
+                Gdk.X11.Display display = (Gdk.X11.Display)Gdk.Display.get_default();
+                unowned X.Display xdisplay = display.get_xdisplay();
+                X.Event xev = new X.Event();
+                xev.xclient.type = X.EventType.ClientMessage;
+                xev.xclient.serial = 0;
+                xev.xclient.send_event = true;
+                xev.xclient.display = xdisplay;
+                xev.xclient.window = xid;
+                xev.xclient.message_type = xdisplay.intern_atom("_NET_ACTIVE_WINDOW", true);
+                xev.xclient.format = 32;
+                xev.xclient.l[0] = 1;//_wnck_handle_get_client_type (handle);
+                xev.xclient.l[1] = Gdk.CURRENT_TIME;
+                xev.xclient.l[2] = 0;
+                xev.xclient.l[3] = 0;
+                xev.xclient.l[4] = 0;
+                xdisplay.send_event(xdisplay.default_root_window(), false, X.EventMask.SubstructureRedirectMask | X.EventMask.SubstructureNotifyMask, ref xev);
             }
             else {
                 //this._window.minimize();
+                Gdk.X11.Display display = (Gdk.X11.Display)Gdk.Display.get_default();
+                display.get_xdisplay().iconify_window(xid, 0);
             }
         } else {
             try {

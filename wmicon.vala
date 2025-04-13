@@ -34,7 +34,7 @@ public class WMIcon : Object
         int actualFormat;
         ulong nItems;
         ulong bytesAfter;
-        uchar* propData = null;
+        uint8* propData = null;
         int status = xdisplay.get_window_property(xid, iconAtom, 0, long.MAX, false, X.ANY_PROPERTY_TYPE, 
             out actualType,out actualFormat, out nItems, out bytesAfter, out propData);
 
@@ -49,6 +49,8 @@ public class WMIcon : Object
             warning("Warning: Unexpected icon data format (%d-bit, expected 32-bit). Parsing might fail.", actualFormat);
             return;
         }
+
+        print("data size: %lu\n", nItems);
 
         int best_icon_index = -1;
         ulong best_icon_size = 0;
@@ -110,26 +112,18 @@ public class WMIcon : Object
             ulong byte_offset = selected_icon.data_offset_cardinals * sizeof(ulong);
             ulong byte_size = selected_icon.pixel_count * sizeof(ulong); // Total bytes for pixel data
 
-            // **Crucially, copy the data** because prop_data will be freed by XFree.
-            // Gdk.Pixbuf expects tightly packed ARGB data (4 bytes per pixel).
-            // The ulong data from Xlib *should* be this format on most systems.
-            var pixel_data = new uint8[selected_icon.width * selected_icon.height * sizeof(ulong)];
+
             uint8* source_ptr = propData + byte_offset;
+            uint8[] pixel_data = ((uint8[])source_ptr)[0:byte_size];
 
-            // Copy data byte-by-byte or using memory copy if formats match
-            // We assume the ulong format is ARGB directly compatible with Pixbuf's expectation.
-            // If endianness or format differs, conversion is needed here.
-            Memory.copy(pixel_data, source_ptr, byte_size);
+            size_t stride = selected_icon.width * sizeof(ulong);
 
-            var pixbuf = new Gdk.Pixbuf.from_data (pixel_data, // Our copied data
-                Gdk.Colorspace.RGB,
-                true, // has_alpha
-                8,    // bits_per_sample
-                selected_icon.width,
-                selected_icon.height,
-                selected_icon.width * 4); // rowstride
+            //R8G8B8A8_PREMULTIPLIED
+            Gdk.MemoryTexture mt = new Gdk.MemoryTexture(selected_icon.width, selected_icon.height, 
+                Gdk.MemoryFormat.B8G8R8A8, new Bytes(pixel_data) , stride);
 
-            iconImage.set_from_pixbuf (pixbuf);
+            iconImage.set_from_paintable(mt);
         }
+        X.free(propData);
     }
 }

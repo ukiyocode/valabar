@@ -5,7 +5,7 @@ add_project_arguments('-O', language: 'c')
 vapi_dir = meson.current_source_dir()
 add_project_arguments(['--vapidir', vapi_dir], language: 'vala')
 add_project_arguments('-Wl,--export-dynamic', language: 'c')
-add_project_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language: 'c')
+#add_project_arguments('-DWNCK_I_KNOW_THIS_IS_UNSTABLE', language: 'c')
 add_project_link_arguments('-lm', language: 'c')
 
 dependencies = [
@@ -21,6 +21,7 @@ dependencies = [
     #dependency('alsa'),
     #meson.get_compiler('vala').find_library('posix'),   
     #dependency('libpulse'),
+    dependency('gee-0.8'),
 ]
 
 sources = files(

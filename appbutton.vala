@@ -151,7 +151,7 @@ public class AppButton : Gtk.Button
                 xev.xclient.window = xid;
                 xev.xclient.message_type = xdisplay.intern_atom("_NET_ACTIVE_WINDOW", true);
                 xev.xclient.format = 32;
-                xev.xclient.l[0] = 1;//_wnck_handle_get_client_type (handle);
+                xev.xclient.l[0] = 1;//WNCK.ClientType.Pager
                 xev.xclient.l[1] = Gdk.CURRENT_TIME;
                 xev.xclient.l[2] = 0;
                 xev.xclient.l[3] = 0;

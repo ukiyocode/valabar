@@ -112,13 +112,20 @@ public class WMIcon : Object
             ulong byte_offset = selected_icon.data_offset_cardinals * sizeof(ulong);
             ulong byte_size = selected_icon.pixel_count * sizeof(ulong); // Total bytes for pixel data
 
+            ulong size32 = selected_icon.pixel_count * 2;
 
             uint8* source_ptr = propData + byte_offset;
-            uint8[] pixel_data = ((uint8[])source_ptr)[0:byte_size];
+            uint32[] data32 = ((uint32[])source_ptr)[0:size32];
+            uint32[] fixedData = new uint32[selected_icon.pixel_count];
 
-            size_t stride = selected_icon.width * sizeof(ulong);
+            for (int i=0; i<fixedData.length; i++) {
+                fixedData[i] = data32[i*2];
+            }
+            uint8[] pixel_data = (uint8[])fixedData;
 
-            //R8G8B8A8_PREMULTIPLIED
+            size_t stride = selected_icon.width * sizeof(uint32);
+
+            //B8G8R8A8_PREMULTIPLIED
             Gdk.MemoryTexture mt = new Gdk.MemoryTexture(selected_icon.width, selected_icon.height, 
                 Gdk.MemoryFormat.B8G8R8A8, new Bytes(pixel_data) , stride);
 

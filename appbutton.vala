@@ -29,9 +29,9 @@ public class AppButton : Gtk.Button
                 warning("Could not retrieve icon from desktop file: %s", dFileName);
                 // Create a fallback if icon retrieval fails
             } else {
-                Gtk.Image iconImage = new Gtk.Image.from_gicon(gicon);
-                iconImage.set_pixel_size(this._imgSize);
-                this.set_child(iconImage);
+                this.image = new Gtk.Image.from_gicon(gicon);
+                this.image.set_pixel_size(this._imgSize);
+                this.set_child(this.image);
             }
             this.set_tooltip_text(this.appInfo.get_display_name());
         }
@@ -50,9 +50,8 @@ public class AppButton : Gtk.Button
         this._window = window;
         this._xid = this._window.get_xid();
 
-        Gtk.Image iconImage = new WMIcon(this._window.get_xid()).iconImage;
-        iconImage.set_pixel_size(this._imgSize);
-        this.set_child(iconImage);
+        this.image = new WMIcon(this._window.get_xid(), this._imgSize).iconImage;
+        this.set_child(this.image);
 
         print("icon: %s\n", this._window.get_icon());
         //this.image = prepare_image(this._window.get_icon());
@@ -73,7 +72,7 @@ public class AppButton : Gtk.Button
         return false;
     }
 
-    private Gtk.Image prepare_image(Gdk.Pixbuf image) {
+    /*private Gtk.Image prepare_image(Gdk.Pixbuf image) {
         if (image == null) {
             print("imgnull\n");
         }
@@ -87,7 +86,7 @@ public class AppButton : Gtk.Button
             }
         }
         return new Gtk.Image.from_pixbuf(background);
-    }
+    }*/
 
     private void on_icon_changed() {
         //this.image = prepare_image(this._window.get_icon());
@@ -143,7 +142,7 @@ public class AppButton : Gtk.Button
                 //this._window.activate(Gtk.get_current_event_time());
                 Gdk.X11.Display display = (Gdk.X11.Display)Gdk.Display.get_default();
                 unowned X.Display xdisplay = display.get_xdisplay();
-                X.Event xev = new X.Event();
+                X.Event xev = X.Event();
                 xev.xclient.type = X.EventType.ClientMessage;
                 xev.xclient.serial = 0;
                 xev.xclient.send_event = true;
